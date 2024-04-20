@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('id', true);
             $table->string('nombre', 100);
             $table->integer('id_departamento')->index('id_departamento');
+            $table->timestamps();
         });
     }
 

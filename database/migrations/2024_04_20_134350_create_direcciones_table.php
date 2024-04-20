@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('id_municipio')->index('id_municipio');
             $table->string('direccion');
             $table->string('referencia');
+            $table->timestamps();
         });
     }
 

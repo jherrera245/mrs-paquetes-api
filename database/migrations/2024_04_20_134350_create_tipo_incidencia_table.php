@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('descripcion');
             $table->integer('estado')->index('estado');
+            $table->timestamps();
         });
     }
 

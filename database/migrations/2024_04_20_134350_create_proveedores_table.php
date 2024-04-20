@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('id_estado')->index('id_estado');
             $table->dateTime('fecha_creacion');
             $table->dateTime('fecha_modificacion');
+            $table->timestamps();
         });
     }
 

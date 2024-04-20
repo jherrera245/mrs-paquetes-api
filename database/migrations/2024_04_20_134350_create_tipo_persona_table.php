@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('id', true);
             $table->integer('nombre');
             $table->integer('descripcion');
+            $table->timestamps();
+            $table->timestamps();
         });
     }
 

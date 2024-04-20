@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tipo_pago', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('pago');
+            $table->timestamps();
         });
     }
 

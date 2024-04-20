@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('id', true);
             $table->integer('id_rol')->index('id_rol');
             $table->integer('id_permiso')->index('id_permiso');
+            $table->timestamps();
         });
     }
 

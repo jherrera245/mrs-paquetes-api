@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('id_estado')->index('id_estado');
             $table->integer('id_departamento')->index('id_departamento');
             $table->integer('id_municipio')->index('id_municipio');
+            $table->timestamps();
         });
     }
 

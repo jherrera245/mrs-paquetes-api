@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('id_paquete')->index('id_paquete');
             $table->string('descripcion');
             $table->decimal('total_pago', 10);
+            $table->timestamps();
         });
     }
 

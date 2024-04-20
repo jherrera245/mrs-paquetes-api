@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('id_paquete')->index('id_paquete');
             $table->dateTime('fecha');
             $table->integer('id_estado')->index('id_estado');
+            $table->timestamps();
         });
     }
 

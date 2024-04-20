@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('id_modelo')->index('id_modelo');
             $table->string('modelo');
             $table->integer('year_fabricacion');
+            $table->timestamps();
         });
     }
 

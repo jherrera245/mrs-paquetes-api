@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('departamento', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('nombre', 100);
+            $table->timestamps();
         });
     }
 

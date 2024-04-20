@@ -29,6 +29,7 @@ return new class extends Migration
             $table->text('instrucciones_entrega');
             $table->dateTime('fecha_ingreso');
             $table->dateTime('fecha_entrega');
+            $table->timestamps();
         });
     }
 

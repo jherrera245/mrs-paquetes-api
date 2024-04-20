@@ -24,6 +24,7 @@ return new class extends Migration
             $table->dateTime('fecha_envio');
             $table->dateTime('fecha_entrega_estimada');
             $table->text('descripcion_contenido');
+            $table->timestamps();
         });
     }
 

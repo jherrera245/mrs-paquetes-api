@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('id_cargo')->index('id_cargo');
             $table->integer('id_departamento')->index('id_departamento');
             $table->integer('id_municipio')->index('id_municipio');
+            $table->timestamps();
         });
     }
 

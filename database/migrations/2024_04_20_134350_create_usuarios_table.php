@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('id_rol')->unique('id_rol');
             $table->integer('id_empleado')->index('id_empleado');
             $table->integer('id_estado')->unique('id_estado');
+            $table->timestamps();
         });
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tipo_entrega', function (Blueprint $table) {
             $table->integer('id', true);
             $table->integer('entrega');
+            $table->timestamps();
         });
     }
 

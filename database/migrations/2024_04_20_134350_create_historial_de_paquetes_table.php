@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('fecha_hora');
             $table->integer('id_usuario')->index('id_usuario');
             $table->string('accion');
+            $table->timestamps();
         });
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('permisos', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('nombre');
+            $table->timestamps();
         });
     }
 

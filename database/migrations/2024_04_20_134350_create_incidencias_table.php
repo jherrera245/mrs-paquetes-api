@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('id_usuario_reporta')->index('id_usuario_reporta');
             $table->integer('id_usuario_asignado')->index('id_usuario_asignado');
             $table->text('solucion');
+            $table->timestamps();
         });
     }
 

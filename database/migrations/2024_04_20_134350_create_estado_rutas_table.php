@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('estado_rutas', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('estado');
+            $table->timestamps();
         });
     }
 

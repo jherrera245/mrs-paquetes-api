@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('empaquetado', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('empaquetado');
+            $table->timestamps();
         });
     }
 
