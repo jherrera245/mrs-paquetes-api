@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 100);
             $table->foreignId('id_departamento');
-            $table->timestamps();
         });
     }
 
