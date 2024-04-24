@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('tipo_incidencia', function (Blueprint $table) {
-            $table->foreign(['estado'], 'tipo_incidencia_ibfk_1')->references(['id'])->on('estado_incidencias')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_estado'], 'tipo_incidencia_fk_id_id_estado')->references(['id'])->on('estado_incidencias');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('tipo_incidencia', function (Blueprint $table) {
-            $table->dropForeign('tipo_incidencia_ibfk_1');
+            $table->dropForeign('tipo_incidencia_fk_id_id_estado');
         });
     }
 };

@@ -14,15 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('paquetes', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('id_tipo_paquete')->index('id_tipo_paquete');
-            $table->integer('id_empaque')->index('id_empaque');
+            $table->id();
+            $table->foreignId('id_tipo_paquete');
+            $table->foreignId('id_empaque');
             $table->decimal('peso', 10);
             $table->string('uuid');
             $table->string('tag');
-            $table->integer('id_estado_paquete')->index('id_estado_paquete');
-            $table->dateTime('fecha_envio');
-            $table->dateTime('fecha_entrega_estimada');
+            $table->foreignId('id_estado_paquete');
+            $table->datetime('fecha_envio');
+            $table->datetime('fecha_entrega_estimada');
             $table->text('descripcion_contenido');
             $table->timestamps();
         });

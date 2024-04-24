@@ -14,12 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('destinos', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('nombre');
-            $table->integer('descripcion');
-            $table->integer('id_departamento')->index('id_departamento');
-            $table->integer('id_municipio')->index('id_municipio');
-            $table->integer('id_estado')->index('id_estado');
+            $table->id();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->foreignId('id_departamento');
+            $table->foreignId('id_municipio');
+            $table->foreignId('id_estado');
             $table->timestamps();
         });
     }

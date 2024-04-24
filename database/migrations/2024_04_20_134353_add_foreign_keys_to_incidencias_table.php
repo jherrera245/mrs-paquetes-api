@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('incidencias', function (Blueprint $table) {
-            $table->foreign(['estado'], 'incidencias_ibfk_5')->references(['id'])->on('estado_incidencias')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_paquete'], 'incidencias_ibfk_2')->references(['id'])->on('paquetes')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_usuario_asignado'], 'incidencias_ibfk_4')->references(['id'])->on('usuarios')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_tipo_incidencia'], 'incidencias_ibfk_1')->references(['id'])->on('tipo_incidencia')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_usuario_reporta'], 'incidencias_ibfk_3')->references(['id'])->on('usuarios')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['estado'], 'incidencias_fk_id_estado')->references(['id'])->on('estado_incidencias');
+            $table->foreign(['id_paquete'], 'incidencias_fk_id_paquete')->references(['id'])->on('paquetes');
+            $table->foreign(['id_usuario_asignado'], 'incidencias_fk_id_user_asignado')->references(['id'])->on('users');
+            $table->foreign(['id_tipo_incidencia'], 'incidencias_fk_id_tipo_incidencia')->references(['id'])->on('tipo_incidencia');
+            $table->foreign(['id_usuario_reporta'], 'incidencias_fk_id_user_recibe')->references(['id'])->on('users');
         });
     }
 
@@ -30,11 +30,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('incidencias', function (Blueprint $table) {
-            $table->dropForeign('incidencias_ibfk_5');
-            $table->dropForeign('incidencias_ibfk_2');
-            $table->dropForeign('incidencias_ibfk_4');
-            $table->dropForeign('incidencias_ibfk_1');
-            $table->dropForeign('incidencias_ibfk_3');
+            $table->dropForeign('incidencias_fk_id_estado');
+            $table->dropForeign('incidencias_fk_id_paquete');
+            $table->dropForeign('incidencias_fk_id_user_asignado');
+            $table->dropForeign('incidencias_fk_id_tipo_incidencia');
+            $table->dropForeign('incidencias_fk_id_user_recibe');
         });
     }
 };

@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('historial_de_paquetes', function (Blueprint $table) {
-            $table->foreign(['id_usuario'], 'historial_de_paquetes_ibfk_2')->references(['id'])->on('usuarios')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_paquete'], 'historial_de_paquetes_ibfk_1')->references(['id'])->on('paquetes')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_usuario'], 'historial_de_paquetes_fk_id_user')->references(['id'])->on('users');
+            $table->foreign(['id_paquete'], 'historial_de_paquetes_fk_id_paquete')->references(['id'])->on('paquetes');
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('historial_de_paquetes', function (Blueprint $table) {
-            $table->dropForeign('historial_de_paquetes_ibfk_2');
-            $table->dropForeign('historial_de_paquetes_ibfk_1');
+            $table->dropForeign('historial_de_paquetes_fk_id_user');
+            $table->dropForeign('historial_de_paquetes_fk_id_paquete');
         });
     }
 };

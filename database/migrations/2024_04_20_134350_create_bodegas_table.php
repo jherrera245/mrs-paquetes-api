@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('bodegas', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('nombre');
-            $table->integer('id_departamento')->index('id_departamento');
-            $table->integer('id_municipio')->index('id_municipio');
+            $table->foreignId('id_departamento');
+            $table->foreignId('id_municipio');
             $table->string('direccion');
             $table->timestamps();
         });

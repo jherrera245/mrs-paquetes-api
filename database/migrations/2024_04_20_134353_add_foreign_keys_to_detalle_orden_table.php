@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('detalle_orden', function (Blueprint $table) {
-            $table->foreign(['id_orden'], 'detalle_orden_ibfk_2')->references(['id'])->on('ordenes')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_paquete'], 'detalle_orden_ibfk_1')->references(['id'])->on('paquetes')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_orden'], 'detalle_orden_fk_id_orden')->references(['id'])->on('ordenes');
+            $table->foreign(['id_paquete'], 'detalle_orden_fk_id_paquete')->references(['id'])->on('paquetes');
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('detalle_orden', function (Blueprint $table) {
-            $table->dropForeign('detalle_orden_ibfk_2');
-            $table->dropForeign('detalle_orden_ibfk_1');
+            $table->dropForeign('detalle_orden_fk_id_orden');
+            $table->dropForeign('detalle_orden_fk_id_paquete');
         });
     }
 };

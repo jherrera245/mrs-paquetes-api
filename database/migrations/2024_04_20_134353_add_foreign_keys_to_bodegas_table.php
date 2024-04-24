@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('bodegas', function (Blueprint $table) {
-            $table->foreign(['id_municipio'], 'bodegas_ibfk_2')->references(['id'])->on('municipios')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_departamento'], 'bodegas_ibfk_1')->references(['id'])->on('departamento')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_municipio'], 'bodegas_fk_id_municipio')->references(['id'])->on('municipios');
+            $table->foreign(['id_departamento'], 'bodegas_fk_id_departamento')->references(['id'])->on('departamento');
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('bodegas', function (Blueprint $table) {
-            $table->dropForeign('bodegas_ibfk_2');
-            $table->dropForeign('bodegas_ibfk_1');
+            $table->dropForeign('bodegas_fk_id_municipio');
+            $table->dropForeign('bodegas_fk_id_departamento');
         });
     }
 };

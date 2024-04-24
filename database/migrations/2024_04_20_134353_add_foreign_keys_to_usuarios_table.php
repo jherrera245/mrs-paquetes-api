@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('usuarios', function (Blueprint $table) {
-            $table->foreign(['id_rol'], 'usuarios_ibfk_3')->references(['id'])->on('roles')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_empleado'], 'usuarios_ibfk_1')->references(['id'])->on('empleados')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_estado'], 'usuarios_ibfk_4')->references(['id'])->on('estado_usuarios')->onUpdate('CASCADE')->onDelete('CASCADE');
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign(['id_empleado'], 'users_fk_id_empleado')->references(['id'])->on('empleados');
+            $table->foreign(['id_cliente'], 'users_fk_id_cliente')->references(['id'])->on('clientes');
         });
     }
 
@@ -27,10 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('usuarios', function (Blueprint $table) {
-            $table->dropForeign('usuarios_ibfk_3');
-            $table->dropForeign('usuarios_ibfk_1');
-            $table->dropForeign('usuarios_ibfk_4');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_fk_id_empleado');
+            $table->dropForeign('users_fk_id_cliente');
         });
     }
 };

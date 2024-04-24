@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('clientes', function (Blueprint $table) {
-            $table->foreign(['id_estado'], 'clientes_ibfk_5')->references(['id'])->on('estado_clientes')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_genero'], 'clientes_ibfk_2')->references(['id'])->on('genero')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_municipio'], 'clientes_ibfk_4')->references(['id'])->on('municipios')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_tipo_persona'], 'clientes_ibfk_1')->references(['id'])->on('tipo_persona')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_departamento'], 'clientes_ibfk_3')->references(['id'])->on('departamento')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_estado'], 'clientes_fk_id_estado')->references(['id'])->on('estado_clientes');
+            $table->foreign(['id_genero'], 'clientes_fk_id_genero')->references(['id'])->on('genero');
+            $table->foreign(['id_municipio'], 'clientes_fk_id_municipio')->references(['id'])->on('municipios');
+            $table->foreign(['id_tipo_persona'], 'clientes_fk_id_tipo_persona')->references(['id'])->on('tipo_persona');
+            $table->foreign(['id_departamento'], 'clientes_fk_id_departamento')->references(['id'])->on('departamento');
         });
     }
 
@@ -30,11 +30,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('clientes', function (Blueprint $table) {
-            $table->dropForeign('clientes_ibfk_5');
-            $table->dropForeign('clientes_ibfk_2');
-            $table->dropForeign('clientes_ibfk_4');
-            $table->dropForeign('clientes_ibfk_1');
-            $table->dropForeign('clientes_ibfk_3');
+            $table->dropForeign('clientes_fk_id_estado');
+            $table->dropForeign('clientes_fk_id_genero');
+            $table->dropForeign('clientes_fk_id_municipio');
+            $table->dropForeign('clientes_fk_id_tipo_persona');
+            $table->dropForeign('clientes_fk_id_departamento');
         });
     }
 };

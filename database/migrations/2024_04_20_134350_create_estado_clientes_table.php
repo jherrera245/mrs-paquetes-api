@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('estado_clientes', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('estado');
             $table->timestamps();
         });

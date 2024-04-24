@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('empleados', function (Blueprint $table) {
-            $table->foreign(['id_estado'], 'empleados_ibfk_5')->references(['id'])->on('estado_empleados')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_departamento'], 'empleados_ibfk_2')->references(['id'])->on('departamento')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_cargo'], 'empleados_ibfk_4')->references(['id'])->on('cargos')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_genero'], 'empleados_ibfk_1')->references(['id'])->on('genero')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_municipio'], 'empleados_ibfk_3')->references(['id'])->on('municipios')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_estado'], 'empleados_fk_id_estado')->references(['id'])->on('estado_empleados');
+            $table->foreign(['id_departamento'], 'empleados_fk_id_departamento')->references(['id'])->on('departamento');
+            $table->foreign(['id_cargo'], 'empleados_fk_id_cargo')->references(['id'])->on('cargos');
+            $table->foreign(['id_genero'], 'empleados_fk_id_genero')->references(['id'])->on('genero');
+            $table->foreign(['id_municipio'], 'empleados_fk_id_municipio')->references(['id'])->on('municipios');
         });
     }
 
@@ -30,11 +30,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('empleados', function (Blueprint $table) {
-            $table->dropForeign('empleados_ibfk_5');
-            $table->dropForeign('empleados_ibfk_2');
-            $table->dropForeign('empleados_ibfk_4');
-            $table->dropForeign('empleados_ibfk_1');
-            $table->dropForeign('empleados_ibfk_3');
+            $table->dropForeign('empleados_fk_id_estado');
+            $table->dropForeign('empleados_fk_id_departamento');
+            $table->dropForeign('empleados_fk_id_cargo');
+            $table->dropForeign('empleados_fk_id_genero');
+            $table->dropForeign('empleados_fk_id_municipio');
         });
     }
 };

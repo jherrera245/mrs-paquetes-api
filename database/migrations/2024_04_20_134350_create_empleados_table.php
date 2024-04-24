@@ -14,20 +14,20 @@ return new class extends Migration
     public function up()
     {
         Schema::create('empleados', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('nombres', 100);
             $table->string('apellidos', 100);
-            $table->integer('id_genero')->index('id_genero');
+            $table->foreignId('id_genero');
             $table->string('dui', 10)->unique('dui');
             $table->string('telefono', 9);
             $table->string('email');
             $table->date('fecha_nacimiento');
             $table->date('fecha_contratacion');
             $table->decimal('salario', 10);
-            $table->integer('id_estado')->index('id_estado');
-            $table->integer('id_cargo')->index('id_cargo');
-            $table->integer('id_departamento')->index('id_departamento');
-            $table->integer('id_municipio')->index('id_municipio');
+            $table->foreignId('id_estado');
+            $table->foreignId('id_cargo');
+            $table->foreignId('id_departamento');
+            $table->foreignId('id_municipio');
             $table->timestamps();
         });
     }

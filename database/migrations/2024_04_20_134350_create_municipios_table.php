@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('municipios', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('nombre', 100);
-            $table->integer('id_departamento')->index('id_departamento');
+            $table->foreignId('id_departamento');
             $table->timestamps();
         });
     }

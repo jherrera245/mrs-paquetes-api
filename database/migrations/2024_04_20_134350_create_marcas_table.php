@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('marcas', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('nombre');
-            $table->integer('descripcion');
+            $table->string('descripcion');
             $table->timestamps();
         });
     }

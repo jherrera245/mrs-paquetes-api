@@ -14,16 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('vehiculos', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('id_empleado_conductor')->index('id_empleado_conductor');
-            $table->integer('id_empleado_apoyo')->index('id_empleado_apoyo');
+            $table->id();
+            $table->foreignId('id_empleado_conductor');
+            $table->foreignId('id_empleado_apoyo');
             $table->string('placa', 10)->unique('placa');
             $table->decimal('capacidad_carga', 10);
-            $table->integer('id_estado')->index('id_estado');
-            $table->integer('id_marca')->index('id_marca');
-            $table->integer('id_modelo')->index('id_modelo');
-            $table->string('modelo');
-            $table->integer('year_fabricacion');
+            $table->foreignId('id_estado');
+            $table->foreignId('id_marca');
+            $table->foreignId('id_modelo');
+            $table->foreignId('year_fabricacion');
             $table->timestamps();
         });
     }

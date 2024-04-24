@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('historial_de_paquetes', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('id_paquete')->index('id_paquete');
+            $table->id();
+            $table->foreignId('id_paquete');
             $table->dateTime('fecha_hora');
-            $table->integer('id_usuario')->index('id_usuario');
+            $table->foreignId('id_usuario');
             $table->string('accion');
             $table->timestamps();
         });

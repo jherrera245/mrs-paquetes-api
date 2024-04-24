@@ -14,16 +14,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ordenes', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('id_cliente_entrega')->index('id_cliente_entrega');
+            $table->id();
+            $table->foreignId('id_cliente_entrega');
             $table->string('telefono_entrega', 9);
-            $table->integer('id_cliente_recibe')->index('id_cliente_recibe');
-            $table->integer('id_direccion')->index('id_direccion');
-            $table->integer('id_tipo_entrega')->index('id_tipo_entrega');
-            $table->integer('id_estado_paquetes')->index('id_estado_paquetes');
-            $table->integer('id_paquete')->index('id_paquete');
+            $table->foreignId('id_cliente_recibe');
+            $table->foreignId('id_direccion');
+            $table->foreignId('id_tipo_entrega');
+            $table->foreignId('id_estado_paquetes');
+            $table->foreignId('id_paquete');
             $table->decimal('precio', 10);
-            $table->integer('id_tipo_pago')->index('id_tipo_pago');
+            $table->foreignId('id_tipo_pago');
             $table->string('validacion_entrega');
             $table->decimal('costo_adicional', 10);
             $table->text('instrucciones_entrega');

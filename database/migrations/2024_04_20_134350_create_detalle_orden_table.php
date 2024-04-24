@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('detalle_orden', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('id_orden')->index('id_orden');
-            $table->integer('id_paquete')->index('id_paquete');
+            $table->id();
+            $table->foreignId('id_orden');
+            $table->foreignId('id_paquete');
             $table->string('descripcion');
             $table->decimal('total_pago', 10);
             $table->timestamps();

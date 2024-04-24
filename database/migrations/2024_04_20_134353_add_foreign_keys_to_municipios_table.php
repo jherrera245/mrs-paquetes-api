@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('municipios', function (Blueprint $table) {
-            $table->foreign(['id_departamento'], 'municipios_ibfk_1')->references(['id'])->on('departamento')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_departamento'], 'municipios_fk_id_departamento')->references(['id'])->on('departamento');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('municipios', function (Blueprint $table) {
-            $table->dropForeign('municipios_ibfk_1');
+            $table->dropForeign('municipios_fk_id_departamento');
         });
     }
 };

@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('vehiculos', function (Blueprint $table) {
-            $table->foreign(['id_estado'], 'vehiculos_ibfk_6')->references(['id'])->on('estado_vehiculos')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_modelo'], 'vehiculos_ibfk_2')->references(['id'])->on('modelos')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_empleado_apoyo'], 'vehiculos_ibfk_5')->references(['id'])->on('empleados')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_marca'], 'vehiculos_ibfk_1')->references(['id'])->on('marcas')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_empleado_conductor'], 'vehiculos_ibfk_4')->references(['id'])->on('empleados')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_estado'], 'vehiculos_ibfk_6')->references(['id'])->on('estado_vehiculos');
+            $table->foreign(['id_modelo'], 'vehiculos_ibfk_2')->references(['id'])->on('modelos');
+            $table->foreign(['id_empleado_apoyo'], 'vehiculos_ibfk_5')->references(['id'])->on('empleados');
+            $table->foreign(['id_marca'], 'vehiculos_ibfk_1')->references(['id'])->on('marcas');
+            $table->foreign(['id_empleado_conductor'], 'vehiculos_ibfk_4')->references(['id'])->on('empleados');
         });
     }
 

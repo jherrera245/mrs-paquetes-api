@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tipo_persona', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('nombre');
-            $table->integer('descripcion');
+            $table->id();
+            $table->string('nombre');
+            $table->string('descripcion');
             $table->timestamps();
         });
     }

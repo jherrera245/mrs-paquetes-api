@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('cargos', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('nombre', 100);
             $table->string('descripcion');
             $table->timestamps();

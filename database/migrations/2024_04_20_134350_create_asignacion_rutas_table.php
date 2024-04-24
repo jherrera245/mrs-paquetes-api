@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('asignacion_rutas', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->string('codigo_unico_asignacion');
-            $table->integer('id_ruta')->index('id_ruta');
-            $table->integer('id_vehiculo')->index('id_vehiculo');
-            $table->integer('id_paquete')->index('id_paquete');
+            $table->foreignId('id_ruta');
+            $table->foreignId('id_vehiculo');
+            $table->foreignId('id_paquete');
             $table->dateTime('fecha');
-            $table->integer('id_estado')->index('id_estado');
+            $table->foreignId('id_estado');
             $table->timestamps();
         });
     }

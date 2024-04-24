@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('destinos', function (Blueprint $table) {
-            $table->foreign(['id_municipio'], 'destinos_ibfk_2')->references(['id'])->on('municipios')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_departamento'], 'destinos_ibfk_1')->references(['id'])->on('departamento')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['id_estado'], 'destinos_ibfk_3')->references(['id'])->on('estado_rutas')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['id_municipio'], 'destinos_fk_id_municipio')->references(['id'])->on('municipios');
+            $table->foreign(['id_departamento'], 'destinos_fk_id_departamento')->references(['id'])->on('departamento');
+            $table->foreign(['id_estado'], 'destinos_fk_id_estado_ruta')->references(['id'])->on('estado_rutas');
         });
     }
 
@@ -28,9 +28,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('destinos', function (Blueprint $table) {
-            $table->dropForeign('destinos_ibfk_2');
-            $table->dropForeign('destinos_ibfk_1');
-            $table->dropForeign('destinos_ibfk_3');
+            $table->dropForeign('destinos_fk_id_municipio');
+            $table->dropForeign('destinos_fk_id_departamento');
+            $table->dropForeign('destinos_fk_id_estado_ruta');
         });
     }
 };
