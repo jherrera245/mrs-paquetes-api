@@ -26,12 +26,21 @@ Route::post('login',  [AuthController::class, 'authenticate']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     //Routes users api
     Route::get('get_user', [AuthController::class, 'getUser']);
+    Route::get('get_users', [AuthController::class, 'getUsers']);
+    Route::post('assign_user_role/{id}', [AuthController::class, 'assignUserRole']);
     Route::get('logout', [AuthController::class, 'logout']);
+    Route::put('update/{id}', [AuthController::class, 'update']);
+    Route::put('update_cliente/{id}', [AuthController::class, 'updateCliente']);
+    Route::post('store_cliente', [AuthController::class, 'storeCliente']);
+    Route::put('update_empleado/{id}', [AuthController::class, 'updateEmpleado']);
+    Route::post('store_empleado', [AuthController::class, 'storeEmpleado']);
+    Route::delete('destroy/{id}', [AuthController::class, 'destroy']);
 
     //roles 
     Route::get('/roles', [RoleController::class, 'index']);
     Route::post('/roles', [RoleController::class, 'store']);
     Route::put('/roles/{role}', [RoleController::class, 'update']);
+    Route::post('/roles/assign_permissions_role/{id}', [RoleController::class, 'assignPermissionsToRole']);
     Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
 
     //permission 

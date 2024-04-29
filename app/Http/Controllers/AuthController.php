@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -121,4 +122,226 @@ class AuthController extends Controller
         //Devolvemos los datos del usuario si todo va bien.
         return response()->json(['user' => $user]);
     }
+
+    // Función para obtener todos los usuarios
+    public function getUsers()
+    {
+        $users = User::where('status', 1)->get();
+        return response()->json(['users' => $users]);
+    }
+
+
+    // Función para asignar roles a un usuario
+    public function assignUserRole(Request $request, $id)
+    {
+        // Validar la solicitud
+        $validator = Validator::make($request->all(), [
+            'role' => 'required|exists:roles,name', // Verificar que el rol exista en la tabla de roles
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        // Obtener el usuario
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        //Variable que recibe el valor del rol
+        $roleName = $request->input('role');
+
+        try {
+            //Busca el rol que se recibe
+            $role = Role::where('name', $roleName)->first();
+
+            // Asignar el rol al usuario
+            if ($role) {
+                //verificamos si el usuario ya tiene un rol
+                if ($user->hasRole($role)) {
+                    return response()->json(['message' => 'El usuario ya tiene asignado este rol'], 200);
+                }
+                $user->syncRoles([$role]);
+                return response()->json(['message' => 'Rol asignado!'], 200);
+            } else {
+                return response()->json(['error' => 'Rol no encontrado'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al asignar el rol'], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validar la solicitud
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        
+
+        if ($user->save()) {
+            return response()->json(['message' => 'Usuario actualizado']);
+        } else {
+            return response()->json(['error' => 'Error al actualizar el usuario'], 500);
+        }
+    
+    }
+
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $user->status = 0;
+        
+
+        if ($user->save()) {
+            return response()->json(['message' => 'Usuario Borrado']);
+        } else {
+            return response()->json(['error' => 'Error al borrar el usuario'], 500);
+        }
+    
+    }
+
+    public function updateCliente(Request $request, $id)
+    {
+        // Validar la solicitud
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->id_cliente = $request->id_cliente;
+
+        if ($user->save()) {
+            return response()->json(['message' => 'Usuario actualizado']);
+        } else {
+            return response()->json(['error' => 'Error al actualizar el usuario'], 500);
+        }
+    
+    }
+
+    public function storeCliente(Request $request)
+    {
+        //Indicamos que solo queremos recibir name, email, id empleado y password de la request
+        $data = $request->only('name', 'email','password', 'id_cliente');
+        //Realizamos las validaciones
+        $validator = Validator::make($data, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:50',
+        ]);
+        //Devolvemos un error si fallan las validaciones
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        //Creamos el nuevo usuario
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'id_cliente' => $request->id_cliente,
+        ]);
+        //Nos guardamos el usuario y la contraseña para realizar la petición de token a JWTAuth
+        $credentials = $request->only('email', 'password');
+        //Devolvemos la respuesta con el token del usuario
+        return response()->json([
+            'message' => 'User created',
+            'token' => JWTAuth::attempt($credentials),
+            'user' => $user,
+        ], Response::HTTP_OK);
+
+    }
+
+    public function updateEmpleado(Request $request, $id)
+    {
+        // Validar la solicitud
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->id_empleado = $request->id_empleado;
+
+        if ($user->save()) {
+            return response()->json(['message' => 'Usuario actualizado']);
+        } else {
+            return response()->json(['error' => 'Error al actualizar el usuario'], 500);
+        }
+    
+    }
+
+    public function storeEmpleado(Request $request)
+    {
+        //Indicamos que solo queremos recibir name, email y password de la request
+        $data = $request->only('name', 'email', 'password', 'id_empleado');
+        //Realizamos las validaciones
+        $validator = Validator::make($data, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:50',
+        ]);
+        //Devolvemos un error si fallan las validaciones
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        }
+
+        //Creamos el nuevo usuario
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'id_empleado' => $request->id_empleado,
+        ]);
+        //Nos guardamos el usuario y la contraseña para realizar la petición de token a JWTAuth
+        $credentials = $request->only('email', 'password');
+        //Devolvemos la respuesta con el token del usuario
+        return response()->json([
+            'message' => 'User created',
+            'token' => JWTAuth::attempt($credentials),
+            'user' => $user,
+        ], Response::HTTP_OK);
+
+    }
 }
+
+
