@@ -3,8 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\tipo_personaController;
+use App\Models\tipoPersona;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,6 +39,21 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/permission', [PermissionController::class, 'store']);
     Route::put('/permission/{permission}', [PermissionController::class, 'update']);
     Route::delete('/permission/{permission}', [PermissionController::class, 'destroy']);
+
+//tipopersona
+    Route::get('/tipoPersona', [tipo_personaController::class, 'index']);
+    Route::post('/tipoPersona', [tipo_personaController::class, 'store']);
+    Route::put('/tipoPersona/{tipo_persona}', [tipo_personaController::class, 'update']);
+    Route::delete('/tipoPersona/{tipo_persona}', [tipo_personaController::class, 'destroy']);
+
+    //clientes
+    Route::get('/clientes', [ClientesController::class, 'index']);
+    Route::post('/clientes', [ClientesController::class, 'store']);
+    Route::put('/clientes/{clientes}', [ClientesController::class, 'update']);
+    Route::delete('/clientes/{clientes}', [ClientesController::class, 'destroy']);
+    
+
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
