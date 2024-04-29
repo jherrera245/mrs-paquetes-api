@@ -8,6 +8,9 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\tipo_personaController;
 use App\Models\tipoPersona;
+use App\Http\Controllers\ModeloVehiculoController;
+use App\Http\Controllers\MarcaVehiculoController;
+use App\Http\Controllers\VehiculoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,8 +63,27 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/clientes', [ClientesController::class, 'store']);
     Route::put('/clientes/{clientes}', [ClientesController::class, 'update']);
     Route::delete('/clientes/{clientes}', [ClientesController::class, 'destroy']);
-    
 
+    //modeloVehiculo
+    Route::get('/modeloVehiculo', [ModeloVehiculoController::class, 'index']);
+    Route::get('/modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'show']);
+    Route::post('/modeloVehiculo', [ModeloVehiculoController::class, 'store']);
+    Route::put('/modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'update']);
+    Route::delete('/modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'destroy']);
+
+    //marcaVehiculo
+    Route::get('/marcaVehiculo', [MarcaVehiculoController::class, 'index']);
+    Route::get('/marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'show']);
+    Route::post('/marcaVehiculo', [MarcaVehiculoController::class, 'store']);
+    Route::put('/marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'update']);
+    Route::delete('/marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'destroy']);
+
+    //vehiculo
+    Route::get('/vehiculo', [VehiculoController::class, 'index']);
+    Route::get('/vehiculo/{vehiculo}', [VehiculoController::class, 'show']);
+    Route::post('/vehiculo',[VehiculoController::class, 'store']);
+    Route::put('/vehiculo/{vehiculo}', [VehiculoController::class, 'update']);
+    Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
 });
 
