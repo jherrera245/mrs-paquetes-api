@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\marcaVehiculo;
+use App\Models\MarcaVehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,11 +16,11 @@ class MarcaVehiculoController extends Controller
     public function index()
     {
         // Obtiene todas las marcas de vehículos y las devuelve como JSON
-        $marcas = marcaVehiculo::all();
+        $marcas = MarcaVehiculo::all();
         return response()->json($marcas);
     }
 
-    public function show(marcaVehiculo $marcaVehiculo)
+    public function show(MarcaVehiculo $marcaVehiculo)
     {
         return response()->json($marcaVehiculo, 200);
     }
@@ -47,7 +47,7 @@ class MarcaVehiculoController extends Controller
         }
 
         // Crea una nueva marca de vehículo y la devuelve como JSON
-        $marca = marcaVehiculo::create($request->all());
+        $marca = MarcaVehiculo::create($request->all());
         return response()->json($marca, 200);
     }
 
@@ -58,7 +58,7 @@ class MarcaVehiculoController extends Controller
      * @param  \App\Models\marcaVehiculo  $marcaVehiculo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, marcaVehiculo $marcaVehiculo)
+    public function update(Request $request, MarcaVehiculo $marcaVehiculo)
     {
         // Valida los datos del formulario para actualizar una marca de vehículo existente
         $data = $request->only('nombre', 'descripcion');
@@ -88,7 +88,7 @@ class MarcaVehiculoController extends Controller
      * @param  \App\Models\marcaVehiculo  $marcaVehiculo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(marcaVehiculo $marcaVehiculo)
+    public function destroy(MarcaVehiculo $marcaVehiculo)
     {
         // Elimina una marca de vehículo existente y devuelve un mensaje de éxito o error
         if ($marcaVehiculo->delete()) {

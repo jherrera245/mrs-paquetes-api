@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\vehiculo;
+use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,7 +20,7 @@ class VehiculoController extends Controller
         return response()->json($vehiculos);
     }
 
-    public function show(vehiculo $vehiculo)
+    public function show(Vehiculo $vehiculo)
     {
         return response()->json($vehiculo, 200);
     }
@@ -73,7 +73,7 @@ class VehiculoController extends Controller
      * @param  \App\Models\vehiculo  $vehiculo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, vehiculo $vehiculo)
+    public function update(Request $request, Vehiculo $vehiculo)
     {
         // Valida los datos del formulario para actualizar un vehículo existente
         $data = $request->only(
@@ -118,7 +118,7 @@ class VehiculoController extends Controller
      * @param  \App\Models\vehiculo  $vehiculo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(vehiculo $vehiculo)
+    public function destroy(Vehiculo $vehiculo)
     {
         // Elimina un vehículo existente y devuelve un mensaje de éxito o error
         if ($vehiculo->delete()) {

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class clientes extends Model
+class Clientes extends Model
 {
     use HasFactory;
     protected $table = 'clientes';
@@ -20,11 +20,12 @@ class clientes extends Model
         'es_contribuyente',
         'id_genero',
         'dui',
-       'fecha_registro',
+        'fecha_registro',
         'id_estado',
         'id_departamento',
         'id_municipio'
 	];
+    
     public function tipo_persona()
     {
         return $this->belongsTo(tipo_persona::class, 'id_tipo_persona');

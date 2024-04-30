@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\modeloVehiculo;
+use App\Models\ModeloVehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,11 +16,11 @@ class ModeloVehiculoController extends Controller
     public function index()
     {
         // Obtiene todos los modelos de vehículos y los devuelve como JSON
-        $modelos = modeloVehiculo::all();
+        $modelos = ModeloVehiculo::all();
         return response()->json($modelos);
     }
 
-    public function show(modeloVehiculo $modeloVehiculo)
+    public function show(ModeloVehiculo $modeloVehiculo)
     {
         return response()->json($modeloVehiculo);
     }
@@ -47,7 +47,7 @@ class ModeloVehiculoController extends Controller
         }
 
         // Crea un nuevo modelo de vehículo y lo devuelve como JSON
-        $modelo = modeloVehiculo::create($request->all());
+        $modelo = ModeloVehiculo::create($request->all());
         return response()->json($modelo, 200);
     }
 
@@ -58,7 +58,7 @@ class ModeloVehiculoController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, modeloVehiculo $modeloVehiculo)
+    public function update(Request $request, ModeloVehiculo $modeloVehiculo)
     {
         // Valida los datos del formulario para actualizar un modelo de vehículo existente
         $data = $request->only('nombre', 'descripcion');
@@ -87,13 +87,13 @@ class ModeloVehiculoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\modeloVehiculo  $modeloVehiculo
+     * @param  \App\Models\ModeloVehiculo  $modeloVehiculo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(modeloVehiculo $modeloVehiculo)
+    public function destroy(ModeloVehiculo $modeloVehiculo)
     {
         // Elimina un modelo de vehículo existente y devuelve un mensaje de éxito o error
-        if ($modeloVehiculo->delete()) {
+        if ($ModeloVehiculo->delete()) {
             return response()->json(["success" => "Modelo de vehículo eliminado correctamente"], 200);
         }
         return response()->json(["error" => "Error al eliminar el modelo de vehículo"], 400);

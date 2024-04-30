@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\tipo_persona;
+use App\Models\TipoPersona;
 use Illuminate\Support\Facades\Validator;
 
-class tipo_personaController extends Controller
+class TipoPersonaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class tipo_personaController extends Controller
      */
     public function index()
     {
-        $tipo_persona = tipo_persona::all();
+        $tipo_persona = TipoPersona::all();
         return response()->json($tipo_persona);
     }
 
@@ -37,12 +37,10 @@ class tipo_personaController extends Controller
             return response()->json(['error' => $validator->messages()], 400);
         }
 
-        $tipo_persona = tipo_persona::create($request->all());
+        $tipo_persona = TipoPersona::create($request->all());
 
         return response()->json($tipo_persona, 201);
     }
-
-
 
     /**
      * Update the specified resource in storage.
@@ -51,7 +49,7 @@ class tipo_personaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, tipo_persona $tipo_persona)
+    public function update(Request $request, TipoPersona $tipo_persona)
     {
         $data = $request ->only('nombre','descripcion');
 
@@ -78,7 +76,7 @@ class tipo_personaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(tipo_persona $tipo_persona)
+    public function destroy(TipoPersona $tipo_persona)
     {
         if ($tipo_persona->delete()) {
             return response()->json(["success" => "Tipo de persona eliminado correctamente"], 200);

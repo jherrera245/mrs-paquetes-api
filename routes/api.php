@@ -6,8 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\tipo_personaController;
-use App\Models\tipoPersona;
+use App\Http\Controllers\TipoPersonaController;
 use App\Http\Controllers\ModeloVehiculoController;
 use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\VehiculoController;
@@ -28,16 +27,16 @@ Route::post('login',  [AuthController::class, 'authenticate']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     //Routes users api
-    Route::get('get_user', [AuthController::class, 'getUser']);
-    Route::get('get_users', [AuthController::class, 'getUsers']);
-    Route::post('assign_user_role/{id}', [AuthController::class, 'assignUserRole']);
-    Route::get('logout', [AuthController::class, 'logout']);
-    Route::put('update/{id}', [AuthController::class, 'update']);
-    Route::put('update_cliente/{id}', [AuthController::class, 'updateCliente']);
-    Route::post('store_cliente', [AuthController::class, 'storeCliente']);
-    Route::put('update_empleado/{id}', [AuthController::class, 'updateEmpleado']);
-    Route::post('store_empleado', [AuthController::class, 'storeEmpleado']);
-    Route::delete('destroy/{id}', [AuthController::class, 'destroy']);
+    Route::get('/auth/get_user', [AuthController::class, 'getUser']);
+    Route::get('/auth/get_users', [AuthController::class, 'getUsers']);
+    Route::post('/auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole']);
+    Route::get('/auth/logout', [AuthController::class, 'logout']);
+    Route::put('/auth/update/{id}', [AuthController::class, 'update']);
+    Route::put('/auth/update_cliente/{id}', [AuthController::class, 'updateCliente']);
+    Route::post('/auth/store_cliente', [AuthController::class, 'storeCliente']);
+    Route::put('/auth/update_empleado/{id}', [AuthController::class, 'updateEmpleado']);
+    Route::post('/auth/store_empleado', [AuthController::class, 'storeEmpleado']);
+    Route::delete('/auth/destroy/{id}', [AuthController::class, 'destroy']);
 
     //roles 
     Route::get('/roles', [RoleController::class, 'index']);
@@ -52,11 +51,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/permission/{permission}', [PermissionController::class, 'update']);
     Route::delete('/permission/{permission}', [PermissionController::class, 'destroy']);
 
-//tipopersona
-    Route::get('/tipoPersona', [tipo_personaController::class, 'index']);
-    Route::post('/tipoPersona', [tipo_personaController::class, 'store']);
-    Route::put('/tipoPersona/{tipo_persona}', [tipo_personaController::class, 'update']);
-    Route::delete('/tipoPersona/{tipo_persona}', [tipo_personaController::class, 'destroy']);
+    //tipopersona
+    Route::get('/tipoPersona', [TipoPersonaController::class, 'index']);
+    Route::post('/tipoPersona', [TipoPersonaController::class, 'store']);
+    Route::put('/tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'update']);
+    Route::delete('/tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'destroy']);
 
     //clientes
     Route::get('/clientes', [ClientesController::class, 'index']);
@@ -85,8 +84,4 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/vehiculo/{vehiculo}', [VehiculoController::class, 'update']);
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
-});
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
 });
