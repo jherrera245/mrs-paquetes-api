@@ -10,6 +10,7 @@ use App\Http\Controllers\TipoPersonaController;
 use App\Http\Controllers\ModeloVehiculoController;
 use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\VehiculoController;
+use App\Http\Controllers\EmpleadoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,5 +84,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/vehiculo',[VehiculoController::class, 'store']);
     Route::put('/vehiculo/{vehiculo}', [VehiculoController::class, 'update']);
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
+
+    //Empleados
+    Route::resource('empleados', 'EmpleadoController');
+     Route::get('/empleados', [EmpleadoController::class, 'index']);
+     Route::post('/empleados', [EmpleadoController::class, 'store']);
+     Route::put('/empleados/{empleados}', [EmpleadoController::class, 'update']);
+     Route::delete('/empleados/{empleados}', [EmpleadoController::class, 'destroy']);
+
+
 
 });
