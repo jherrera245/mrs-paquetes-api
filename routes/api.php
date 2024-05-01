@@ -87,11 +87,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     //Empleados
     Route::resource('empleados', 'EmpleadoController');
-     Route::get('/empleados', [EmpleadoController::class, 'index']);
-     Route::post('/empleados', [EmpleadoController::class, 'store']);
-     Route::put('/empleados/{empleados}', [EmpleadoController::class, 'update']);
-     Route::delete('/empleados/{empleados}', [EmpleadoController::class, 'destroy']);
-
-
+    
+    Route::get('/empleados', [EmpleadoController::class, 'index']);
+    Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show']);
+    Route::post('/empleados', [EmpleadoController::class, 'store']);
+    Route::put('/empleados/{empleado}', [EmpleadoController::class, 'update']);
+    Route::delete('/empleados/{empleado}', [EmpleadoController::class, 'destroy']);
 
 });
