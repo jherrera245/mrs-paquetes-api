@@ -28,4 +28,3 @@ class Empleado extends Model
         ];
     }
 
-

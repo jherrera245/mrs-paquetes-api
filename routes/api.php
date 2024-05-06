@@ -12,6 +12,8 @@ use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\EmpleadoController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +24,7 @@ use App\Http\Controllers\EmpleadoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login',  [AuthController::class, 'authenticate']);
@@ -87,7 +90,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
     //Empleados
-    Route::resource('empleados', 'EmpleadoController');
+   
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show']);
     Route::post('/empleados', [EmpleadoController::class, 'store']);
