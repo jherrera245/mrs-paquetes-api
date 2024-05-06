@@ -26,6 +26,7 @@ use App\Http\Controllers\EmpleadoController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login',  [AuthController::class, 'authenticate']);
 
+
 Route::group(['middleware' => ['jwt.verify']], function() {
     //Routes users api
     Route::get('/auth/get_user', [AuthController::class, 'getUser']);
@@ -87,7 +88,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     //Empleados
     Route::resource('empleados', 'EmpleadoController');
-    
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show']);
     Route::post('/empleados', [EmpleadoController::class, 'store']);
