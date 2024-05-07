@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             EstadoIncidenciasSeeder::class,
             EstadoPaquetesSeeder::class,
             CargosTableSeeder::class,
+            GeneroTableSeeder::class,
         ]);
     }
 }
