@@ -15,19 +15,19 @@ class EmpleadoController extends Controller
     public function index()
     {
         $empleados = Empleado::all();
-    
+
         $data = [
             'empleados' => $empleados,
             'status' => 200
         ];
-    
+
         return response()->json($data, 200);
     }
-    
+
     public function store(Request $request)
     {
 
-        
+
         $validator = Validator::make($request->all(), [
             'nombres' => 'required|max:255',
             'apellidos' => 'required|max:255',
@@ -43,7 +43,7 @@ class EmpleadoController extends Controller
             'id_departamento' => 'required',
             'id_municipio' => 'required'
         ]);
-    
+
         if ($validator->fails()) {
             $data = [
                 'message' => 'Error en la validación de los datos',
@@ -52,9 +52,9 @@ class EmpleadoController extends Controller
             ];
             return response()->json($data, 400);
         }
-    
 
-        
+
+
         $empleado = Empleado::create([
             'nombres' => $request->nombres,
             'apellidos' => $request->apellidos,
@@ -70,7 +70,7 @@ class EmpleadoController extends Controller
             'id_departamento' => $request->id_departamento,
             'id_municipio' => $request->id_municipio
         ]);
-    
+
         if (!$empleado) {
             $data = [
                 'message' => 'Error al crear el empleado',
@@ -78,12 +78,12 @@ class EmpleadoController extends Controller
             ];
             return response()->json($data, 500);
         }
-    
+
         $data = [
             'empleado' => $empleado,
             'status' => 201
         ];
-    
+
         return response()->json($data, 201);
 
          // Validar los datos del request utilizando las reglas del modelo Empleado
@@ -93,10 +93,10 @@ class EmpleadoController extends Controller
              $errors = implode('<br>', $validator->errors()->all());
              return response()->json(['error' => $errors], 400);
          }
- 
+
          // Si la validación pasa, procede con la creación del empleado
      }
- 
+
      // Otros métodos del controlador...
 
 
@@ -106,7 +106,7 @@ class EmpleadoController extends Controller
     public function show($id)
     {
         $empleado = Empleado::find($id);
-    
+
         if (!$empleado) {
             $data = [
                 'message' => 'Empleado no encontrado',
@@ -114,15 +114,15 @@ class EmpleadoController extends Controller
             ];
             return response()->json($data, 404);
         }
-    
+
         $data = [
             'empleado' => $empleado,
             'status' => 200
         ];
-    
+
         return response()->json($data, 200);
     }
-    
+
 
     public function destroy($id)
    {
@@ -135,7 +135,7 @@ class EmpleadoController extends Controller
         ];
         return response()->json($data, 404);
     }
-    
+
     $empleado->delete();
 
     $data = [
@@ -145,8 +145,8 @@ class EmpleadoController extends Controller
 
     return response()->json($data, 200);
     }
-    
- 
+
+
 
     public function update(Request $request, $id)
     {
@@ -276,5 +276,5 @@ public function updatePartial(Request $request, $id)
     return response()->json($data, 200);
 }
 
- 
+
 }

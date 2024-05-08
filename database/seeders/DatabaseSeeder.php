@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\db;
 
-
 class DatabaseSeeder extends Seeder
 {    /**
     * Seed the application's database.
@@ -26,6 +25,8 @@ class DatabaseSeeder extends Seeder
             EstadoEmpleadosSeeder::class,
             EstadoIncidenciasSeeder::class,
             EstadoPaquetesSeeder::class,
+            GeneroSeeder::class,
+            TipoPersonaSeeder::class,
         ]);
     }
 }
