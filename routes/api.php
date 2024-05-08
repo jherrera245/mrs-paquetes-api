@@ -17,6 +17,8 @@ use App\Http\Controllers\DestinosController;
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\AsignacionRutasController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,6 +29,7 @@ use App\Http\Controllers\AsignacionRutasController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login',  [AuthController::class, 'authenticate']);
@@ -92,7 +95,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
     //Empleados
-    Route::resource('empleados', 'EmpleadoController');
+   
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show']);
     Route::post('/empleados', [EmpleadoController::class, 'store']);
