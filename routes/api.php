@@ -38,8 +38,10 @@ Route::post('login',  [AuthController::class, 'authenticate']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     //Routes users api
     Route::get('/auth/get_user', [AuthController::class, 'getUser']);
+    Route::get('/auth/get_user_by_id/{id}', [AuthController::class, 'getUserById']);
     Route::get('/auth/get_users', [AuthController::class, 'getUsers']);
     Route::post('/auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole']);
+    Route::post('/auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole']);
     Route::get('/auth/logout', [AuthController::class, 'logout']);
     Route::put('/auth/update/{id}', [AuthController::class, 'update']);
     Route::put('/auth/update_cliente/{id}', [AuthController::class, 'updateCliente']);
