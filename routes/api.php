@@ -16,8 +16,9 @@ use App\Http\Controllers\BodegasController;
 use App\Http\Controllers\DestinosController;
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\AsignacionRutasController;
-
-
+use App\Http\Controllers\PaqueteController;
+use App\Http\Controllers\IncidenciaController;
+use App\Http\Controllers\HistorialPaqueteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +98,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
     //Empleados
-   
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show']);
     Route::post('/empleados', [EmpleadoController::class, 'store']);
@@ -143,4 +143,24 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/asignacionrutas', [AsignacionRutasController::class, 'store']);
     Route::put('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update']);
     Route::delete('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy']);
+
+    //paquete
+    Route::get('/paquete', [PaqueteController::class, 'index']);
+    Route::get('/paquete/{paquete}', [PaqueteController::class, 'show']);
+    Route::post('/paquete', [PaqueteController::class, 'store']);
+    Route::post('/paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
+    Route::put('/paquete/{paquete}', [PaqueteController::class, 'update']);
+    Route::delete('/paquete/{paquete}', [PaqueteController::class, 'destroy']);
+    Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
+
+    //historial paquetes
+    Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index']);
+    Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show']);
+
+    //incidencias
+    Route::get('/incidencias', [IncidenciaController::class, 'index']);
+    Route::post('/incidencias', [IncidenciaController::class, 'store']);
+    Route::get('/incidencias/{incidencia}', [IncidenciaController::class, 'show']);
+    Route::put('/incidencias/{incidencia}', [IncidenciaController::class, 'update']);
+    Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
 });

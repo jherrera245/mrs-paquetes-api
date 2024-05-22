@@ -18,12 +18,12 @@ return new class extends Migration
             $table->foreignId('id_paquete');
             $table->dateTime('fecha_hora');
             $table->foreignId('id_tipo_incidencia');
-            $table->foreignId('descripcion');
+            $table->text('descripcion');
             $table->foreignId('estado');
-            $table->dateTime('fecha_resolucion');
+            $table->dateTime('fecha_resolucion')->nullable();
             $table->foreignId('id_usuario_reporta');
-            $table->foreignId('id_usuario_asignado');
-            $table->text('solucion');
+            $table->foreignId('id_usuario_asignado')->nullable();
+            $table->text('solucion')->nullable();
             $table->timestamps();
         });
     }
