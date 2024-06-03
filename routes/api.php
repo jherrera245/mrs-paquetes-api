@@ -19,6 +19,8 @@ use App\Http\Controllers\AsignacionRutasController;
 use App\Http\Controllers\PaqueteController;
 use App\Http\Controllers\IncidenciaController;
 use App\Http\Controllers\HistorialPaqueteController;
+use App\Http\Controllers\DetalleOrdenController;
+use App\Http\Controllers\OrdenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +36,8 @@ use App\Http\Controllers\HistorialPaqueteController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login',  [AuthController::class, 'authenticate']);
+Route::apiResource('detalle_orden', DetalleOrdenController::class);
+Route::apiResource('ordenes', OrdenController::class);
 
 
 Route::group(['middleware' => ['jwt.verify']], function() {
