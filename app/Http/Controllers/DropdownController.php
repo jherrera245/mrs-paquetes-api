@@ -36,29 +36,26 @@ class DropdownController extends Controller
        return response()->json(["municipio" => $municipio]);
     }
 
-    public function getGeneros()
+    public function getGeneros($id)
     {
-        $generos = Genero::all();
+        $generos = DB::table('generos')->select('id', 'nombre')->where( $id)->get();
+        return response()->json(["genero" => $generos]);
 
-        return response()-> json(["genero"=>$generos]);
+    }
+    public function getMarcas($id)
+    {
+        $marca = DB::table('marca')->select('id', 'nombre','descripcion')->where( $id)->get();
+        return response()->json(["marca" => $marca]);
 
     }
 
-    public function getEstados()
+    public function getEstados($id)
     {
-        $estados = Estado::all();
-
-        return response()->json(["estado"=>$estados]);
+        $estado = DB::table('estado')->select('id', 'nombre','descripcion')->where( $id)->get();
+        return response()->json(["estado" => $estado]);
 
     }
 
-    public function getMarcas()
-    {
-        $marcas = MarcaVehiculo::all();
-
-        return response()->json(["marcas"=>$marcas]);
-
-    }
 
     public function getPaquetes()
     {
@@ -67,11 +64,10 @@ class DropdownController extends Controller
         return response()->json(["paquetes"=>$paquetes]);
     }
 
-    public function getCargos()
+    public function getCargos($id)
     {
-        $cargos = Cargo::all();
-
-        return response()->json(["cargos"=>$cargos]);
+        $cargo = DB::table('cargo')->select('id', 'nombre','descripcion')->where( $id)->get();
+        return response()->json(["cargo" => $cargo]);
 
     }
 
@@ -127,19 +123,19 @@ class DropdownController extends Controller
 
     }
 
-    public function getTipoPaquetes()
-    {
-        $tipopaquete = TipoPaquete::all();
+    public function getTipoPaquete($id){
+       
 
-        return response()->json(["tipopaquete"=>$tipopaquete]);
-    }
+        $tipopaquete = DB::table('tipopaquete')->select('id', 'nombre','descripcion')->where('id_estado', $id)->get();
+        return response()->json(["tipopaquete" => $tipopaquete]);
+     }
 
-    public function getEmpaques()
-    {
-        $empaque = Empaque::all();
+     public function getEmpaques($id){
+       
 
-        return response()->json(["empaque"=>$empaque]);
-    }
+        $empaque = DB::table('empaque')->select('id', 'nombre','descripcion')->where( $id)->get();
+        return response()->json(["empaque" => $empaque]);
+     }
 
 }
 
