@@ -11,17 +11,7 @@ use App\Http\Controllers\ModeloVehiculoController;
 use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\EmpleadoController;
-use App\Http\Controllers\RutasController;
-use App\Http\Controllers\BodegasController;
-use App\Http\Controllers\DestinosController;
-use App\Http\Controllers\DireccionesController;
-use App\Http\Controllers\AsignacionRutasController;
-use App\Http\Controllers\PaqueteController;
-use App\Http\Controllers\IncidenciaController;
-use App\Http\Controllers\HistorialPaqueteController;
-use App\Http\Controllers\DetalleOrdenController;
-use App\Http\Controllers\OrdenController;
-
+use App\Http\Controllers\DropdownController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -108,63 +98,21 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/empleados/{empleado}', [EmpleadoController::class, 'update']);
     Route::delete('/empleados/{empleado}', [EmpleadoController::class, 'destroy']);
 
-    //rutas
-    Route::resource('rutas', 'RutasController');
-    Route::get('/rutas', [RutasController::class, 'index']);
-    Route::get('/rutas/{ruta}', [RutasController::class, 'show']);
-    Route::post('/rutas', [RutasController::class, 'store']);
-    Route::put('/rutas/{ruta}', [RutasController::class, 'update']);
-    Route::delete('/rutas/{ruta}', [RutasController::class, 'destroy']);
+    //Dropdown
+    Route::get('dropdown/departamentos', [DropdownController::class, 'getDepartamentos']);
+    Route::get('dropdown/municipio/{id}', [DropdownController::class, 'getMunicipios']);
+    Route::get('dropdown/marca/{id}', [DropdownController::class, 'getMarcas']);
+    Route::get('dropdown/estado/{id}', [DropdownController::class, 'getEstados']);
+    Route::get('dropdown/estadopaquete{id}', [DropdownController::class, 'getEstadoPaquete']);
+    Route::get('dropdown/cargo/{id}', [DropdownController::class, 'getCargos']);
+    Route::get('dropdown/estadorutas/{id}', [DropdownController::class, 'getEstadoRutas']);
+    Route::get('dropdown/estadovehiculo/{id}', [DropdownController::class, 'getEstadoVehiculo']);
+    Route::get('dropdown/estadocliente/{id}', [DropdownController::class, 'getEstadoCliente']);
+    Route::get('dropdown/estadoempleado{id}', [DropdownController::class, 'getEstadoEmpleado']);
+    Route::get('dropdown/estadoincidencia/{id}', [DropdownController::class, 'getEstadoIncidencia']);
+    Route::get('dropdown/tipopersona{id}', [DropdownController::class, 'getTipoPersona']);
+    Route::get('dropdown/tipoincidencia/{id}', [DropdownController::class, 'getTipoIncidencia']);
+    Route::get('dropdown/tipopaquete/{id}', [DropdownController::class, 'getTipoPaquetes']);
+    Route::get('dropdown/empaque/{id}', [DropdownController::class, 'getEmpaques']);
 
-    //direcciones
-    Route::resource('direcciones', 'DireccionesController');
-    Route::get('/direcciones', [DireccionesController::class, 'index']);
-    Route::get('/direcciones/{direccione}', [DireccionesController::class, 'show']);
-    Route::post('/direcciones', [DireccionesController::class, 'store']);
-    Route::put('/direcciones/{direccione}', [DireccionesController::class, 'update']);
-    Route::delete('/direcciones/{direccione}', [DireccionesController::class, 'destroy']);
-
-    //destinos
-    Route::resource('destinos', 'DestinosController');
-    Route::get('/destinos', [DestinosController::class, 'index']);
-    Route::get('/destinos/{destino}', [DestinosController::class, 'show']);
-    Route::post('/destinos', [DestinosController::class, 'store']);
-    Route::put('/destinos/{destino}', [DestinosController::class, 'update']);
-    Route::delete('/destinos/{destino}', [DestinosController::class, 'destroy']);
-
-    //bodegas
-    Route::resource('bodegas', 'BodegasController');
-    Route::get('/bodegas', [BodegasController::class, 'index']);
-    Route::get('/bodegas/{bodega}', [BodegasController::class, 'show']);
-    Route::post('/bodegas', [BodegasController::class, 'store']);
-    Route::put('/bodegas/{bodega}', [BodegasController::class, 'update']);
-    Route::delete('/bodegas/{bodega}', [BodegasController::class, 'destroy']);
-
-    //asignarrutas
-    Route::resource('asignacionrutas', 'AsignacionRutasController');
-    Route::get('/asignacionrutas', [AsignacionRutasController::class, 'index']);
-    Route::get('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show']);
-    Route::post('/asignacionrutas', [AsignacionRutasController::class, 'store']);
-    Route::put('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update']);
-    Route::delete('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy']);
-
-    //paquete
-    Route::get('/paquete', [PaqueteController::class, 'index']);
-    Route::get('/paquete/{paquete}', [PaqueteController::class, 'show']);
-    Route::post('/paquete', [PaqueteController::class, 'store']);
-    Route::post('/paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
-    Route::put('/paquete/{paquete}', [PaqueteController::class, 'update']);
-    Route::delete('/paquete/{paquete}', [PaqueteController::class, 'destroy']);
-    Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
-
-    //historial paquetes
-    Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index']);
-    Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show']);
-
-    //incidencias
-    Route::get('/incidencias', [IncidenciaController::class, 'index']);
-    Route::post('/incidencias', [IncidenciaController::class, 'store']);
-    Route::get('/incidencias/{incidencia}', [IncidenciaController::class, 'show']);
-    Route::put('/incidencias/{incidencia}', [IncidenciaController::class, 'update']);
-    Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
 });
