@@ -6,6 +6,7 @@ use App\Models\Departamento;
 use App\Models\Municipio;
 use App\Models\Genero;
 use App\Models\Estado;
+use App\Models\MarcaVehiculo;
 use App\Models\Paquete;
 use App\Models\Cargo;
 use App\Models\Ruta;
@@ -31,105 +32,114 @@ class DropdownController extends Controller
     public function getMunicipios($id){
        
 
-       $municipio = DB::table('municipio')->select('id', 'nombre')->where('id_departamento', $id)->get();
+       $municipio = DB::table('municipios')->select('id', 'nombre')->where('id_departamento', $id)->get();
        return response()->json(["municipio" => $municipio]);
     }
 
     public function getGeneros()
-{
-    $generos = Genero::all();
+    {
+        $generos = Genero::all();
 
-    return response()-> json(["genero"=>$generos]);
+        return response()-> json(["genero"=>$generos]);
 
-}
+    }
 
-public function getEstados()
-{
-    $estados = Estado::all();
+    public function getEstados()
+    {
+        $estados = Estado::all();
 
-    return response()->json(["estado"=>$estados]);
+        return response()->json(["estado"=>$estados]);
 
-}
+    }
 
-public function getPaquetes()
-{
-    $paquetes = Paquete::all();
-    
-    return response()->json(["paquetes"=>$paquetes]);
-}
+    public function getMarcas()
+    {
+        $marcas = MarcaVehiculo::all();
 
-public function getCargos()
-{
-    $cargos = Cargo::all();
+        return response()->json(["marcas"=>$marcas]);
 
-    return response()->json(["cargos"=>$cargos]);
+    }
 
-}
+    public function getPaquetes()
+    {
+        $paquetes = Paquete::all();
+        
+        return response()->json(["paquetes"=>$paquetes]);
+    }
 
-public function getRutas()
-{
-    $rutas = Ruta::all();
+    public function getCargos()
+    {
+        $cargos = Cargo::all();
 
-    return response()->json(["rutas"=>$rutas]);
-}
+        return response()->json(["cargos"=>$cargos]);
 
-public function getVehiculo()
-{
-    $vehiculo = Vehiculo::all();
+    }
 
-    return response()->json(["vehiculo"=>$vehiculo]);
-}
+    public function getRutas()
+    {
+        $rutas = Ruta::all();
 
-public function getCliente()
-{
-    $clientes = Cliente::all();
+        return response()->json(["rutas"=>$rutas]);
+    }
 
-    return response()->json(["cliente"=>$clientes]);
-}
+    public function getVehiculo()
+    {
+        $vehiculo = Vehiculo::all();
 
-public function getEmpleados()
-{
-    $empleados = Empleado::all();
+        return response()->json(["vehiculo"=>$vehiculo]);
+    }
 
-    return response()->json(["empleado"=>$empleados]);
+    public function getCliente()
+    {
+        $clientes = Cliente::all();
 
-}
+        return response()->json(["cliente"=>$clientes]);
+    }
 
-public function getIncidencia()
-{
-    $incidencia = Incidencia::all();
+    public function getEmpleados()
+    {
+        $empleados = Empleado::all();
 
-    return response()->json(["incidencia"=>$incidencia]);
-}
+        return response()->json(["empleado"=>$empleados]);
 
-public function getTipoPersona()
-{
-    $tipopersona = TipoPersona::all();
+    }
 
-    return response()->json(["tipopersona"=>$tipopersona]);
+    public function getIncidencia()
+    {
+        $incidencia = Incidencia::all();
 
-}
+        return response()->json(["incidencia"=>$incidencia]);
+    }
 
-public function getTipoIncidencia()
-{
-    $tipoincidencia = TipoIncidencia::all();
+    public function getTipoPersona()
+    {
+        $tipopersona = TipoPersona::all();
 
-    return response()->json(["tipoincidencia"=>$tipoincidencia]);
+        return response()->json(["tipopersona"=>$tipopersona]);
 
-}
-public function getTipoPaquetes()
-{
-    $tipopaquete = TipoPaquete::all();
+    }
 
-    return response()->json(["tipopaquete"=>$tipopaquete]);
-}
+    public function getTipoIncidencia()
+    {
+        $tipoincidencia = TipoIncidencia::all();
 
-public function getEmpaques()
-{
-    $empaque = Empaque::all();
+        return response()->json(["tipoincidencia"=>$tipoincidencia]);
 
-    return response()->json(["empaque"=>$empaque]);
-}
+    }
+
+    public function getTipoPaquetes()
+    {
+        $tipopaquete = TipoPaquete::all();
+
+        return response()->json(["tipopaquete"=>$tipopaquete]);
+    }
+
+    public function getEmpaques()
+    {
+        $empaque = Empaque::all();
+
+        return response()->json(["empaque"=>$empaque]);
+    }
 
 }
 
