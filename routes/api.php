@@ -101,18 +101,18 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     //Dropdown
     Route::get('dropdown/departamentos', [DropdownController::class, 'getDepartamentos']);
     Route::get('dropdown/municipio/{id}', [DropdownController::class, 'getMunicipios']);
-    Route::get('dropdown/marca/{id}', [DropdownController::class, 'getMarcas']);
-    Route::get('dropdown/estado/{id}', [DropdownController::class, 'getEstados']);
-    Route::get('dropdown/estadopaquete{id}', [DropdownController::class, 'getEstadoPaquete']);
-    Route::get('dropdown/cargo/{id}', [DropdownController::class, 'getCargos']);
-    Route::get('dropdown/estadorutas/{id}', [DropdownController::class, 'getEstadoRutas']);
-    Route::get('dropdown/estadovehiculo/{id}', [DropdownController::class, 'getEstadoVehiculo']);
-    Route::get('dropdown/estadocliente/{id}', [DropdownController::class, 'getEstadoCliente']);
-    Route::get('dropdown/estadoempleado{id}', [DropdownController::class, 'getEstadoEmpleado']);
-    Route::get('dropdown/estadoincidencia/{id}', [DropdownController::class, 'getEstadoIncidencia']);
-    Route::get('dropdown/tipopersona{id}', [DropdownController::class, 'getTipoPersona']);
-    Route::get('dropdown/tipoincidencia/{id}', [DropdownController::class, 'getTipoIncidencia']);
-    Route::get('dropdown/tipopaquete/{id}', [DropdownController::class, 'getTipoPaquetes']);
-    Route::get('dropdown/empaque/{id}', [DropdownController::class, 'getEmpaques']);
+    Route::get('dropdown/marca', [DropdownController::class, 'getMarcas']);
+    Route::get('dropdown/estado', [DropdownController::class, 'getEstados']);
+    Route::get('dropdown/estadopaquete', [DropdownController::class, 'getEstadoPaquete']);
+    Route::get('dropdown/cargo', [DropdownController::class, 'getCargos']);
+    Route::get('dropdown/estadorutas', [DropdownController::class, 'getEstadoRutas']);
+    Route::get('dropdown/estadovehiculo', [DropdownController::class, 'getEstadoVehiculo']);
+    Route::get('dropdown/estadocliente', [DropdownController::class, 'getEstadoCliente']);
+    Route::get('dropdown/estadoempleado', [DropdownController::class, 'getEstadoEmpleado']);
+    Route::get('dropdown/estadoincidencia', [DropdownController::class, 'getEstadoIncidencia']);
+    Route::get('dropdown/tipopersona', [DropdownController::class, 'getTipoPersona']);
+    Route::get('dropdown/tipoincidencia', [DropdownController::class, 'getTipoIncidencia']);
+    Route::get('dropdown/tipopaquete', [DropdownController::class, 'getTipoPaquetes']);
+    Route::get('dropdown/empaque', [DropdownController::class, 'getEmpaques']);
 
 });
