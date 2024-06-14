@@ -26,8 +26,8 @@ class Clientes extends Model
         'id_municipio'
 	];
     
-    public function tipo_persona()
+    public function tipoPersona()
     {
-        return $this->belongsTo(tipo_persona::class, 'id_tipo_persona');
+        return $this->belongsTo(TipoPersona::class, 'id_tipo_persona');
     } 
 }

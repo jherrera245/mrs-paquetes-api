@@ -169,20 +169,27 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
 
     //Dropdown
-    Route::get('dropdown/departamentos', [DropdownController::class, 'getDepartamentos']);
-    Route::get('dropdown/municipio/{id}', [DropdownController::class, 'getMunicipios']);
-    Route::get('dropdown/marca', [DropdownController::class, 'getMarcas']);
-    Route::get('dropdown/estado', [DropdownController::class, 'getEstados']);
-    Route::get('dropdown/estadopaquete', [DropdownController::class, 'getEstadoPaquete']);
-    Route::get('dropdown/cargo', [DropdownController::class, 'getCargos']);
-    Route::get('dropdown/estadorutas', [DropdownController::class, 'getEstadoRutas']);
-    Route::get('dropdown/estadovehiculo', [DropdownController::class, 'getEstadoVehiculo']);
-    Route::get('dropdown/estadocliente', [DropdownController::class, 'getEstadoCliente']);
-    Route::get('dropdown/estadoempleado', [DropdownController::class, 'getEstadoEmpleado']);
-    Route::get('dropdown/estadoincidencia', [DropdownController::class, 'getEstadoIncidencia']);
-    Route::get('dropdown/tipopersona', [DropdownController::class, 'getTipoPersona']);
-    Route::get('dropdown/tipoincidencia', [DropdownController::class, 'getTipoIncidencia']);
-    Route::get('dropdown/tipopaquete', [DropdownController::class, 'getTipoPaquetes']);
-    Route::get('dropdown/empaque', [DropdownController::class, 'getEmpaques']);
+    Route::get('dropdown/get_departamentos', [DropdownController::class, 'getDepartamentos']);
+    Route::get('dropdown/get_municipio/{id}', [DropdownController::class, 'getMunicipios']);
+    Route::get('dropdown/get_marcas', [DropdownController::class, 'getMarcas']);
+    Route::get('dropdown/get_estados', [DropdownController::class, 'getEstados']);
+    Route::get('dropdown/get_estado_paquete', [DropdownController::class, 'getEstadoPaquete']);
+    Route::get('dropdown/get_paquetes', [DropdownController::class, 'getPaquetes']);
+    Route::get('dropdown/get_cargos', [DropdownController::class, 'getCargos']);
+    Route::get('dropdown/get_estado_rutas', [DropdownController::class, 'getEstadoRutas']);
+    Route::get('dropdown/get_rutas', [DropdownController::class, 'getRutas']);
+    Route::get('dropdown/get_vehiculos', [DropdownController::class, 'getVehiculos']);
+    Route::get('dropdown/get_clientes', [DropdownController::class, 'getClientes']);
+    Route::get('dropdown/get_empleados', [DropdownController::class, 'getEmpleados']);
+    Route::get('dropdown/get_incidencias', [DropdownController::class, 'getIncidencias']);
+    Route::get('dropdown/get_bodegas', [DropdownController::class, 'getBodegas']);
+    Route::get('dropdown/get_estado_vehiculos', [DropdownController::class, 'getEstadoVehiculos']);
+    Route::get('dropdown/get_tipo_persona', [DropdownController::class, 'getTipoPersona']);
+    Route::get('dropdown/get_tipo_incidencia', [DropdownController::class, 'getTipoIncidencia']);
+    Route::get('dropdown/get_tipo_paquete', [DropdownController::class, 'getTipoPaquete']);
+    Route::get('dropdown/get_empaques', [DropdownController::class, 'getEmpaques']);
+    Route::get('dropdown/get_estado_clientes', [DropdownController::class, 'getEstadoClientes']);
+    Route::get('dropdown/get_estado_empleados', [DropdownController::class, 'getEstadoEmpleados']);
+    Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
 
 });

@@ -8,12 +8,12 @@ use App\Models\Genero;
 use App\Models\Estado;
 use App\Models\MarcaVehiculo;
 use App\Models\Paquete;
-use App\Models\Cargo;
-use App\Models\Ruta;
+use App\Models\Rutas;
 use App\Models\Vehiculo;
-use App\Models\Cliente;
-use App\Models\Empleados;
+use App\Models\Clientes;
+use App\Models\Empleado;
 use App\Models\Incidencia;
+use App\Models\Bodegas;
 use App\Models\TipoPersona;
 use App\Models\TipoIncidencia;
 use App\Models\TipoPaquete;
@@ -38,105 +38,135 @@ class DropdownController extends Controller
 
     public function getGeneros($id)
     {
-        $generos = DB::table('generos')->select('id', 'nombre')->where( $id)->get();
+        $generos = DB::table('genero')->select('id', 'nombre')->where( $id)->get();
         return response()->json(["genero" => $generos]);
 
     }
-    public function getMarcas($id)
+    public function getMarcas()
     {
-        $marca = DB::table('marca')->select('id', 'nombre','descripcion')->where( $id)->get();
-        return response()->json(["marca" => $marca]);
+        $marca = DB::table('marcas')->select('id', 'nombre','descripcion')->get();
+        return response()->json(["marcas" => $marca]);
 
     }
 
-    public function getEstados($id)
+    public function getEstados()
     {
-        $estado = DB::table('estado')->select('id', 'nombre','descripcion')->where( $id)->get();
-        return response()->json(["estado" => $estado]);
-
+        $estado = DB::table('estados')->select('id', 'nombre','descripcion')->get();
+        return response()->json(["estados" => $estado]);
     }
 
+    public function getEstadoPaquete()
+    {
+        $estado_paquetes = DB::table('estado_paquetes')->select('id', 'nombre','descripcion')->get();
+        return response()->json(["estado_paquetes" => $estado_paquetes]);
+    }
 
     public function getPaquetes()
     {
         $paquetes = Paquete::all();
-        
         return response()->json(["paquetes"=>$paquetes]);
     }
 
-    public function getCargos($id)
+    public function getCargos()
     {
-        $cargo = DB::table('cargo')->select('id', 'nombre','descripcion')->where( $id)->get();
-        return response()->json(["cargo" => $cargo]);
+        $cargos = DB::table('cargos')->select('id', 'nombre','descripcion')->get();
+        return response()->json(["cargos" => $cargos]);
+    }
 
+    public function getEstadoRutas()
+    {
+        $estado_rutas = DB::table('estado_rutas')->select('id', 'estado')->get();
+        return response()->json(["estado_rutas" => $estado_rutas]);
     }
 
     public function getRutas()
     {
-        $rutas = Ruta::all();
+        $rutas = Rutas::all();
 
         return response()->json(["rutas"=>$rutas]);
     }
 
-    public function getVehiculo()
+    public function getVehiculos()
     {
-        $vehiculo = Vehiculo::all();
+        $vehiculos = Vehiculo::all();
 
-        return response()->json(["vehiculo"=>$vehiculo]);
+        return response()->json(["vehiculos"=>$vehiculo]);
     }
 
-    public function getCliente()
+    public function getClientes()
     {
-        $clientes = Cliente::all();
+        $clientes = Clientes::all();
 
-        return response()->json(["cliente"=>$clientes]);
+        return response()->json(["clientes"=>$clientes]);
     }
 
     public function getEmpleados()
     {
         $empleados = Empleado::all();
 
-        return response()->json(["empleado"=>$empleados]);
-
+        return response()->json(["empleados"=>$empleados]);
     }
 
-    public function getIncidencia()
+    public function getIncidencias()
     {
-        $incidencia = Incidencia::all();
+        $incidencias = Incidencia::all();
 
-        return response()->json(["incidencia"=>$incidencia]);
+        return response()->json(["incidencias"=>$incidencias]);
+    }
+
+    public function getBodegas() 
+    {
+        $bodegas = Bodegas::all();
+        return response()->json(["bodegas"=>$bodegas]);
+    }
+
+    public function getEstadoVehiculos()
+    {
+        $estado_vehiculos = DB::table('estado_vehiculos')->select('id', 'estado')->get();
+        return response()->json(["estado_vehiculos" => $estado_vehiculos]);
     }
 
     public function getTipoPersona()
     {
-        $tipopersona = TipoPersona::all();
-
-        return response()->json(["tipopersona"=>$tipopersona]);
-
+        $tipo_persona = TipoPersona::all();
+        return response()->json(["tipo_persona"=>$tipo_persona]);
     }
 
     public function getTipoIncidencia()
     {
-        $tipoincidencia = TipoIncidencia::all();
-
-        return response()->json(["tipoincidencia"=>$tipoincidencia]);
-
+        $tipo_incidencia = TipoIncidencia::all();
+        return response()->json(["tipo_incidencia"=>$tipo_incidencia]);
     }
 
-    public function getTipoPaquete($id){
-       
+    public function getTipoPaquete()
+    {
+        $tipo_paquete = DB::table('tipo_paquete')->select('id', 'nombre','descripcion')->get();
+        return response()->json(["tipo_paquete" => $tipo_paquete]);
+    }
 
-        $tipopaquete = DB::table('tipopaquete')->select('id', 'nombre','descripcion')->where('id_estado', $id)->get();
-        return response()->json(["tipopaquete" => $tipopaquete]);
-     }
+    public function getEmpaques()
+    {
+        $empaques = DB::table('empaquetado')->select('id', 'empaquetado')->get();
+        return response()->json(["empaques" => $empaques]);
+    }
 
-     public function getEmpaques($id){
-       
+    public function getEstadoClientes()
+    {
+        $estado_clientes = DB::table('estado_clientes')->select('id', 'estado')->get();
+        return response()->json(["estado_clientes" => $estado_clientes]);
+    }
 
-        $empaque = DB::table('empaque')->select('id', 'nombre','descripcion')->where( $id)->get();
-        return response()->json(["empaque" => $empaque]);
-     }
+    public function getEstadoEmpleados()
+    {
+        $estado_empleados = DB::table('estado_empleados')->select('id', 'estado')->get();
+        return response()->json(["estado_empleados" => $estado_empleados]);
+    }
 
+    public function getEstadoIncidencias()
+    {
+        $estado_incidencias = DB::table('estado_incidencias')->select('id', 'estado')->get();
+        return response()->json(["estado_incidencias" => $estado_incidencias]);
+    }
 }
 
 
