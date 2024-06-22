@@ -29,8 +29,9 @@ class ClientesController extends Controller
             'fecha_registro',
             'id_estado',
             'id_departamento',
-            'id_municipio'
+            'id_municipio',
         );
+
         $validator = Validator::make($data, [
             'nombre' => 'required',
             'apellido' => 'required',

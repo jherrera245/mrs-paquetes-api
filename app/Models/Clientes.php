@@ -23,7 +23,12 @@ class Clientes extends Model
         'fecha_registro',
         'id_estado',
         'id_departamento',
-        'id_municipio'
+        'id_municipio',
+        'nit',
+        'nrc',
+        'giro',
+        'nombre_empresa',
+        'direccion',
 	];
     
     public function tipoPersona()
