@@ -26,7 +26,7 @@ class AlterColumnNombreComercialTblClientes extends Migration
     public function down()
     {
         Schema::table('clientes', function (Blueprint $table) {
-            $table->string('nombre_comercial')->nullable(false)->change();
+            $table->string('nombre_comercial')->nullable()->change();
         });
     }
 }

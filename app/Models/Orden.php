@@ -12,21 +12,15 @@ class Orden extends Model
     use HasFactory;
 
     protected $table = 'ordenes';
+    
     protected $fillable = [
-        'id_cliente_entrega',
-        'telefono_entrega',
-        'id_cliente_recible',
+        'id_cliente',
         'id_direccion',
-        'id_tipo_entrega',
-        'id_estado_paquetes',
-        'id_paquete',
-        'precio',
         'id_tipo_pago',
-        'validacion_entrega',
+        'total_pagar',
         'costo_adicional',
-        'instrucciones_entrega',
-        'fecha_ingreso',
-        'fecha_entrega'
+        'concepto',
+        'finished',
     ];
 
     public function tipo_pago(): BelongsTo{
@@ -42,22 +36,9 @@ class Orden extends Model
         return $this->belongsTo(Clientes::class);
     }
 
-    public function detalle_orden(){
-        return $this->hasMany(DetalleOrden::class);
+    public function direcciones():BelongsTo
+    {
+        return $this->belongsTo(Direcciones::class);
     }
-
-    // public function direccion():BelongsTo
-    // {
-    //     return $this->belongsTo(Direcciones::class);
-    // }
-
-    // public function estado_paquete():BelongsTo
-    // {
-    //     return $this->belongsTo(EstadoPaquete::class);
-    // }
-
-    // public function paquete():BelongsTo{
-    //     return $this->belongsTo(Paquete::class);
-    // }
 
 }

@@ -15,20 +15,13 @@ return new class extends Migration
     {
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_cliente_entrega');
-            $table->string('telefono_entrega', 9);
-            $table->foreignId('id_cliente_recibe');
+            $table->foreignId('id_cliente');
             $table->foreignId('id_direccion');
-            $table->foreignId('id_tipo_entrega');
-            $table->foreignId('id_estado_paquetes');
-            $table->foreignId('id_paquete');
-            $table->decimal('precio', 10);
             $table->foreignId('id_tipo_pago');
-            $table->string('validacion_entrega');
+            $table->decimal('total_pagar', 10);
             $table->decimal('costo_adicional', 10);
-            $table->text('instrucciones_entrega');
-            $table->dateTime('fecha_ingreso');
-            $table->dateTime('fecha_entrega');
+            $table->longText('concepto');
+            $table->boolean('finished')->default(0);
             $table->timestamps();
         });
     }
