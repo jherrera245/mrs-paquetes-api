@@ -36,10 +36,10 @@ class DropdownController extends Controller
        return response()->json(["municipio" => $municipio]);
     }
 
-    public function getGeneros($id)
+    public function getGeneros()
     {
-        $generos = DB::table('genero')->select('id', 'nombre')->where( $id)->get();
-        return response()->json(["genero" => $generos]);
+        $generos = DB::table('genero')->select('id', 'nombre')->get();
+        return response()->json(["generos" => $generos]);
 
     }
     public function getMarcas()
