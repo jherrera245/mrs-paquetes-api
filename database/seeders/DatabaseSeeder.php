@@ -16,20 +16,22 @@ class DatabaseSeeder extends Seeder
     {
         // Lista de seeders a ejecutar
         $this->call([
-            RoleSeeder::class,
+            CargosTableSeeder::class,
             DepartamentoSeeder::class,
-            MunicipioSeeder::class,
-            EstadoRutasSeeder::class,
-            EstadoVehiculosSeeder::class,
+            EmpaquetadoSeeder::class,
             EstadoClientesSeeder::class,
             EstadoEmpleadosSeeder::class,
             EstadoIncidenciasSeeder::class,
             EstadoPaquetesSeeder::class,
+            EstadoRutasSeeder::class,
+            EstadoVehiculosSeeder::class,
             GeneroSeeder::class,
-            TipoPersonaSeeder::class,
+            MunicipioSeeder::class,
+            RoleSeeder::class,
             TipoIncidenciaSeeder::class,
             TipoPaqueteSeeder::class,
-            EmpaquetadoSeeder::class
+            TipoPersonaSeeder::class,
+            UsersSeeder::class
         ]);
     }
 }

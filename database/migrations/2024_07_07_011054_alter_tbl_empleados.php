@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterColumnTelefonoTblDirecciones extends Migration
+class AlterTblEmpleados extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AlterColumnTelefonoTblDirecciones extends Migration
      */
     public function up()
     {
-        Schema::table('direcciones', function (Blueprint $table) {
+        Schema::table('empleados', function (Blueprint $table) {
             $table->string('telefono', 20)->change();
         });
     }
@@ -25,7 +25,7 @@ class AlterColumnTelefonoTblDirecciones extends Migration
      */
     public function down()
     {
-        Schema::table('direcciones', function (Blueprint $table) {
+        Schema::table('empleados', function (Blueprint $table) {
             $table->string('telefono', 20)->change();
         });
     }
