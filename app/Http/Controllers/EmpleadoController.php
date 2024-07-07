@@ -13,9 +13,10 @@ use Illuminate\Support\Facades\Validator;
 class EmpleadoController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $empleados = Empleado::all();
+        $filters = $request->only(['nombres', 'apellidos', 'fecha_contratacion_inicio', 'fecha_contratacion_fin', 'id_estado']);
+        $empleados = Empleado::search($filters);
 
         $data = [
             'empleados' => $empleados,
