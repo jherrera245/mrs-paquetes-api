@@ -13,12 +13,17 @@ class VehiculoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtiene todos los vehículos y los devuelve como JSON
-        $vehiculos = Vehiculo::all();
+        // Definir el número de elementos por página con un valor predeterminado de 10
+        $perPage = $request->input('per_page', 10);
+
+        // Obtener los vehículos paginados
+        $vehiculos = Vehiculo::paginate($perPage);
+
         return response()->json($vehiculos);
     }
+
 
     public function show(Vehiculo $vehiculo)
     {
@@ -46,14 +51,14 @@ class VehiculoController extends Controller
         );
 
         $validator = Validator::make($data, [
-            'id_empleado_conductor' => 'required|exists:empleados,id',
-            'id_empleado_apoyo' => 'nullable|exists:empleados,id',
-            'placa' => 'required|unique:vehiculos',
-            'capacidad_carga' => 'required|numeric',
-            'id_estado' => 'required|exists:estados,id',
-            'id_marca' => 'required|exists:marcas,id',
-            'id_modelo' => 'required|exists:modelos,id',
-            'year_fabricacion' => 'required|integer',
+            'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
+            'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1',
+            'placa' => 'required|unique:vehiculos|regex:/^(?=.*[0-9])[A-Z0-9]{1,7}$/',
+            'capacidad_carga' => 'required|numeric|min:0',
+            'id_estado' => 'required|exists:estado_vehiculos,id|integer|min:1',
+            'id_marca' => 'required|exists:marcas,id|integer|min:1',
+            'id_modelo' => 'required|exists:modelos,id|integer|min:1',
+            'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
         ]);
 
         // Si la validación falla, devuelve un error de validación
@@ -88,14 +93,14 @@ class VehiculoController extends Controller
         );
 
         $validator = Validator::make($data, [
-            'id_empleado_conductor' => 'required|exists:empleados,id',
-            'id_empleado_apoyo' => 'nullable|exists:empleados,id',
-            'placa' => 'required|unique:vehiculos,placa,' . $vehiculo->id,
-            'capacidad_carga' => 'required',
-            'id_estado' => 'required|exists:estados,id',
-            'id_marca' => 'required|exists:marcas,id',
-            'id_modelo' => 'required|exists:modelos,id',
-            'year_fabricacion' => 'required',
+            'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
+            'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1',
+            'placa' => 'required|unique:vehiculos,placa,' . $vehiculo->id . '|regex:/^(?=.*[0-9])[A-Z0-9]{1,7}$/',
+            'capacidad_carga' => 'required|numeric|min:0',
+            'id_estado' => 'required|exists:estado_vehiculos,id|integer|min:1',
+            'id_marca' => 'required|exists:marcas,id|integer|min:1',
+            'id_modelo' => 'required|exists:modelos,id|integer|min:1',
+            'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
         ]);
 
         // Si la validación falla, devuelve un error de validación
@@ -109,7 +114,7 @@ class VehiculoController extends Controller
         }
 
         // Si no se puede actualizar, devuelve un mensaje de error
-        return response()->json(['error' => "Vehiculo no actualizado"], 200);
+        return response()->json(['error' => "Vehiculo no actualizado"], 400);
     }
 
     /**

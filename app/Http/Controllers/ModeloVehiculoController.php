@@ -13,10 +13,14 @@ class ModeloVehiculoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtiene todos los modelos de vehículos y los devuelve como JSON
-        $modelos = ModeloVehiculo::all();
+        // Definir el número de elementos por página con un valor predeterminado de 10
+        $perPage = $request->input('per_page', 10);
+
+        // Obtener los modelos de vehículos paginados
+        $modelos = ModeloVehiculo::paginate($perPage);
+
         return response()->json($modelos);
     }
 
@@ -93,7 +97,7 @@ class ModeloVehiculoController extends Controller
     public function destroy(ModeloVehiculo $modeloVehiculo)
     {
         // Elimina un modelo de vehículo existente y devuelve un mensaje de éxito o error
-        if ($ModeloVehiculo->delete()) {
+        if ($modeloVehiculo->delete()) {
             return response()->json(["success" => "Modelo de vehículo eliminado correctamente"], 200);
         }
         return response()->json(["error" => "Error al eliminar el modelo de vehículo"], 400);

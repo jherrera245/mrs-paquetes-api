@@ -13,10 +13,14 @@ class MarcaVehiculoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtiene todas las marcas de vehículos y las devuelve como JSON
-        $marcas = MarcaVehiculo::all();
+        // Definir el número de elementos por página con un valor predeterminado de 10
+        $perPage = $request->input('per_page', 10);
+
+        // Obtener las marcas de vehículos paginadas
+        $marcas = MarcaVehiculo::paginate($perPage);
+
         return response()->json($marcas);
     }
 

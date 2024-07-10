@@ -21,22 +21,7 @@ class Vehiculo extends Model
         'id_modelo',
         'year_fabricacion',
     ];
-    /*
-    public function empleadoConductor()
-    {
-        return $this->belongsTo(Empleado::class, 'id_empleado_conductor');
-    }
-
-    public function empleadoApoyo()
-    {
-        return $this->belongsTo(Empleado::class, 'id_empleado_apoyo');
-    }
-
-    public function estado()
-    {
-        return $this->belongsTo(Estado::class, 'id_estado');
-    }
-    */
+    
     public function marca()
     {
         return $this->belongsTo(MarcaVehiculo::class, 'id_marca');
