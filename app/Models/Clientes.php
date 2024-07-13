@@ -30,6 +30,27 @@ class Clientes extends Model
         'nombre_empresa',
         'direccion',
 	];
+
+    public function setTelefonoAttribute($value)
+    {
+        // Formatear el teléfono para agregar un guion si no lo tiene
+        if (!preg_match('/\d{4}-\d{4}/', $value)) {
+            $this->attributes['telefono'] = preg_replace('/(\d{4})(\d{4})/', '$1-$2', $value);
+        } else {
+            $this->attributes['telefono'] = $value;
+        }
+    }
+
+    public function setDuiAttribute($value)
+    {
+        // Formatear el DUI para agregar un guion antes del último dígito si no lo tiene
+        if (!preg_match('/\d{8}-\d/', $value)) {
+            $this->attributes['dui'] = substr($value, 0, 8) . '-' . substr($value, 8, 1);
+        } else {
+            $this->attributes['dui'] = $value;
+        }
+    }
+
     
     public function tipoPersona()
     {

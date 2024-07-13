@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = Clientes::all();
+        $perPage = $request->input('per_page', 10);
+
+        $clientes = Clientes::paginate($perPage);
+
+        
         return response()->json($clientes);
     }
 
@@ -36,9 +40,11 @@ class ClientesController extends Controller
             'nombre' => 'required',
             'apellido' => 'required',
             'nombre_comercial' => 'nullable',
-            'email' => 'required|unique:clientes,email',
+            'email' => 'required|email|unique:clientes,email',
             'dui' => 'nullable|unique:clientes,dui',
-            'telefono' => 'nullable',
+            'telefono' => [
+            'required',
+            'regex:/^\d{4}-?\d{4}$/'],
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required',
             'id_genero' => 'required|exists:genero,id',
