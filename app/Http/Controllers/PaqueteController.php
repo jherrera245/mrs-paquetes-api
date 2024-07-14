@@ -24,6 +24,12 @@ class PaqueteController extends Controller
         // Obtener los paquetes no eliminados paginados
         $paquetes = Paquete::whereNull('eliminado_at')->paginate($perPage);
 
+        // Añadir el campo filename a cada paquete
+        $paquetes->getCollection()->transform(function ($paquete) {
+            $paquete->filename = basename($paquete->tag);
+            return $paquete;
+        });
+
         return response()->json($paquetes);
     }
 
@@ -55,13 +61,15 @@ class PaqueteController extends Controller
                 ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
                 ->build();
 
-            // Guardar la imagen del código QR en el directorio de almacenamiento
+            // Guardar la imagen del código QR en S3
             $filename = $uuid . '.png';
             $path = 'qr_codes/' . $filename;
-            Storage::disk('public')->put($path, $result->getString());
+            Storage::disk('s3')->put($path, $result->getString());
 
-            // La función asset() genera la URL completa del archivo
-            $qrCodeUrl = asset('storage/' . $path);
+            // Generar la URL completa del archivo en S3
+            $bucketName = env('AWS_BUCKET');
+            $region = env('AWS_DEFAULT_REGION');
+            $qrCodeUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
             $data['tag'] = $qrCodeUrl;
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al generar el código QR: ' . $e->getMessage()], 500);
@@ -118,7 +126,30 @@ class PaqueteController extends Controller
                 })->firstOrFail();
             }
 
-            return response()->json($paquete);
+            $qrCodeUrl = $paquete->tag;
+
+            // Obtener el nombre del archivo
+            $filename = basename($qrCodeUrl);
+
+            // Reorganizar los datos del paquete y añadir el nombre del archivo
+            $paqueteData = [
+                'id' => $paquete->id,
+                'id_tipo_paquete' => $paquete->id_tipo_paquete,
+                'id_empaque' => $paquete->id_empaque,
+                'peso' => $paquete->peso,
+                'uuid' => $paquete->uuid,
+                'tag' => $qrCodeUrl,
+                'id_estado_paquete' => $paquete->id_estado_paquete,
+                'fecha_envio' => $paquete->fecha_envio,
+                'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
+                'descripcion_contenido' => $paquete->descripcion_contenido,
+                'created_at' => $paquete->created_at,
+                'updated_at' => $paquete->updated_at,
+                'eliminado_at' => $paquete->eliminado_at,
+                'filename' => $filename,  // Agregar el nombre del archivo
+            ];
+
+            return response()->json($paqueteData);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Paquete no encontrado: ' . $e->getMessage()], 404);
         }
@@ -147,12 +178,16 @@ class PaqueteController extends Controller
 
             $paquete->update($request->all());
 
-            if (!empty(array_diff_assoc($request->all(), $originalData))) {
+            // Obtener el nombre del estado actual del paquete si existe
+            $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
+
+            // Verificar si el estado del paquete ha cambiado y registrar en el historial
+            if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
                 HistorialPaquete::create([
                     'id_paquete' => $paquete->id,
                     'fecha_hora' => now(),
                     'id_usuario' => auth()->id(),
-                    'accion' => 'Paquete actualizado',
+                    'accion' => 'Estado del paquete actualizado a ' . $estadoActual,
                 ]);
             }
 
@@ -161,6 +196,8 @@ class PaqueteController extends Controller
             return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
         }
     }
+
+
 
     public function destroy($id)
     {

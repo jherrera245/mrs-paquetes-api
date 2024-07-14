@@ -38,4 +38,10 @@ class Paquete extends Model
         return static::withoutGlobalScope('not_eliminado');
     }
 
+    public function estado()
+    {
+        return $this->belongsTo(EstadoPaquetes::class, 'id_estado_paquete');
+    }
+    
+
 }

@@ -40,7 +40,7 @@ Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
 
 
-Route::group(['middleware' => ['jwt.verify']], function() {
+Route::group(['middleware' => ['jwt.verify']], function () {
     //Routes users api
     Route::get('/auth/get_user', [AuthController::class, 'getUser']);
     Route::get('/auth/get_user_by_id/{id}', [AuthController::class, 'getUserById']);
@@ -97,7 +97,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     //vehiculo
     Route::get('/vehiculo', [VehiculoController::class, 'index']);
     Route::get('/vehiculo/{vehiculo}', [VehiculoController::class, 'show']);
-    Route::post('/vehiculo',[VehiculoController::class, 'store']);
+    Route::post('/vehiculo', [VehiculoController::class, 'store']);
     Route::put('/vehiculo/{vehiculo}', [VehiculoController::class, 'update']);
     Route::delete('/vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
 
@@ -108,65 +108,65 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/empleados/{empleado}', [EmpleadoController::class, 'update']);
     Route::delete('/empleados/{empleado}', [EmpleadoController::class, 'destroy']);
 
-     //rutas
-     Route::resource('rutas', 'RutasController');
-     Route::get('/rutas', [RutasController::class, 'index']);
-     Route::get('/rutas/{ruta}', [RutasController::class, 'show']);
-     Route::post('/rutas', [RutasController::class, 'store']);
-     Route::put('/rutas/{ruta}', [RutasController::class, 'update']);
-     Route::delete('/rutas/{ruta}', [RutasController::class, 'destroy']);
+    //rutas
+    Route::resource('rutas', 'RutasController');
+    Route::get('/rutas', [RutasController::class, 'index']);
+    Route::get('/rutas/{ruta}', [RutasController::class, 'show']);
+    Route::post('/rutas', [RutasController::class, 'store']);
+    Route::put('/rutas/{ruta}', [RutasController::class, 'update']);
+    Route::delete('/rutas/{ruta}', [RutasController::class, 'destroy']);
 
-     //direcciones
-     Route::resource('direcciones', 'DireccionesController');
-     Route::get('/direcciones', [DireccionesController::class, 'index']);
-     Route::get('/direcciones/{direccione}', [DireccionesController::class, 'show']);
-     Route::post('/direcciones', [DireccionesController::class, 'store']);
-     Route::put('/direcciones/{direccione}', [DireccionesController::class, 'update']);
-     Route::delete('/direcciones/{direccione}', [DireccionesController::class, 'destroy']);
+    //direcciones
+    Route::resource('direcciones', 'DireccionesController');
+    Route::get('/direcciones', [DireccionesController::class, 'index']);
+    Route::get('/direcciones/{direccione}', [DireccionesController::class, 'show']);
+    Route::post('/direcciones', [DireccionesController::class, 'store']);
+    Route::put('/direcciones/{direccione}', [DireccionesController::class, 'update']);
+    Route::delete('/direcciones/{direccione}', [DireccionesController::class, 'destroy']);
 
-     //destinos
-     Route::resource('destinos', 'DestinosController');
-     Route::get('/destinos', [DestinosController::class, 'index']);
-     Route::get('/destinos/{destino}', [DestinosController::class, 'show']);
-     Route::post('/destinos', [DestinosController::class, 'store']);
-     Route::put('/destinos/{destino}', [DestinosController::class, 'update']);
-     Route::delete('/destinos/{destino}', [DestinosController::class, 'destroy']);
+    //destinos
+    Route::resource('destinos', 'DestinosController');
+    Route::get('/destinos', [DestinosController::class, 'index']);
+    Route::get('/destinos/{destino}', [DestinosController::class, 'show']);
+    Route::post('/destinos', [DestinosController::class, 'store']);
+    Route::put('/destinos/{destino}', [DestinosController::class, 'update']);
+    Route::delete('/destinos/{destino}', [DestinosController::class, 'destroy']);
 
-     //bodegas
-     Route::resource('bodegas', 'BodegasController');
-     Route::get('/bodegas', [BodegasController::class, 'index']);
-     Route::get('/bodegas/{bodega}', [BodegasController::class, 'show']);
-     Route::post('/bodegas', [BodegasController::class, 'store']);
-     Route::put('/bodegas/{bodega}', [BodegasController::class, 'update']);
-     Route::delete('/bodegas/{bodega}', [BodegasController::class, 'destroy']);
+    //bodegas
+    Route::resource('bodegas', 'BodegasController');
+    Route::get('/bodegas', [BodegasController::class, 'index']);
+    Route::get('/bodegas/{bodega}', [BodegasController::class, 'show']);
+    Route::post('/bodegas', [BodegasController::class, 'store']);
+    Route::put('/bodegas/{bodega}', [BodegasController::class, 'update']);
+    Route::delete('/bodegas/{bodega}', [BodegasController::class, 'destroy']);
 
-     //asignarrutas
-     Route::resource('asignacionrutas', 'AsignacionRutasController');
-     Route::get('/asignacionrutas', [AsignacionRutasController::class, 'index']);
-     Route::get('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show']);
-     Route::post('/asignacionrutas', [AsignacionRutasController::class, 'store']);
-     Route::put('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update']);
-     Route::delete('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy']);
+    //asignarrutas
+    Route::resource('asignacionrutas', 'AsignacionRutasController');
+    Route::get('/asignacionrutas', [AsignacionRutasController::class, 'index']);
+    Route::get('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show']);
+    Route::post('/asignacionrutas', [AsignacionRutasController::class, 'store']);
+    Route::put('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update']);
+    Route::delete('/asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy']);
 
-     //paquete
-     Route::get('/paquete', [PaqueteController::class, 'index']);
-     Route::get('/paquete/{paquete}', [PaqueteController::class, 'show']);
-     Route::post('/paquete', [PaqueteController::class, 'store']);
-     Route::post('/paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
-     Route::put('/paquete/{paquete}', [PaqueteController::class, 'update']);
-     Route::delete('/paquete/{paquete}', [PaqueteController::class, 'destroy']);
-     Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
+    //paquete
+    Route::get('/paquete', [PaqueteController::class, 'index']);
+    Route::get('/paquete/{paquete}', [PaqueteController::class, 'show']);
+    Route::post('/paquete', [PaqueteController::class, 'store']);
+    Route::post('/paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
+    Route::put('/paquete/{paquete}', [PaqueteController::class, 'update']);
+    Route::delete('/paquete/{paquete}', [PaqueteController::class, 'destroy']);
+    Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
 
-     //historial paquetes
-     Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index']);
-     Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show']);
+    //historial paquetes
+    Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index']);
+    Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show']);
 
-     //incidencias
-     Route::get('/incidencias', [IncidenciaController::class, 'index']);
-     Route::post('/incidencias', [IncidenciaController::class, 'store']);
-     Route::get('/incidencias/{incidencia}', [IncidenciaController::class, 'show']);
-     Route::put('/incidencias/{incidencia}', [IncidenciaController::class, 'update']);
-     Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
+    //incidencias
+    Route::get('/incidencias', [IncidenciaController::class, 'index']);
+    Route::post('/incidencias', [IncidenciaController::class, 'store']);
+    Route::get('/incidencias/{incidencia}', [IncidenciaController::class, 'show']);
+    Route::put('/incidencias/{incidencia}', [IncidenciaController::class, 'update']);
+    Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
 
     //Dropdown
     Route::get('dropdown/get_departamentos', [DropdownController::class, 'getDepartamentos']);
@@ -192,5 +192,4 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('dropdown/get_estado_clientes', [DropdownController::class, 'getEstadoClientes']);
     Route::get('dropdown/get_estado_empleados', [DropdownController::class, 'getEstadoEmpleados']);
     Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
-
 });
