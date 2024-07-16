@@ -7,23 +7,17 @@ use Illuminate\Http\Request;
 
 class DetalleOrdenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+   
+    public function filter(Request $request)
     {
-        // Obtener todos los detalles de órdenes
-        return DetalleOrden::all();
+        $idOrden = $request->input('id_orden');
+        $idPaquete = $request->input('id_paquete');
+
+        $detalleOrden = DetalleOrden::filterByOrderAndPackage($idOrden, $idPaquete)->get();
+
+        return response()->json($detalleOrden);
     }
 
-    /**
-     * Funcion que se encarga de agregar los detalles de la orden
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         // Validar y crear un nuevo detalle de orden

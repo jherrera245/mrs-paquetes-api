@@ -13,18 +13,26 @@ class TipoPersonaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tipo_persona = TipoPersona::all();
-        return response()->json($tipo_persona);
+        {
+            
+            $filtro_nombre = $request->query('filtro_nombre');
+    
+            $query = TipoPersona::query();
+    
+            if ($filtro_nombre) {
+                $query->where('nombre', 'like', '%' . $filtro_nombre . '%');
+            }
+    
+            $tipo_persona = $query->get();
+    
+            
+            return response()->json($tipo_persona);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

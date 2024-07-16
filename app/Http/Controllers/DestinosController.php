@@ -9,14 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 class DestinosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $destinos = Destinos::all();
+        
+        $filters = $request->only(['id_departamento', 'id_municipio', 'id_estado']);
+
+        
+        $destinos = Destinos::filter($filters)->get();
 
         $data = [
             'destinos' => $destinos,

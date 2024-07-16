@@ -44,4 +44,37 @@ class Direcciones extends Model
 	{
 		return $this->hasMany(Ordene::class, 'id_direccion');
 	}
+
+	public static function filtrarDirecciones($filters)
+    {
+        $query = self::query();
+
+        if (isset($filters['id_cliente'])) {
+            $query->where('id_cliente', $filters['id_cliente']);
+        }
+
+		if (isset($filters['nombre_contacto'])) {
+            $query->where('nombre_contacto', $filters['nombre_contacto']);
+        }
+
+		if (isset($filters['telefono'])) {
+            $query->where('telefono', $filters['telefono']);
+        }
+
+        if (isset($filters['id_departamento'])) {
+            $query->where('id_departamento', $filters['id_departamento']);
+        }
+
+        if (isset($filters['id_municipio'])) {
+            $query->where('id_municipio', $filters['id_municipio']);
+        }
+
+		if (isset($filters['referencia'])) {
+            $query->where('referencia', $filters['referencia']);
+        }
+
+        
+
+        return $query;
+    }
 }

@@ -10,9 +10,12 @@ class ClientesController extends Controller
 {
     public function index(Request $request)
     {
+        $filters = $request->only(['nombre', 'apellido', 'nombre_comercial','email','telefono','id_tipo_persona','es_contribuyente',
+    'id_genero','dui','nit','nrc','fecha_registro','id_estado','id_departamento','id_municipio']);
+
         $perPage = $request->input('per_page', 10);
 
-        $clientes = Clientes::paginate($perPage);
+        $clientes = Clientes::filter($filters)->paginate($perPage);
 
         
         return response()->json($clientes);

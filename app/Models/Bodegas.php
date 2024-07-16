@@ -35,4 +35,24 @@ class Bodegas extends Model
 	{
 		return $this->hasMany(Ruta::class, 'id_bodega');
 	}
+
+	public static function buscarConFiltros($nombre = null, $id_departamento = null, $id_municipio = null)
+    {
+        $query = self::query();
+
+        if ($nombre) {
+            $query->where('nombre', 'like', "%$nombre%");
+        }
+
+        if ($id_departamento) {
+            $query->where('id_departamento', $id_departamento);
+        }
+
+        if ($id_municipio) {
+            $query->where('id_municipio', $id_municipio);
+        }
+
+        return $query;
+    }
+
 }

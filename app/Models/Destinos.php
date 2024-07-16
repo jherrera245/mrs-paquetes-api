@@ -42,4 +42,23 @@ class Destinos extends Model
 	{
 		return $this->hasMany(Ruta::class, 'id_destino');
 	}
+
+	public static function filter(array $filters)
+    {
+        $query = self::query();
+
+        if (isset($filters['id_departamento'])) {
+            $query->where('id_departamento', $filters['id_departamento']);
+        }
+
+        if (isset($filters['id_municipio'])) {
+            $query->where('id_municipio', $filters['id_municipio']);
+        }
+
+        if (isset($filters['id_estado'])) {
+            $query->where('id_estado', $filters['id_estado']);
+        }
+
+        return $query;
+    }
 }

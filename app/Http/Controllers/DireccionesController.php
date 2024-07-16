@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Validator;
 
 class DireccionesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $direcciones = Direcciones::all();
+        $filters = $request->only(['id_cliente','nombre_contacto','telefono', 'id_departamento', 
+        'id_municipio','referencia']);
+
+        $query = Direcciones::filtrarDirecciones($filters);
+
+        $direcciones = $query->get();
 
         $data = [
             'direcciones' => $direcciones,
@@ -26,6 +26,7 @@ class DireccionesController extends Controller
         return response()->json($data, 200);
     }
 
+}
     /**
      * Store a newly created resource in storage.
      *

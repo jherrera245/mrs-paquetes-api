@@ -56,4 +56,75 @@ class Clientes extends Model
     {
         return $this->belongsTo(TipoPersona::class, 'id_tipo_persona');
     } 
+
+public static function filter($filters)
+    {
+        $query = self::query();
+
+        
+        if (isset($filters['nombre'])) {
+            $query->where('nombre', 'like', '%' . $filters['nombre'] . '%');
+        }
+
+        if (isset($filters['apellido'])) {
+            $query->where('apellido', 'like', '%' . $filters['apellido'] . '%');
+        }
+
+        if (isset($filters['nombre_comercial'])) {
+            $query->where('nombre_comercial', 'like', '%' . $filters['nombre_comercial'] . '%');
+        }
+
+        
+        if (isset($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+        
+        if (isset($filters['telefono'])) {
+            $query->where('telefono', 'like', '%' . $filters['telefono'] . '%');
+        }
+
+        if (isset($filters['id_tipo_persona'])) {
+            $query->where('id_tipo_persona', 'like', '%' . $filters['id_tipo_persona'] . '%');
+        }
+
+        if (isset($filters['es_contribuyente'])) {
+            $query->where('es_contribuyente', 'like', '%' . $filters['es_contribuyente'] . '%');
+        }
+
+        if (isset($filters['id_genero'])) {
+            $query->where('id_genero', 'like', '%' . $filters['id_genero'] . '%');
+        }
+
+        if (isset($filters['dui'])) {
+            $query->where('dui', 'like', '%' . $filters['dui'] . '%');
+        }
+        if (isset($filters['nit'])) {
+            $query->where('nit', 'like', '%' . $filters['nit'] . '%');
+        }
+
+        if (isset($filters['nrc'])) {
+            $query->where('nrc', 'like', '%' . $filters['nrc'] . '%');
+        }
+
+        if (isset($filters['fecha_registro'])) {
+            $query->where('fecha_registro', 'like', '%' . $filters['fecha_registro'] . '%');
+        }
+
+        if (isset($filters['id_estado'])) {
+            $query->where('id_estado', 'like', '%' . $filters['id_estado'] . '%');
+        }
+
+        if (isset($filters['id_departamento'])) {
+            $query->where('id_departamento', 'like', '%' . $filters['id_departamento'] . '%');
+        }
+
+        if (isset($filters['id_municipio'])) {
+            $query->where('id_municipio', 'like', '%' . $filters['id_municipio'] . '%');
+        }
+
+
+    
+        return $query;
+    }
 }

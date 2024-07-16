@@ -45,4 +45,36 @@ class AsignacionRutas extends Model
 	{
 		return $this->belongsTo(Paquete::class, 'id_paquete');
 	}
+
+	public static function filtrar($filtros)
+    {
+        $query = self::query();
+
+        
+        if (isset($filtros['codigo_unico_asignacion'])) {
+            $query->where('codigo_unico_asignacion', 'like', '%' . $filtros['codigo_unico_asignacion'] . '%');
+        }
+
+        if (isset($filtros['id_ruta'])) {
+            $query->where('id_ruta', $filtros['id_ruta']);
+        }
+
+        if (isset($filtros['id_vehiculo'])) {
+            $query->where('id_vehiculo', $filtros['id_vehiculo']);
+        }
+
+        if (isset($filtros['id_paquete'])) {
+            $query->where('id_paquete', $filtros['id_paquete']);
+        }
+
+        if (isset($filtros['fecha'])) {
+            $query->whereDate('fecha', $filtros['fecha']);
+        }
+
+        if (isset($filtros['id_estado'])) {
+            $query->where('id_estado', $filtros['id_estado']);
+        }
+
+        return $query->get();
+    }
 }

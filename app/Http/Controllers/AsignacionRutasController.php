@@ -9,14 +9,18 @@ use Illuminate\Support\Facades\Validator;
 
 class AsignacionRutasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $asignacionrutas = AsignacionRutas::all();
+        $filtros = $request->only([
+            'codigo_unico_asignacion',
+            'id_ruta',
+            'id_vehiculo',
+            'id_paquete',
+            'fecha',
+            'id_estado',
+        ]);
+
+        $asignacionrutas = AsignacionRutas::filtrar($filtros);
 
         $data = [
             'asignacionrutas' => $asignacionrutas,
@@ -25,13 +29,7 @@ class AsignacionRutasController extends Controller
 
         return response()->json($data, 200);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

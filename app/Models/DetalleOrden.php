@@ -48,4 +48,18 @@ class DetalleOrden extends Model
         return $this->belongsTo(Direcciones::class);
     }
     
+    public static function filterByOrderAndPackage($idOrden = null, $idPaquete = null)
+    {
+        $query = self::query();
+
+        if ($idOrden !== null) {
+            $query->where('id_orden', $idOrden);
+        }
+
+        if ($idPaquete !== null) {
+            $query->where('id_paquete', $idPaquete);
+        }
+
+        return $query;
+    }
 }

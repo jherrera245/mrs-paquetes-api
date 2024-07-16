@@ -9,14 +9,19 @@ use Illuminate\Support\Facades\Validator;
 
 class BodegasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    
+    public function index(Request $request)
     {
-        $bodegas = Bodegas::all();
+        
+        $nombre = $request->query('nombre');
+        $id_departamento = $request->query('id_departamento');
+        $id_municipio = $request->query('id_municipio');
+
+        
+        $query = Bodegas::buscarConFiltros($nombre, $id_departamento, $id_municipio);
+
+        
+        $bodegas = $query->get();
 
         $data = [
             'bodegas' => $bodegas,
