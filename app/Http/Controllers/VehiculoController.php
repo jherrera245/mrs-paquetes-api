@@ -15,42 +15,52 @@ class VehiculoController extends Controller
      */
     public function index(Request $request)
     {
-        // Definir el número de elementos por página con un valor predeterminado de 10
-        $perPage = $request->input('per_page', 10);
-
-        // Obtener los vehículos paginados
-        $vehiculos = Vehiculo::paginate($perPage);
-
-        return response()->json($vehiculos);
-    }
-
-
-    public function show(Vehiculo $vehiculo)
-    {
-        return response()->json($vehiculo, 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        // Valida los datos del formulario para crear un nuevo vehículo
-        $data = $request->only(
-            'id_empleado_conductor',
-            'id_empleado_apoyo',
+        $filters = $request->only([
+            'conductor',
+            'apoyo',
             'placa',
             'capacidad_carga',
-            'id_estado',
-            'id_marca',
-            'id_modelo',
-            'year_fabricacion'
-        );
+            'estado',
+            'marca',
+            'modelo',
+            'year_fabricacion',
+            'palabra_clave'
+        ]);
 
-        $validator = Validator::make($data, [
+        $per_page = $request->input('per_page', 10);
+
+        $vehiculosQuery = Vehiculo::search($filters);
+
+        // Aplicar paginación después de la búsqueda
+        $vehiculos = $vehiculosQuery->paginate($per_page);
+
+        // Verificar si hay resultados
+        if ($vehiculos->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron coincidencias.'], 404);
+        }
+
+        // Transformar los resultados según sea necesario
+        $vehiculos->getCollection()->transform(function ($vehiculo) {
+            return $this->transformVehiculo($vehiculo);
+        });
+
+        return response()->json($vehiculos, 200);
+    }
+
+    public function show($id)
+    {
+        $vehiculo = Vehiculo::with(['conductor', 'apoyo', 'estado', 'marca', 'modelo'])->find($id);
+
+        if (!$vehiculo) {
+            return response()->json(['error' => 'Vehículo no encontrado'], 404);
+        }
+
+        return response()->json($this->transformVehiculo($vehiculo), 200);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
             'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1',
             'placa' => 'required|unique:vehiculos|regex:/^(?=.*[0-9])[A-Z0-9]{1,7}$/',
@@ -61,38 +71,25 @@ class VehiculoController extends Controller
             'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
         ]);
 
-        // Si la validación falla, devuelve un error de validación
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
-        // Crea un nuevo vehículo y lo devuelve como JSON
         $vehiculo = Vehiculo::create($request->all());
-        return response()->json($vehiculo, 200);
+        $vehiculo->load(['conductor', 'apoyo', 'estado', 'marca', 'modelo']);
+
+        return response()->json($this->transformVehiculo($vehiculo), 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\vehiculo  $vehiculo
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Vehiculo $vehiculo)
+    public function update(Request $request, $id)
     {
-        // Valida los datos del formulario para actualizar un vehículo existente
-        $data = $request->only(
-            'id_empleado_conductor',
-            'id_empleado_apoyo',
-            'placa',
-            'capacidad_carga',
-            'id_estado',
-            'id_marca',
-            'id_modelo',
-            'year_fabricacion'
-        );
+        $vehiculo = Vehiculo::find($id);
 
-        $validator = Validator::make($data, [
+        if (!$vehiculo) {
+            return response()->json(['error' => 'Vehículo no encontrado'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
             'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
             'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1',
             'placa' => 'required|unique:vehiculos,placa,' . $vehiculo->id . '|regex:/^(?=.*[0-9])[A-Z0-9]{1,7}$/',
@@ -103,32 +100,43 @@ class VehiculoController extends Controller
             'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
         ]);
 
-        // Si la validación falla, devuelve un error de validación
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
-        // Actualiza el vehículo y lo devuelve como JSON
-        if ($vehiculo->update($request->all())) {
-            return response()->json($vehiculo, 200);
-        }
+        $vehiculo->update($request->all());
+        $vehiculo->load(['conductor', 'apoyo', 'estado', 'marca', 'modelo']);
 
-        // Si no se puede actualizar, devuelve un mensaje de error
-        return response()->json(['error' => "Vehiculo no actualizado"], 400);
+        return response()->json($this->transformVehiculo($vehiculo), 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\vehiculo  $vehiculo
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Vehiculo $vehiculo)
+    public function destroy($id)
     {
-        // Elimina un vehículo existente y devuelve un mensaje de éxito o error
-        if ($vehiculo->delete()) {
-            return response()->json(["success" => "Vehículo eliminado correctamente"], 200);
+        $vehiculo = Vehiculo::find($id);
+
+        if (!$vehiculo) {
+            return response()->json(['error' => 'Vehículo no encontrado'], 404);
         }
-        return response()->json(["error" => "Error al eliminar el vehículo"], 400);
+
+        $vehiculo->delete();
+
+        return response()->json(["success" => "Vehículo eliminado correctamente"], 200);
+    }
+
+    private function transformVehiculo(Vehiculo $vehiculo)
+    {
+        return [
+            'id' => $vehiculo->id,
+            'conductor' => $vehiculo->conductor ? $vehiculo->conductor->nombres . ' ' . $vehiculo->conductor->apellidos : null,
+            'apoyo' => $vehiculo->apoyo ? $vehiculo->apoyo->nombres . ' ' . $vehiculo->apoyo->apellidos : null,
+            'placa' => $vehiculo->placa,
+            'capacidad_carga' => $vehiculo->capacidad_carga . ' T',
+            'estado' => $vehiculo->estado ? $vehiculo->estado->estado : null,
+            'marca' => $vehiculo->marca ? $vehiculo->marca->nombre : null,
+            'modelo' => $vehiculo->modelo ? $vehiculo->modelo->nombre : null,
+            'year_fabricacion' => $vehiculo->year_fabricacion,
+            'created_at' => $vehiculo->created_at,
+            'updated_at' => $vehiculo->updated_at,
+        ];
     }
 }

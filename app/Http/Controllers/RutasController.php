@@ -14,18 +14,36 @@ class RutasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $rutas = Rutas::all();
+        // Obtener los filtros del request
+        $filters = $request->only([
+            'id_destino',
+            'nombre',
+            'id_bodega',
+            'id_estado',
+            'distancia_km',
+            'duracion_aproximada',
+            'fecha_programada',
+        ]);
 
-        $data = [
-            'rutas' => $rutas,
-            'status' => 200
-        ];
+        // Establecer el número de resultados por página
+        $per_page = $request->input('per_page', 10);
 
-        return response()->json($data, 200);
+        // Aplicar el método de búsqueda del modelo
+        $query = Rutas::search($filters);
+
+        // Obtener los resultados paginados
+        $rutas = $query->paginate($per_page);
+
+        // Transformar los resultados según sea necesario
+        $rutas->getCollection()->transform(function ($ruta) {
+            return $this->transformRuta($ruta);
+        });
+
+        // Devolver una respuesta JSON
+        return response()->json($rutas, 200);
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -194,5 +212,24 @@ class RutasController extends Controller
         ];
 
         return response()->json($data, 200);
+    }
+
+    private function transformRuta(Rutas $ruta)
+    {
+        return [
+            'id' => $ruta->id,
+            'id_destino' => $ruta->id_destino,
+            'nombre' => $ruta->nombre,
+            'id_bodega' => $ruta->id_bodega,
+            'id_estado' => $ruta->id_estado,
+            'distancia_km' => $ruta->distancia_km,
+            'duracion_aproximada' => $ruta->duracion_aproximada,
+            'fecha_programada' => $ruta->fecha_programada,
+            'created_at' => $ruta->created_at,
+            'updated_at' => $ruta->updated_at,
+            'destino' => $ruta->destino,
+            'bodega' => $ruta->bodega,
+            'estado_ruta' => $ruta->estado_ruta,
+        ];
     }
 }

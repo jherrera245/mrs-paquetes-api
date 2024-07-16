@@ -11,22 +11,22 @@ class MarcaVehiculoController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        // Definir el número de elementos por página con un valor predeterminado de 10
+        $filters = $request->only([
+            'nombre'
+        ]);
+
         $perPage = $request->input('per_page', 10);
 
-        // Obtener las marcas de vehículos paginadas
-        $marcas = MarcaVehiculo::paginate($perPage);
+        $marcasQuery = MarcaVehiculo::search($filters);
+
+        $marcas = $marcasQuery->paginate($perPage);
 
         return response()->json($marcas);
-    }
-
-    public function show(MarcaVehiculo $marcaVehiculo)
-    {
-        return response()->json($marcaVehiculo, 200);
     }
 
     /**
@@ -38,9 +38,7 @@ class MarcaVehiculoController extends Controller
     public function store(Request $request)
     {
         // Valida los datos del formulario para crear una nueva marca de vehículo
-        $data = $request->only('nombre', 'descripcion');
-
-        $validator = Validator::make($data, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|unique:marcas,nombre',
             'descripcion' => 'required',
         ]);
@@ -52,22 +50,31 @@ class MarcaVehiculoController extends Controller
 
         // Crea una nueva marca de vehículo y la devuelve como JSON
         $marca = MarcaVehiculo::create($request->all());
-        return response()->json($marca, 200);
+        return response()->json($marca, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\MarcaVehiculo  $marcaVehiculo
+     * @return \Illuminate\Http\Response
+     */
+    public function show(MarcaVehiculo $marcaVehiculo)
+    {
+        return response()->json($marcaVehiculo, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\marcaVehiculo  $marcaVehiculo
+     * @param  \App\Models\MarcaVehiculo  $marcaVehiculo
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, MarcaVehiculo $marcaVehiculo)
     {
         // Valida los datos del formulario para actualizar una marca de vehículo existente
-        $data = $request->only('nombre', 'descripcion');
-
-        $validator = Validator::make($data, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|unique:marcas,nombre,' . $marcaVehiculo->id,
             'descripcion' => 'required',
         ]);
@@ -78,26 +85,20 @@ class MarcaVehiculoController extends Controller
         }
 
         // Actualiza la marca de vehículo y la devuelve como JSON
-        if ($marcaVehiculo->update($request->all())) {
-            return response()->json($marcaVehiculo, 200);
-        }
-
-        // Si no se puede actualizar, devuelve un mensaje de error
-        return response()->json(["error" => "Marca de vehículo no actualizada"], 200);
+        $marcaVehiculo->update($request->all());
+        return response()->json($marcaVehiculo, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\marcaVehiculo  $marcaVehiculo
+     * @param  \App\Models\MarcaVehiculo  $marcaVehiculo
      * @return \Illuminate\Http\Response
      */
     public function destroy(MarcaVehiculo $marcaVehiculo)
     {
         // Elimina una marca de vehículo existente y devuelve un mensaje de éxito o error
-        if ($marcaVehiculo->delete()) {
-            return response()->json(["success" => "Marca de vehículo eliminada correctamente"], 200);
-        }
-        return response()->json(["error" => "Error al eliminar la marca de vehículo"], 400);
+        $marcaVehiculo->delete();
+        return response()->json(["success" => "Marca de vehículo eliminada correctamente"], 200);
     }
 }

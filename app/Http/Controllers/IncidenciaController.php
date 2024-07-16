@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Incidencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class IncidenciaController extends Controller
 {
@@ -14,14 +13,31 @@ class IncidenciaController extends Controller
         // Definir el número de elementos por página con un valor predeterminado de 10
         $perPage = $request->input('per_page', 10);
 
-        // Obtener las incidencias paginadas
-        $incidencias = Incidencia::with('tipoIncidencia', 'paquete')->paginate($perPage);
+        // Obtener los filtros de búsqueda desde la solicitud
+        $filters = $request->only([
+            'tipo_incidencia', 'paquete', 'usuario_reporta', 'usuario_asignado', 'estado', 'fecha_hora', 'palabra_clave'
+        ]);
 
+        // Filtrar las incidencias utilizando el método search del modelo Incidencia
+        $incidencias = Incidencia::search($filters)->paginate($perPage);
+
+        // Verificar si no se encontraron incidencias
+        if ($incidencias->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron incidencias'], 404);
+        }
+
+        // Transformar los datos para incluir nombres en lugar de IDs y mejorar el UUID del paquete
+        $incidencias->getCollection()->transform(function ($incidencia) {
+            return $this->transformIncidencia($incidencia); // Asegúrate de que $this esté vinculado correctamente aquí
+        });
+
+        // Devolver una respuesta JSON con las incidencias transformadas
         return response()->json($incidencias);
     }
 
     public function store(Request $request)
     {
+        // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'id_paquete' => 'required|exists:paquetes,id',
             'fecha_hora' => 'required|date',
@@ -34,14 +50,25 @@ class IncidenciaController extends Controller
             'fecha_resolucion' => 'nullable|date',
         ]);
 
+        // Si la validación falla, devolver errores de validación
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
         try {
-            $incidencia = Incidencia::create($request->all());
-            return response()->json(['incidencia' => $incidencia], 201);
+            // Crear la incidencia con los datos validados
+            $incidencia = Incidencia::create($validator->validated());
+
+            // Cargar las relaciones necesarias
+            $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
+
+            // Transformar los datos antes de devolver la respuesta
+            $data = $this->transformIncidencia($incidencia);
+
+            // Devolver una respuesta JSON con los datos transformados y un código de estado 201 (Created)
+            return response()->json(['message' => 'Incidencia creada', 'incidencia' => $data], 201);
         } catch (\Exception $e) {
+            // Capturar cualquier excepción y devolver un mensaje de error
             return response()->json(['error' => 'Error al crear la incidencia', 'message' => $e->getMessage()], 500);
         }
     }
@@ -49,8 +76,13 @@ class IncidenciaController extends Controller
     public function show($id)
     {
         try {
-            $incidencia = Incidencia::with('tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado')->findOrFail($id);
-            return response()->json($incidencia);
+            $incidencia = Incidencia::with(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado'])
+                ->findOrFail($id);
+
+            // Transformar los datos antes de devolver la respuesta
+            $incidenciaTransformed = $this->transformIncidencia($incidencia);
+
+            return response()->json($incidenciaTransformed);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Incidencia no encontrada', 'message' => $e->getMessage()], 404);
         }
@@ -58,6 +90,7 @@ class IncidenciaController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'id_paquete' => 'sometimes|required|exists:paquetes,id',
             'fecha_hora' => 'sometimes|required|date',
@@ -70,16 +103,28 @@ class IncidenciaController extends Controller
             'fecha_resolucion' => 'nullable|date',
         ]);
 
+        // Si la validación falla, devolver errores de validación
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
         try {
+            // Buscar la incidencia por su ID
             $incidencia = Incidencia::findOrFail($id);
-            $incidencia->update($request->all());
 
-            return response()->json(['message' => 'Incidencia actualizada', 'incidencia' => $incidencia]);
+            // Actualizar la incidencia con los datos validados
+            $incidencia->update($validator->validated());
+
+            // Cargar las relaciones necesarias después de la actualización
+            $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
+
+            // Transformar los datos antes de devolver la respuesta
+            $data = $this->transformIncidencia($incidencia);
+
+            // Devolver una respuesta JSON con los datos transformados y un mensaje de éxito
+            return response()->json(['message' => 'Incidencia actualizada', 'incidencia' => $data]);
         } catch (\Exception $e) {
+            // Capturar cualquier excepción y devolver un mensaje de error
             return response()->json(['error' => 'Error al actualizar la incidencia', 'message' => $e->getMessage()], 500);
         }
     }
@@ -94,5 +139,25 @@ class IncidenciaController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al eliminar la incidencia', 'message' => $e->getMessage()], 500);
         }
+    }
+
+    // Función de transformación de incidencia
+    private function transformIncidencia($incidencia)
+    {
+        return [
+            'id' => $incidencia->id,
+            'paquete_uuid' => $incidencia->paquete ? $incidencia->paquete->uuid : null,
+            'paquete_descripcion' => $incidencia->paquete ? $incidencia->paquete->descripcion_contenido : null,
+            'fecha_hora' => $incidencia->fecha_hora,
+            'tipo_incidencia' => $incidencia->tipoIncidencia ? $incidencia->tipoIncidencia->nombre : null,
+            'descripcion' => $incidencia->descripcion,
+            'estado' => $incidencia->estado == 1 ? 'Activo' : 'Inactivo',
+            'fecha_resolucion' => $incidencia->fecha_resolucion,
+            'usuario_reporta' => $incidencia->usuarioReporta ? $incidencia->usuarioReporta->name : null,
+            'usuario_asignado' => $incidencia->usuarioAsignado ? $incidencia->usuarioAsignado->name : null,
+            'solucion' => $incidencia->solucion,
+            'created_at' => $incidencia->created_at,
+            'updated_at' => $incidencia->updated_at,
+        ];
     }
 }

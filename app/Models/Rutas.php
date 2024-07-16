@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rutas extends Model
 {
-    protected $table = 'rutas';
+	use HasFactory;
+
+	protected $table = 'rutas';
 
 	protected $casts = [
 		'id_destino' => 'int',
@@ -46,5 +48,26 @@ class Rutas extends Model
 	public function asignacion_rutas()
 	{
 		return $this->hasMany(AsignacionRuta::class, 'id_ruta');
+	}
+
+	public static function search($filters)
+	{
+		$query = self::query();
+
+		foreach ($filters as $key => $value) {
+			if (!empty($value)) {
+				if ($key === 'id_destino' || $key === 'id_bodega' || $key === 'id_estado') {
+					$query->where($key, $value);
+				} elseif ($key === 'nombre') {
+					$query->where('nombre', 'like', '%' . $value . '%');
+				} elseif ($key === 'distancia_km' || $key === 'duracion_aproximada') {
+					$query->where($key, $value);
+				} elseif ($key === 'fecha_programada') {
+					$query->whereDate('fecha_programada', $value);
+				}
+			}
+		}
+
+		return $query->with(['destino', 'bodega', 'estado_ruta']);
 	}
 }

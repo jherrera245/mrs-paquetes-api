@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EstadoPaquetes extends Model
+class Empaquetado extends Model
 {
     use HasFactory;
 
-    protected $table = 'estado_paquetes';
+    protected $table = 'empaquetado';
 
     protected $fillable = [
-        'nombre',
-        'descripcion'
+        'empaquetado',
     ];
 }

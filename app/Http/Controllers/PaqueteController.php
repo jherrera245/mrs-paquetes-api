@@ -18,38 +18,40 @@ class PaqueteController extends Controller
 {
     public function index(Request $request)
     {
-        // Definir el número de elementos por página con un valor predeterminado de 10
+        $filters = $request->only([
+            'tipo_paquete', 'empaque', 'peso', 'estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido', 'palabra_clave'
+        ]);
+
         $perPage = $request->input('per_page', 10);
 
-        // Obtener los paquetes no eliminados paginados
-        $paquetes = Paquete::whereNull('eliminado_at')->paginate($perPage);
+        // Filtrar los paquetes utilizando el método search del modelo Paquete
+        $paquetesQuery = Paquete::search($filters);
 
-        // Añadir el campo filename a cada paquete
+        // Aplicar paginación después de la búsqueda
+        $paquetes = $paquetesQuery->paginate($perPage);
+
+        // Verificar si hay resultados
+        if ($paquetes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron coincidencias.'], 404);
+        }
+
+        // Transformar la colección de paquetes antes de devolverla como JSON
         $paquetes->getCollection()->transform(function ($paquete) {
-            $paquete->filename = basename($paquete->tag);
-            return $paquete;
+            return $this->transformPaquete($paquete); // Asegúrate de que $this esté vinculado correctamente aquí
         });
 
-        return response()->json($paquetes);
+        return response()->json($paquetes, 200);
     }
 
     public function store(Request $request)
     {
         $data = $request->only([
-            'id_tipo_paquete',
-            'id_empaque',
-            'peso',
-            'id_estado_paquete',
-            'fecha_envio',
-            'fecha_entrega_estimada',
-            'descripcion_contenido',
+            'id_tipo_paquete', 'id_empaque', 'peso', 'id_estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido'
         ]);
 
-        // Genera un UUID para el paquete
         $uuid = Str::uuid();
         $data['uuid'] = $uuid;
 
-        // Generar el código QR
         try {
             $result = Builder::create()
                 ->writer(new PngWriter())
@@ -61,12 +63,10 @@ class PaqueteController extends Controller
                 ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
                 ->build();
 
-            // Guardar la imagen del código QR en S3
             $filename = $uuid . '.png';
             $path = 'qr_codes/' . $filename;
             Storage::disk('s3')->put($path, $result->getString());
 
-            // Generar la URL completa del archivo en S3
             $bucketName = env('AWS_BUCKET');
             $region = env('AWS_DEFAULT_REGION');
             $qrCodeUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
@@ -92,22 +92,18 @@ class PaqueteController extends Controller
         }
 
         try {
-            // Crear el paquete
             $paquete = Paquete::create($data);
-
-            // Obtener el ID de usuario actualmente autenticado
             $userId = auth()->id();
 
-            // Registrar la acción en el historial
             HistorialPaquete::create([
                 'id_paquete' => $paquete->id,
                 'fecha_hora' => now(),
-                'id_usuario' => $userId, // Asignar el ID de usuario actual
+                'id_usuario' => $userId,
                 'accion' => 'Paquete creado',
             ]);
 
             return response()->json([
-                'paquete' => $paquete,
+                'paquete' => $this->transformPaquete($paquete),
                 'qr_code_url' => $qrCodeUrl,
             ], 201);
         } catch (\Exception $e) {
@@ -118,38 +114,13 @@ class PaqueteController extends Controller
     public function show($idOrQrCode)
     {
         try {
-            if (is_numeric($idOrQrCode)) {
-                $paquete = Paquete::whereNull('eliminado_at')->findOrFail($idOrQrCode);
-            } else {
-                $paquete = Paquete::whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
+            $paquete = is_numeric($idOrQrCode)
+                ? Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->findOrFail($idOrQrCode)
+                : Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
                     $query->where('tag', $idOrQrCode)->orWhere('uuid', $idOrQrCode);
                 })->firstOrFail();
-            }
 
-            $qrCodeUrl = $paquete->tag;
-
-            // Obtener el nombre del archivo
-            $filename = basename($qrCodeUrl);
-
-            // Reorganizar los datos del paquete y añadir el nombre del archivo
-            $paqueteData = [
-                'id' => $paquete->id,
-                'id_tipo_paquete' => $paquete->id_tipo_paquete,
-                'id_empaque' => $paquete->id_empaque,
-                'peso' => $paquete->peso,
-                'uuid' => $paquete->uuid,
-                'tag' => $qrCodeUrl,
-                'id_estado_paquete' => $paquete->id_estado_paquete,
-                'fecha_envio' => $paquete->fecha_envio,
-                'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
-                'descripcion_contenido' => $paquete->descripcion_contenido,
-                'created_at' => $paquete->created_at,
-                'updated_at' => $paquete->updated_at,
-                'eliminado_at' => $paquete->eliminado_at,
-                'filename' => $filename,  // Agregar el nombre del archivo
-            ];
-
-            return response()->json($paqueteData);
+            return response()->json($this->transformPaquete($paquete));
         } catch (\Exception $e) {
             return response()->json(['error' => 'Paquete no encontrado: ' . $e->getMessage()], 404);
         }
@@ -158,7 +129,9 @@ class PaqueteController extends Controller
     public function update(Request $request, $param)
     {
         try {
-            $paquete = is_numeric($param) ? Paquete::whereNull('eliminado_at')->findOrFail($param) : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
+            $paquete = is_numeric($param)
+                ? Paquete::whereNull('eliminado_at')->findOrFail($param)
+                : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
 
             $validator = Validator::make($request->all(), [
                 'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
@@ -178,10 +151,8 @@ class PaqueteController extends Controller
 
             $paquete->update($request->all());
 
-            // Obtener el nombre del estado actual del paquete si existe
             $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
 
-            // Verificar si el estado del paquete ha cambiado y registrar en el historial
             if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
                 HistorialPaquete::create([
                     'id_paquete' => $paquete->id,
@@ -191,23 +162,22 @@ class PaqueteController extends Controller
                 ]);
             }
 
-            return response()->json(['message' => 'Paquete actualizado correctamente', 'paquete' => $paquete]);
+            return response()->json([
+                'message' => 'Paquete actualizado correctamente',
+                'paquete' => $this->transformPaquete($paquete),
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
         }
     }
-
-
 
     public function destroy($id)
     {
         try {
             $paquete = Paquete::withEliminados()->findOrFail($id);
 
-            // Actualizar el campo 'eliminado_at' en lugar de eliminar físicamente el paquete
             $paquete->update(['eliminado_at' => now()]);
 
-            // Guardar la acción en el historial
             $this->registerHistory($paquete->id, 'Paquete eliminado');
 
             return response()->json(['message' => 'Paquete marcado como eliminado correctamente']);
@@ -219,24 +189,38 @@ class PaqueteController extends Controller
     public function restore($id)
     {
         try {
-            // Encontrar el paquete, incluyendo los eliminados (sin filtro de `eliminado_at`)
             $paquete = Paquete::withEliminados()->findOrFail($id);
 
-            // Verificar si el paquete está marcado como eliminado
             if ($paquete->eliminado_at) {
-                // Actualizar el campo 'eliminado_at' a NULL para restaurar el paquete
                 $paquete->update(['eliminado_at' => null]);
 
-                // Guardar la acción en el historial
                 $this->registerHistory($paquete->id, 'Paquete restaurado');
 
                 return response()->json(['message' => 'Paquete restaurado correctamente']);
             } else {
-                return response()->json(['message' => 'El paquete no está marcado como eliminado'], 400);
+                return response()->json(['error' => 'Paquete no está eliminado'], 400);
             }
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al restaurar el paquete: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function transformPaquete($paquete)
+    {
+        return [
+            'id' => $paquete->id,
+            'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
+            'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
+            'peso' => $paquete->peso,
+            'uuid' => $paquete->uuid,
+            'tag' => $paquete->tag,
+            'estado_paquete' => $paquete->estado ? $paquete->estado->nombre : null,
+            'fecha_envio' => $paquete->fecha_envio,
+            'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
+            'descripcion_contenido' => $paquete->descripcion_contenido,
+            'created_at' => $paquete->created_at,
+            'updated_at' => $paquete->updated_at,
+        ];
     }
 
     private function registerHistory($paqueteId, $accion)

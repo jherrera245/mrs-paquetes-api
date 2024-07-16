@@ -22,4 +22,9 @@ class HistorialPaquete extends Model
     {
         return $this->belongsTo(Paquete::class, 'id_paquete');
     }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
 }

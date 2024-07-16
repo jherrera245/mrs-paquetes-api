@@ -15,4 +15,24 @@ class MarcaVehiculo extends Model
         'nombre',
         'descripcion',
     ];
+
+    public function vehiculos()
+    {
+        return $this->hasMany(Vehiculo::class, 'id_marca');
+    }
+
+    public static function search($filters)
+    {
+        $query = self::query();
+
+        foreach ($filters as $key => $value) {
+            if (!empty($value)) {
+                if ($key === 'nombre') {
+                    $query->where('nombre', 'like', '%' . $value . '%');
+                }
+            }
+        }
+
+        return $query;
+    }
 }
