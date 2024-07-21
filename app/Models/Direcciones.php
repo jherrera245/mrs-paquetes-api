@@ -73,8 +73,6 @@ class Direcciones extends Model
             $query->where('referencia', $filters['referencia']);
         }
 
-        
-
         return $query;
     }
 }
