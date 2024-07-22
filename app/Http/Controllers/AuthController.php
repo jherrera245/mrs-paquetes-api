@@ -279,6 +279,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
+        if ($user->id == 1) {
+            return response()->json(['error' => 'Failed to delete user'], Response::HTTP_NOT_FOUND);
+        }
+
         if ($user->delete()) {
             return response()->json(['message' => 'User deleted successfully'], Response::HTTP_OK);
         }
