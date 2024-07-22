@@ -13,6 +13,7 @@ use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
+use Exception;
 
 class PaqueteController extends Controller
 {
@@ -53,9 +54,10 @@ class PaqueteController extends Controller
         $data['uuid'] = $uuid;
 
         try {
+            // Genera el código QR
             $result = Builder::create()
                 ->writer(new PngWriter())
-                ->data($uuid)
+                ->data($uuid->toString())
                 ->encoding(new Encoding('UTF-8'))
                 ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
                 ->size(200)
@@ -65,16 +67,19 @@ class PaqueteController extends Controller
 
             $filename = $uuid . '.png';
             $path = 'qr_codes/' . $filename;
+
+            // Guarda el código QR en S3
             Storage::disk('s3')->put($path, $result->getString());
 
             $bucketName = env('AWS_BUCKET');
             $region = env('AWS_DEFAULT_REGION');
             $qrCodeUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
             $data['tag'] = $qrCodeUrl;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al generar el código QR: ' . $e->getMessage()], 500);
         }
 
+        // Valida los datos del paquete
         $validator = Validator::make($data, [
             'id_tipo_paquete' => 'required|exists:tipo_paquete,id',
             'id_empaque' => 'required|exists:empaquetado,id',
@@ -83,7 +88,7 @@ class PaqueteController extends Controller
             'tag' => 'required',
             'id_estado_paquete' => 'required|exists:estado_paquetes,id',
             'fecha_envio' => 'required|date',
-            'fecha_entrega_estimada' => 'required|date',
+            'fecha_entrega_estimada' => 'required|date|after_or_equal:fecha_envio',
             'descripcion_contenido' => 'required|string|max:1000',
         ]);
 
@@ -92,9 +97,11 @@ class PaqueteController extends Controller
         }
 
         try {
+            // Crea el paquete
             $paquete = Paquete::create($data);
             $userId = auth()->id();
 
+            // Registra el historial del paquete
             HistorialPaquete::create([
                 'id_paquete' => $paquete->id,
                 'fecha_hora' => now(),
@@ -106,7 +113,7 @@ class PaqueteController extends Controller
                 'paquete' => $this->transformPaquete($paquete),
                 'qr_code_url' => $qrCodeUrl,
             ], 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al crear el paquete: ' . $e->getMessage()], 500);
         }
     }
@@ -121,7 +128,7 @@ class PaqueteController extends Controller
                 })->firstOrFail();
 
             return response()->json($this->transformPaquete($paquete));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Paquete no encontrado: ' . $e->getMessage()], 404);
         }
     }
@@ -139,7 +146,7 @@ class PaqueteController extends Controller
                 'peso' => 'sometimes|required|numeric|min:0',
                 'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
                 'fecha_envio' => 'sometimes|required|date',
-                'fecha_entrega_estimada' => 'sometimes|required|date',
+                'fecha_entrega_estimada' => 'sometimes|required|date|after_or_equal:fecha_envio',
                 'descripcion_contenido' => 'sometimes|required|string|max:1000',
             ]);
 
@@ -166,7 +173,7 @@ class PaqueteController extends Controller
                 'message' => 'Paquete actualizado correctamente',
                 'paquete' => $this->transformPaquete($paquete),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
         }
     }
@@ -181,7 +188,7 @@ class PaqueteController extends Controller
             $this->registerHistory($paquete->id, 'Paquete eliminado');
 
             return response()->json(['message' => 'Paquete marcado como eliminado correctamente']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al marcar el paquete como eliminado: ' . $e->getMessage()], 500);
         }
     }
@@ -200,7 +207,7 @@ class PaqueteController extends Controller
             } else {
                 return response()->json(['error' => 'Paquete no está eliminado'], 400);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al restaurar el paquete: ' . $e->getMessage()], 500);
         }
     }

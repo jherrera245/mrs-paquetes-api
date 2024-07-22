@@ -152,7 +152,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/paquete', [PaqueteController::class, 'index']);
     Route::get('/paquete/{paquete}', [PaqueteController::class, 'show']);
     Route::post('/paquete', [PaqueteController::class, 'store']);
-    Route::post('/paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
     Route::put('/paquete/{paquete}', [PaqueteController::class, 'update']);
     Route::delete('/paquete/{paquete}', [PaqueteController::class, 'destroy']);
     Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
