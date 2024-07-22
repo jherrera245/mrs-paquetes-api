@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('apellido', 100);
             $table->string('nombre_comercial', 45);
-            $table->string('email');
-            $table->string('dui', 10)->unique('dui');
+            $table->string('dui', 10)->unique('dui')->nullable();
             $table->string('telefono', 9);
             $table->foreignId('id_tipo_persona');
             $table->boolean('es_contribuyente')->nullable()->default(0);
@@ -28,6 +27,10 @@ return new class extends Migration
             $table->foreignId('id_estado');
             $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }

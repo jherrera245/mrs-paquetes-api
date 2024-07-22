@@ -20,14 +20,16 @@ return new class extends Migration
             $table->foreignId('id_genero');
             $table->string('dui', 10)->unique('dui');
             $table->string('telefono', 9);
-            $table->string('email');
             $table->date('fecha_nacimiento');
             $table->date('fecha_contratacion');
-            $table->decimal('salario', 10);
             $table->foreignId('id_estado');
             $table->foreignId('id_cargo');
             $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -17,14 +17,14 @@ class Empleado extends Model
         'id_genero',
         'dui',
         'telefono',
-        'email',
         'fecha_nacimiento',
         'fecha_contratacion',
-        'salario',
         'id_estado',
         'id_cargo',
         'id_departamento',
-        'id_municipio'
+        'id_municipio',
+        'created_by', 
+        'updated_by'
     ];
 
     public function genero()
@@ -52,6 +52,35 @@ class Empleado extends Model
         return $this->belongsTo(Municipio::class, 'id_municipio');
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento para asignar 'created_by' al crear un registro
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->created_by = auth()->id();
+            }
+        });
+
+        // Evento para asignar 'updated_by' al actualizar un registro
+        static::updating(function ($model) {
+            if (auth()->check()) {
+                $model->updated_by = auth()->id();
+            }
+        });
+    }
+
     public static function search($filters)
     {
         $query = self::query();
@@ -74,4 +103,5 @@ class Empleado extends Model
 
         return $query->with(['genero', 'estado', 'cargo', 'departamento', 'municipio'])->get();
     }
+
 }

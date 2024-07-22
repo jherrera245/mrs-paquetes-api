@@ -14,7 +14,6 @@ class Clientes extends Model
         'nombre',
 		'apellido',
         'nombre_comercial',
-        'email',
         'telefono',
         'id_tipo_persona',
         'es_contribuyente',
@@ -29,7 +28,28 @@ class Clientes extends Model
         'giro',
         'nombre_empresa',
         'direccion',
+        'created_by', 
+        'updated_by'
 	];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento para asignar 'created_by' al crear un registro
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->created_by = auth()->id();
+            }
+        });
+
+        // Evento para asignar 'updated_by' al actualizar un registro
+        static::updating(function ($model) {
+            if (auth()->check()) {
+                $model->updated_by = auth()->id();
+            }
+        });
+    }
 
     public function setTelefonoAttribute($value)
     {
@@ -57,7 +77,7 @@ class Clientes extends Model
         return $this->belongsTo(TipoPersona::class, 'id_tipo_persona');
     } 
 
-public static function filter($filters)
+    public static function filter($filters)
     {
         $query = self::query();
 

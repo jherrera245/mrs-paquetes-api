@@ -15,11 +15,5 @@ class RoleSeeder extends Seeder
         $role2 = Role::firstOrCreate(['name' => 'cliente']);
         $role3 = Role::firstOrCreate(['name' => 'conductor']);
         $role4 = Role::firstOrCreate(['name' => 'basico']);
-
-        // Creación de permisos si no existen
-        $permission1 = Permission::firstOrCreate(['name' => 'user.register'])->syncRoles([$role1, $role2]);
-        $permission2 = Permission::firstOrCreate(['name' => 'user.update'])->syncRoles([$role1]);
-        $permission3 = Permission::firstOrCreate(['name' => 'user.delete'])->syncRoles([$role1]);
-        $permission4 = Permission::firstOrCreate(['name' => 'user.create'])->syncRoles([$role1]);
     }
 }

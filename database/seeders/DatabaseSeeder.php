@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             GeneroSeeder::class,
             MunicipioSeeder::class,
             RoleSeeder::class,
+            PermissionSeeder::class,
             TipoIncidenciaSeeder::class,
             TipoPaqueteSeeder::class,
             TipoPersonaSeeder::class,

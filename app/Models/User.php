@@ -56,4 +56,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function hasAccessChanged()
+    {
+        return $this->updated_at && $this->updated_at > now()->subMinutes(30);
+    }
 }
