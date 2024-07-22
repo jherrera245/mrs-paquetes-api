@@ -36,10 +36,8 @@ class EmpleadoController extends Controller
             'id_genero' => 'required',
             'dui' => 'required|digits:9|unique:empleados',
             'telefono' => 'required|digits:8',
-            'email' => 'required|email|unique:empleados',
             'fecha_nacimiento' => 'required|date',
             'fecha_contratacion' => 'required|date',
-            'salario' => 'required|numeric',
             'id_estado' => 'required',
             'id_cargo' => 'required',
             'id_departamento' => 'required',
@@ -63,10 +61,8 @@ class EmpleadoController extends Controller
             'id_genero' => $request->id_genero,
             'dui' => $request->dui,
             'telefono' => $request->telefono,
-            'email' => $request->email,
             'fecha_nacimiento' => $request->fecha_nacimiento,
             'fecha_contratacion' => $request->fecha_contratacion,
-            'salario' => $request->salario,
             'id_estado' => $request->id_estado,
             'id_cargo' => $request->id_cargo,
             'id_departamento' => $request->id_departamento,
@@ -168,10 +164,8 @@ class EmpleadoController extends Controller
         'id_genero' => 'required',
         'dui' => 'required|digits:9|unique:empleados,dui,'.$id,
         'telefono' => 'required|digits:8',
-        'email' => 'required|email|unique:empleados,email,'.$id,
         'fecha_nacimiento' => 'required|date',
         'fecha_contratacion' => 'required|date',
-        'salario' => 'required|numeric',
         'id_estado' => 'required',
         'id_cargo' => 'required',
         'id_departamento' => 'required',
@@ -192,10 +186,8 @@ class EmpleadoController extends Controller
     $empleado->id_genero = $request->id_genero;
     $empleado->dui = $request->dui;
     $empleado->telefono = $request->telefono;
-    $empleado->email = $request->email;
     $empleado->fecha_nacimiento = $request->fecha_nacimiento;
     $empleado->fecha_contratacion = $request->fecha_contratacion;
-    $empleado->salario = $request->salario;
     $empleado->id_estado = $request->id_estado;
     $empleado->id_cargo = $request->id_cargo;
     $empleado->id_departamento = $request->id_departamento;

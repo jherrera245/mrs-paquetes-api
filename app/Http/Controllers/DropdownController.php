@@ -167,6 +167,31 @@ class DropdownController extends Controller
         $estado_incidencias = DB::table('estado_incidencias')->select('id', 'estado')->get();
         return response()->json(["estado_incidencias" => $estado_incidencias]);
     }
+
+    public function getPeopleData($type)
+    {
+        $data = [];
+
+        if ($type == 0) {
+            $empleados = DB::table('empleados')
+            ->leftJoin('users', 'empleados.id', '=', 'users.id_empleado')
+            ->whereNull('users.id_empleado')
+            ->select('empleados.*')
+            ->get();
+
+            $data['empleados'] = $empleados;
+        } else {
+            $clientes= DB::table('clientes')
+                ->leftJoin('users', 'clientes.id', '=', 'users.id_cliente')
+                ->whereNull('users.id_cliente')
+                ->select('clientes.*')
+                ->get();
+            $data['clientes'] = $clientes;
+        }
+
+
+        return response()->json($data);
+    }
 }
 
 

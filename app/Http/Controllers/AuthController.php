@@ -133,40 +133,6 @@ class AuthController extends Controller
         return response()->json(['users' => $users]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|max:50|confirmed',
-            'status' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->status = $request->status;
-
-        if ($request->has('password')) {
-            $user->password = bcrypt($request->password);
-        }
-
-        if ($user->save()) {
-            return response()->json(['message' => 'User updated successfully'], Response::HTTP_OK);
-        }
-
-        return response()->json(['error' => 'Failed to update user'], Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
     // Función para asignar roles a un usuario
     public function assignUserRole(Request $request, $id)
     {
@@ -223,82 +189,19 @@ class AuthController extends Controller
         return response()->json(['message' => 'Permissions assigned successfully'], Response::HTTP_OK);
     }
 
-
-    public function storeUserCliente(Request $request)
-    {
-        //Indicamos que solo queremos recibir name, email, id empleado y password de la request
-        $data = $request->only('name', 'email', 'password', 'id_cliente');
-        //Realizamos las validaciones
-        $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|max:50',
-        ]);
-        //Devolvemos un error si fallan las validaciones
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        //Creamos el nuevo usuario
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'id_cliente' => $request->id_cliente,
-        ]);
-        //Nos guardamos el usuario y la contraseña para realizar la petición de token a JWTAuth
-        $credentials = $request->only('email', 'password');
-        //Devolvemos la respuesta con el token del usuario
-        return response()->json([
-            'message' => 'User created',
-            'token' => JWTAuth::attempt($credentials),
-            'user' => $user,
-        ], Response::HTTP_OK);
-
-    }
-
-    public function updateUserCliente(Request $request, $id)
-    {
-        // Validar la solicitud
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'status' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $user = User::find($id);
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->id_cliente = $request->id_cliente;
-        $user->status = $request->status ? 1 : 0;
-
-        if ($user->save()) {
-            return response()->json(['message' => 'Usuario actualizado']);
-        } else {
-            return response()->json(['error' => 'Error al actualizar el usuario'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-    }
-
-    public function storeUserEmpleado(Request $request)
+    public function store(Request $request)
     {
         //Indicamos que solo queremos recibir name, email y password de la request
-        $data = $request->only('name', 'email', 'password', 'id_empleado', 'role_id');
+        $data = $request->only('name', 'email', 'password', 'type', 'role_id');
         //Realizamos las validaciones
         $validator = Validator::make($data, [
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
             'role_id' => 'required|integer',
-            'id_empleado' => 'required|email|unique:users'
+            'type' => 'required|integer',
+            'id_empleado' => 'id_empleado|unique:users',
+            'id_cliente' => 'id_cliente|unique:users',
         ]);
         
         //Devolvemos un error si fallan las validaciones
@@ -306,34 +209,37 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        //Creamos el nuevo usuario
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'id_empleado' => $request->id_empleado,
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password =  bcrypt($request->password);
+        $user->type = $request->type;
 
-        $user = User::find($user->id);
+        if ($request->type == 0) {
+            $user->id_empleado = $request->id_empleado;
+        } else {
+            $user->id_cliente = $request->id_cliente;
+        }
+
+        $user->save();
+
         $role = Role::find($request->role_id);
         $user->roles()->detach();
         $user->assignRole($role);
 
         return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
-
     }
 
-    public function updateUserEmpleado(Request $request, $id)
+    public function update(Request $request, $id)
     {
         // Validar la solicitud
-        $data = $request->only('name', 'email', 'password', 'id_empleado', 'role_id');
+        $data = $request->only('name', 'email', 'password',  'role_id');
         //Realizamos las validaciones
         $validator = Validator::make($data, [
             'name' => 'required|string',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'required|string|min:6|max:50',
-            'role_id' => 'required|integer',
-            'id_empleado' => 'required|email|unique:users'
+            'role_id' => 'required|integer'
         ]);
 
         if ($validator->fails()) {
@@ -349,17 +255,20 @@ class AuthController extends Controller
         $user->email = $request->email;
         $user->id_empleado = $request->id_empleado;
         $user->status = $request->status ? 1 : 0;
+        $user->password =  bcrypt($request->password);
+        $user->save();
 
-        $role = Role::find($request->role_id);
-        $user->roles()->detach();
-        $user->assignRole($role);
+        if ($user->type == 0) {
+            $role = Role::find($request->role_id);
+            $user->roles()->detach();
+            $user->assignRole($role);
+        }
 
-        if ($user->save()) {
+        if ($user) {
             return response()->json(['message' => 'Users updated successfully'], Response::HTTP_OK);
         } else {
             return response()->json(['error' => 'Error al actualizar el usuario'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
     }
 
     public function destroy($id)

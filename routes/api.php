@@ -46,10 +46,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole']);
     Route::get('auth/logout', [AuthController::class, 'logout']);
     Route::put('auth/update/{id}', [AuthController::class, 'update']);
-    Route::post('auth/store_user_cliente', [AuthController::class, 'storeUserCliente']);
-    Route::put('auth/update_user_cliente/{id}', [AuthController::class, 'updateUserCliente']);
-    Route::post('auth/store_user_empleado', [AuthController::class, 'storeUserEmpleado']);
-    Route::put('auth/update_user_empleado/{id}', [AuthController::class, 'updateUserEmpleado']);
+    Route::post('auth/store', [AuthController::class, 'store']);
+    Route::put('auth/update/{id}', [AuthController::class, 'update']);
     Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy']);
 
     //roles
@@ -189,4 +187,5 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_estado_clientes', [DropdownController::class, 'getEstadoClientes']);
     Route::get('dropdown/get_estado_empleados', [DropdownController::class, 'getEstadoEmpleados']);
     Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
+    Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
 });
