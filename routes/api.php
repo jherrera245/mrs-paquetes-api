@@ -38,130 +38,131 @@ Route::apiResource('ordenes', OrdenController::class);
 
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
-    //Routes users api
-    Route::get('auth/get_user', [AuthController::class, 'getUser']);
-    Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById']);
-    Route::get('auth/get_users', [AuthController::class, 'getUsers']);
-    Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole']);
-    Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole']);
+    // Routes users api
+    Route::get('auth/get_user', [AuthController::class, 'getUser'])->middleware('permission:auth-view_user');
+    Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById'])->middleware('permission:auth-get_user_by_id');
+    Route::get('auth/get_users', [AuthController::class, 'getUsers'])->middleware('permission:auth-get_users');
+    Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole'])->middleware('permission:auth-assign_user_role');
+    Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole'])->middleware('permission:auth-assign_permissions_to_role');
     Route::get('auth/logout', [AuthController::class, 'logout']);
-    Route::put('auth/update/{id}', [AuthController::class, 'update']);
-    Route::post('auth/store', [AuthController::class, 'store']);
-    Route::put('auth/update/{id}', [AuthController::class, 'update']);
-    Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy']);
+    Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update_user');
+    Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store_user_cliente');
+    Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update_user_cliente');
+    Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy_user');
 
-    //roles
-    Route::get('roles', [RoleController::class, 'index']);
-    Route::post('roles', [RoleController::class, 'store']);
-    Route::put('roles/{role}', [RoleController::class, 'update']);
-    Route::post('roles/assign_permissions_role/{id}', [RoleController::class, 'assignPermissionsToRole']);
-    Route::delete('roles/{role}', [RoleController::class, 'destroy']);
+    // Roles
+    Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');
+    Route::post('roles', [RoleController::class, 'store'])->middleware('permission:roles-create');
+    Route::put('roles/{role}', [RoleController::class, 'update'])->middleware('permission:roles-update');
+    Route::post('roles/assign_permissions_role/{id}', [RoleController::class, 'assignPermissionsToRole'])->middleware('permission:roles-assign_permissions');
+    Route::delete('roles/{role}', [RoleController::class, 'destroy'])->middleware('permission:roles-destroy');
 
-    //permission
-    Route::get('permission', [PermissionController::class, 'index']);
-    Route::post('permission', [PermissionController::class, 'store']);
-    Route::put('permission/{permission}', [PermissionController::class, 'update']);
-    Route::delete('permission/{permission}', [PermissionController::class, 'destroy']);
+    // Permission
+    Route::get('permission', [PermissionController::class, 'index'])->middleware('permission:permission-view');
+    Route::post('permission', [PermissionController::class, 'store'])->middleware('permission:permission-create');
+    Route::put('permission/{permission}', [PermissionController::class, 'update'])->middleware('permission:permission-update');
+    Route::delete('permission/{permission}', [PermissionController::class, 'destroy'])->middleware('permission:permission-destroy');
 
-    //tipopersona
-    Route::get('tipoPersona', [TipoPersonaController::class, 'index']);
-    Route::post('tipoPersona', [TipoPersonaController::class, 'store']);
-    Route::put('tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'update']);
-    Route::delete('tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'destroy']);
+    // Tipo Persona
+    Route::get('tipoPersona', [TipoPersonaController::class, 'index'])->middleware('permission:tipoPersona-view');
+    Route::post('tipoPersona', [TipoPersonaController::class, 'store'])->middleware('permission:tipoPersona-create');
+    Route::put('tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'update'])->middleware('permission:tipoPersona-update');
+    Route::delete('tipoPersona/{tipo_persona}', [TipoPersonaController::class, 'destroy'])->middleware('permission:tipoPersona-destroy');
 
-    //clientes
-    Route::get('clientes', [ClientesController::class, 'index']);
-    Route::post('clientes', [ClientesController::class, 'store']);
-    Route::put('clientes/{clientes}', [ClientesController::class, 'update']);
-    Route::delete('clientes/{clientes}', [ClientesController::class, 'destroy']);
+    // Clientes
+    Route::get('clientes', [ClientesController::class, 'index'])->middleware('permission:clientes-view');
+    Route::post('clientes', [ClientesController::class, 'store'])->middleware('permission:clientes-create');
+    Route::put('clientes/{clientes}', [ClientesController::class, 'update'])->middleware('permission:clientes-update');
+    Route::delete('clientes/{clientes}', [ClientesController::class, 'destroy'])->middleware('permission:clientes-destroy');
 
-    //modeloVehiculo
-    Route::get('modeloVehiculo', [ModeloVehiculoController::class, 'index']);
-    Route::get('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'show']);
-    Route::post('modeloVehiculo', [ModeloVehiculoController::class, 'store']);
-    Route::put('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'update']);
-    Route::delete('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'destroy']);
+    // Modelo Vehículo
+    Route::get('modeloVehiculo', [ModeloVehiculoController::class, 'index'])->middleware('permission:modeloVehiculo-view');
+    Route::get('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'show'])->middleware('permission:modeloVehiculo-show');
+    Route::post('modeloVehiculo', [ModeloVehiculoController::class, 'store'])->middleware('permission:modeloVehiculo-create');
+    Route::put('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'update'])->middleware('permission:modeloVehiculo-update');
+    Route::delete('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'destroy'])->middleware('permission:modeloVehiculo-destroy');
 
-    //marcaVehiculo
-    Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index']);
-    Route::get('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'show']);
-    Route::post('marcaVehiculo', [MarcaVehiculoController::class, 'store']);
-    Route::put('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'update']);
-    Route::delete('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'destroy']);
+    // Marca Vehículo
+    Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');
+    Route::get('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'show'])->middleware('permission:marcaVehiculo-show');
+    Route::post('marcaVehiculo', [MarcaVehiculoController::class, 'store'])->middleware('permission:marcaVehiculo-create');
+    Route::put('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'update'])->middleware('permission:marcaVehiculo-update');
+    Route::delete('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'destroy'])->middleware('permission:marcaVehiculo-destroy');
 
-    //vehiculo
-    Route::get('vehiculo', [VehiculoController::class, 'index']);
-    Route::get('vehiculo/{vehiculo}', [VehiculoController::class, 'show']);
-    Route::post('vehiculo', [VehiculoController::class, 'store']);
-    Route::put('vehiculo/{vehiculo}', [VehiculoController::class, 'update']);
-    Route::delete('vehiculo/{vehiculo}', [VehiculoController::class, 'destroy']);
+    // Vehículo
+    Route::get('vehiculo', [VehiculoController::class, 'index'])->middleware('permission:vehiculo-view');
+    Route::get('vehiculo/{vehiculo}', [VehiculoController::class, 'show'])->middleware('permission:vehiculo-show');
+    Route::post('vehiculo', [VehiculoController::class, 'store'])->middleware('permission:vehiculo-create');
+    Route::put('vehiculo/{vehiculo}', [VehiculoController::class, 'update'])->middleware('permission:vehiculo-update');
+    Route::delete('vehiculo/{vehiculo}', [VehiculoController::class, 'destroy'])->middleware('permission:vehiculo-destroy');
 
-    //Empleados
-    Route::get('empleados', [EmpleadoController::class, 'index']);
-    Route::get('empleados/{empleado}', [EmpleadoController::class, 'show']);
-    Route::post('empleados', [EmpleadoController::class, 'store']);
-    Route::put('empleados/{empleado}', [EmpleadoController::class, 'update']);
-    Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy']);
+    // Empleados
+    Route::get('empleados', [EmpleadoController::class, 'index'])->middleware('permission:empleados-view');
+    Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->middleware('permission:empleados-show');
+    Route::post('empleados', [EmpleadoController::class, 'store'])->middleware('permission:empleados-create');
+    Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->middleware('permission:empleados-update');
+    Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->middleware('permission:empleados-destroy');
 
-    //rutas
-    Route::resource('rutas', 'RutasController');
-    Route::get('rutas', [RutasController::class, 'index']);
-    Route::get('rutas/{ruta}', [RutasController::class, 'show']);
-    Route::post('rutas', [RutasController::class, 'store']);
-    Route::put('rutas/{ruta}', [RutasController::class, 'update']);
-    Route::delete('rutas/{ruta}', [RutasController::class, 'destroy']);
+    // Rutas
+    Route::resource('rutas', 'RutasController')->middleware('permission:rutas-view');
+    Route::get('rutas', [RutasController::class, 'index'])->middleware('permission:rutas-view');
+    Route::get('rutas/{ruta}', [RutasController::class, 'show'])->middleware('permission:rutas-show');
+    Route::post('rutas', [RutasController::class, 'store'])->middleware('permission:rutas-create');
+    Route::put('rutas/{ruta}', [RutasController::class, 'update'])->middleware('permission:rutas-update');
+    Route::delete('rutas/{ruta}', [RutasController::class, 'destroy'])->middleware('permission:rutas-destroy');
 
-    //direcciones
-    Route::resource('direcciones', 'DireccionesController');
-    Route::get('direcciones', [DireccionesController::class, 'index']);
-    Route::get('direcciones/{direccione}', [DireccionesController::class, 'show']);
-    Route::post('direcciones', [DireccionesController::class, 'store']);
-    Route::put('direcciones/{direccione}', [DireccionesController::class, 'update']);
-    Route::delete('direcciones/{direccione}', [DireccionesController::class, 'destroy']);
+    // Direcciones
+    Route::resource('direcciones', 'DireccionesController')->middleware('permission:direcciones-view');
+    Route::get('direcciones', [DireccionesController::class, 'index'])->middleware('permission:direcciones-view');
+    Route::get('direcciones/{direccione}', [DireccionesController::class, 'show'])->middleware('permission:direcciones-show');
+    Route::post('direcciones', [DireccionesController::class, 'store'])->middleware('permission:direcciones-create');
+    Route::put('direcciones/{direccione}', [DireccionesController::class, 'update'])->middleware('permission:direcciones-update');
+    Route::delete('direcciones/{direccione}', [DireccionesController::class, 'destroy'])->middleware('permission:direcciones-destroy');
 
-    //destinos
-    Route::resource('destinos', 'DestinosController');
-    Route::get('destinos', [DestinosController::class, 'index']);
-    Route::get('destinos/{destino}', [DestinosController::class, 'show']);
-    Route::post('destinos', [DestinosController::class, 'store']);
-    Route::put('destinos/{destino}', [DestinosController::class, 'update']);
-    Route::delete('destinos/{destino}', [DestinosController::class, 'destroy']);
+    // Destinos
+    Route::resource('destinos', 'DestinosController')->middleware('permission:destinos-view');
+    Route::get('destinos', [DestinosController::class, 'index'])->middleware('permission:destinos-view');
+    Route::get('destinos/{destino}', [DestinosController::class, 'show'])->middleware('permission:destinos-show');
+    Route::post('destinos', [DestinosController::class, 'store'])->middleware('permission:destinos-create');
+    Route::put('destinos/{destino}', [DestinosController::class, 'update'])->middleware('permission:destinos-update');
+    Route::delete('destinos/{destino}', [DestinosController::class, 'destroy'])->middleware('permission:destinos-destroy');
 
-    //bodegas
-    Route::resource('bodegas', 'BodegasController');
-    Route::get('bodegas', [BodegasController::class, 'index']);
-    Route::get('bodegas/{bodega}', [BodegasController::class, 'show']);
-    Route::post('bodegas', [BodegasController::class, 'store']);
-    Route::put('bodegas/{bodega}', [BodegasController::class, 'update']);
-    Route::delete('bodegas/{bodega}', [BodegasController::class, 'destroy']);
+    // Bodegas
+    Route::resource('bodegas', 'BodegasController')->middleware('permission:bodegas-view');
+    Route::get('bodegas', [BodegasController::class, 'index'])->middleware('permission:bodegas-view');
+    Route::get('bodegas/{bodega}', [BodegasController::class, 'show'])->middleware('permission:bodegas-show');
+    Route::post('bodegas', [BodegasController::class, 'store'])->middleware('permission:bodegas-create');
+    Route::put('bodegas/{bodega}', [BodegasController::class, 'update'])->middleware('permission:bodegas-update');
+    Route::delete('bodegas/{bodega}', [BodegasController::class, 'destroy'])->middleware('permission:bodegas-destroy');
 
-    //asignarrutas
-    Route::resource('asignacionrutas', 'AsignacionRutasController');
-    Route::get('asignacionrutas', [AsignacionRutasController::class, 'index']);
-    Route::get('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show']);
-    Route::post('asignacionrutas', [AsignacionRutasController::class, 'store']);
-    Route::put('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update']);
-    Route::delete('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy']);
+    // Asignación Rutas
+    Route::resource('asignacionrutas', 'AsignacionRutasController')->middleware('permission:asignacionrutas-view');
+    Route::get('asignacionrutas', [AsignacionRutasController::class, 'index'])->middleware('permission:asignacionrutas-view');
+    Route::get('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show'])->middleware('permission:asignacionrutas-show');
+    Route::post('asignacionrutas', [AsignacionRutasController::class, 'store'])->middleware('permission:asignacionrutas-create');
+    Route::put('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update'])->middleware('permission:asignacionrutas-update');
+    Route::delete('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy'])->middleware('permission:asignacionrutas-destroy');
 
-    //paquete
-    Route::get('paquete', [PaqueteController::class, 'index']);
-    Route::get('paquete/{paquete}', [PaqueteController::class, 'show']);
-    Route::post('paquete', [PaqueteController::class, 'store']);
-    Route::post('paquete/searchbyimage', [PaqueteController::class, 'searchByImage']);
-    Route::put('paquete/{paquete}', [PaqueteController::class, 'update']);
-    Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy']);
-    Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore']);
+    // Paquete
+    Route::get('paquete', [PaqueteController::class, 'index'])->middleware('permission:paquete-view');
+    Route::get('paquete/{paquete}', [PaqueteController::class, 'show'])->middleware('permission:paquete-show');
+    Route::post('paquete', [PaqueteController::class, 'store'])->middleware('permission:paquete-create');
+    Route::post('paquete/searchbyimage', [PaqueteController::class, 'searchByImage'])->middleware('permission:paquete-search_by_image');
+    Route::put('paquete/{paquete}', [PaqueteController::class, 'update'])->middleware('permission:paquete-update');
+    Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy'])->middleware('permission:paquete-destroy');
+    Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore'])->middleware('permission:paquete-restore');
 
-    //historial paquetes
-    Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index']);
-    Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show']);
-    
-    //incidencias
-    Route::get('incidencias', [IncidenciaController::class, 'index']);
-    Route::post('incidencias', [IncidenciaController::class, 'store']);
-    Route::get('incidencias/{incidencia}', [IncidenciaController::class, 'show']);
-    Route::put('incidencias/{incidencia}', [IncidenciaController::class, 'update']);
-    Route::delete('incidencias/{incidencia}', [IncidenciaController::class, 'destroy']);
+    // Historial Paquetes
+    Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');
+    Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show'])->middleware('permission:historialpaquete-show');
+
+    // Incidencias
+    Route::get('incidencias', [IncidenciaController::class, 'index'])->middleware('permission:incidencias-view');
+    Route::post('incidencias', [IncidenciaController::class, 'store'])->middleware('permission:incidencias-create');
+    Route::get('incidencias/{incidencia}', [IncidenciaController::class, 'show'])->middleware('permission:incidencias-show');
+    Route::put('incidencias/{incidencia}', [IncidenciaController::class, 'update'])->middleware('permission:incidencias-update');
+    Route::delete('incidencias/{incidencia}', [IncidenciaController::class, 'destroy'])->middleware('permission:incidencias-destroy');
+
 
     //Dropdown
     Route::get('dropdown/get_departamentos', [DropdownController::class, 'getDepartamentos']);

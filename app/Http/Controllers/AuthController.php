@@ -26,6 +26,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['message' => 'Login failed'], Response::HTTP_BAD_REQUEST);
@@ -41,22 +42,30 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-
         $roleName = $user->getRoleNames()->first();
         $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->toArray();
-        $permissions = Permission::all()->pluck('name')->toArray();
-        $permissionsWithStatus = [];
-
-        foreach ($permissions as $permission) {
-            $permissionsWithStatus[$permission] = in_array($permission, $rolePermissions);
+        $permissionsByModule = [];
+        
+        foreach ($rolePermissions as $permission) {
+            [$module, $actionPermission] = explode('-', $permission, 2);
+    
+            if (!isset($permissionsMap[$module])) {
+                $permissionsMap[$module] = [
+                    'modulo' => $module,
+                    'permissions' => []
+                ];
+            }
+    
+            $permissionsMap[$module]['permissions'][$actionPermission] = true;
         }
-
+    
+        $formattedPermissions = array_values($permissionsMap);
         unset($user->roles);
 
         $payload = [
             'user' => $user,
             'role' => $roleName,
-            'permissions' => $permissionsWithStatus,
+            'permissions' => $formattedPermissions,
             'token' => $token,
         ];
 
