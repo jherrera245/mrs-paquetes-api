@@ -17,7 +17,7 @@ class PermissionSeeder extends Seeder
             'auth-get_users',
             'auth-assign_user_role',
             'auth-assign_permissions_to_role',
-            'auth-update_user',
+            'auth-update',
             'auth-store',
             'auth-update',
             'auth-destroy',
