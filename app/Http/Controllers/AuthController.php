@@ -224,7 +224,7 @@ class AuthController extends Controller
         $user->password =  bcrypt($request->password);
         $user->type = $request->type;
 
-        if (empty($request->id_empleado) == null && empty($request->id_cliente)) {
+        if (empty($request->id_empleado) && empty($request->id_cliente)) {
             return response()->json(['error' => 'Faild to create user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
