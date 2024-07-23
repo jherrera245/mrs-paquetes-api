@@ -45,10 +45,9 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole'])->middleware('permission:auth-assign_user_role');
     Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole'])->middleware('permission:auth-assign_permissions_to_role');
     Route::get('auth/logout', [AuthController::class, 'logout']);
-    Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update_user');
-    Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store_user_cliente');
-    Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update_user_cliente');
-    Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy_user');
+    Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update');
+    Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store');
+    Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy');
 
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');
