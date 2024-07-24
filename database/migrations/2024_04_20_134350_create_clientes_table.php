@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('apellido', 100);
             $table->string('nombre_comercial', 45);
-            $table->string('dui', 10)->unique('dui')->nullable();
+            $table->string('dui', 10)->nullable(true);
             $table->string('telefono', 9);
             $table->foreignId('id_tipo_persona');
             $table->boolean('es_contribuyente')->nullable()->default(0);

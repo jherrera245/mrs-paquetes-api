@@ -36,7 +36,7 @@ class DetalleOrden extends Model
     }
 
     public function estado_paquete():BelongsTo {
-        return $this->belongsTo(EstadoPaquetes::class);
+        return $this->belongsTo(EstadoPaquete::class);
     }
 
     public function cliente():BelongsTo {
