@@ -96,15 +96,61 @@ class PermissionSeeder extends Seeder
             'incidencias-update',
             'incidencias-destroy',
         ];
-        
+
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Crear un rol y asignar permisos (ejemplo de rol 'admin')
-        $role = Role::find(1); //para admin
+        // Obtener los roles existentes
+        $adminRole = Role::where('name', 'admin')->first();
+        $clienteRole = Role::where('name', 'cliente')->first();
+        $conductorRole = Role::where('name', 'conductor')->first();
+        $basicoRole = Role::where('name', 'basico')->first();
 
-        // Asignar todos los permisos al rol 'admin'
-        $role->givePermissionTo(Permission::all());
+        // Asignar permisos a los roles existentes
+        if ($adminRole) {
+            $adminRole->givePermissionTo(Permission::all());
+        }
+
+        if ($clienteRole) {
+            $clienteRole->givePermissionTo([
+                'paquete-view',
+                'incidencias-create',
+                'incidencias-view', // Asumimos que se refiere a las incidencias que el cliente ha reportado
+            ]);
+        }
+
+        if ($conductorRole) {
+            $conductorRole->givePermissionTo([
+                'rutas-view',
+                'rutas-show',
+                'rutas-create',
+                'rutas-update',
+                'rutas-destroy',
+                'destinos-view',
+                'destinos-show',
+                'destinos-create',
+                'destinos-update',
+                'destinos-destroy',
+                'direcciones-view',
+                'direcciones-show',
+                'direcciones-create',
+                'direcciones-update',
+                'direcciones-destroy',
+                'paquete-view',
+                'paquete-show',
+                'paquete-create',
+                'paquete-update',
+                'paquete-destroy',
+                'vehiculo-view', 
+            ]);
+        }
+
+        if ($basicoRole) {
+            $basicoRole->givePermissionTo([
+                'paquete-view',
+                'clientes-view',
+            ]);
+        }
     }
 }
