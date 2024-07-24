@@ -63,6 +63,7 @@ class Clientes extends Model
             : preg_replace('/(\d{4})(\d{4})/', '$1-$2', $value);
     }
 
+    // Mutador para formatear el DUI
     public function setDuiAttribute($value)
     {
         // Si el valor del DUI está vacío, simplemente asigna el valor sin aplicar formato
