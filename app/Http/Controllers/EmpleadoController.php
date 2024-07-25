@@ -7,8 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
-
+use Illuminate\Support\Facades\DB;
 
 class EmpleadoController extends Controller
 {
@@ -144,6 +143,18 @@ class EmpleadoController extends Controller
         return response()->json($data, 200);
     }
 
+    public function relacion()
+    {
+    $empleados = DB::table('empleados')
+                    ->join('users', 'empleados.id', '=', 'users.id')
+                    ->join('roles', 'users.id', '=', 'roles.id')
+                    ->select('empleados.*', 'users.name as nombre_usuario', 'roles.name as nombre_rol')
+                    ->get();
+
+    return response()->json([
+        'empleados' => $empleados
+    ]);
+    }
 
 
     public function update(Request $request, $id)

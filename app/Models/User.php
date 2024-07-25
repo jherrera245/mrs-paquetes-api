@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -52,7 +53,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->getKey();
     }
-    
+
     public function getJWTCustomClaims()
     {
         return [];
@@ -62,4 +63,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->updated_at && $this->updated_at > now()->subMinutes(30);
     }
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'id');
+    }
+    public function empleados()
+    {
+        return $this->hasMany(Empleado::class, 'id');
+    }
+
 }

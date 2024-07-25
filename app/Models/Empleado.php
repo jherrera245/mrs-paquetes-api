@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
 
 class Empleado extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'empleados';
 
     protected $fillable = [
@@ -23,7 +27,7 @@ class Empleado extends Model
         'id_cargo',
         'id_departamento',
         'id_municipio',
-        'created_by', 
+        'created_by',
         'updated_by'
     ];
 
@@ -60,6 +64,15 @@ class Empleado extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id');
+    }
+    public function roles()
+    {
+        return $this->belongsTo(Role::class, 'id');
     }
 
     protected static function boot()
@@ -101,7 +114,7 @@ class Empleado extends Model
             $query->where('id_estado', $filters['id_estado']);
         }
 
-        return $query->with(['genero', 'estado', 'cargo', 'departamento', 'municipio'])->get();
+        return $query->with(['genero', 'estado', 'cargo', 'departamento', 'municipio','user','roles'],)->get();
     }
 
 }
