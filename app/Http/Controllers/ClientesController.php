@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clientes;
+use App\Rules\validNit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,7 +12,7 @@ class ClientesController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'email', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -26,7 +27,7 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'email', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -35,12 +36,13 @@ class ClientesController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'nombre_comercial' => 'nullable|string|max:255',
-            'email' => 'nullable|email',
             'dui' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
                     if (!empty($value) && !preg_match('/^\d{8}-\d$/', $value)) {
                         $fail('El formato del DUI no es válido. Debe ser en formato 12345678-9.');
+                    }else{
+
                     }
                 },
             ],
@@ -54,6 +56,7 @@ class ClientesController extends Controller
             'id_municipio' => 'required|exists:municipios,id',
             'nit' => [
                 'nullable',
+                new validNit,
                 'string',
                 'max:20',
                 'regex:/^\d{4}-\d{6}-\d{3}-\d$/',
@@ -80,7 +83,7 @@ class ClientesController extends Controller
     public function update(Request $request, Clientes $cliente)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'email', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -89,7 +92,6 @@ class ClientesController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'nombre_comercial' => 'nullable|string|max:255',
-            'email' => 'nullable|email',
             'dui' => [
                 'nullable',
                 function ($attribute, $value, $fail) {

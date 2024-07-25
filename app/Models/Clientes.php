@@ -15,22 +15,18 @@ class Clientes extends Model
         'nombre',
         'apellido',
         'nombre_comercial',
-        'email',
+        'dui',
         'telefono',
         'id_tipo_persona',
         'es_contribuyente',
         'id_genero',
-        'dui',
         'fecha_registro',
         'id_estado',
         'id_departamento',
         'id_municipio',
-        'nit',
-        'nrc',
-        'giro',
-        'nombre_empresa',
-        'direccion',
-        'created_at', 
+        'created_by',
+        'updated_by',
+        'created_at',
         'updated_at',
         'nit',
         'nrc',
@@ -104,7 +100,7 @@ class Clientes extends Model
         $query = self::query();
 
         foreach ($filters as $field => $value) {
-            if (in_array($field, ['nombre', 'apellido', 'nombre_comercial', 'email', 'telefono', 'dui', 'nit', 'nrc', 'fecha_registro'])) {
+            if (in_array($field, ['nombre', 'apellido', 'nombre_comercial', 'telefono', 'dui', 'nit', 'nrc', 'fecha_registro'])) {
                 $query->where($field, 'like', '%' . $value . '%');
             } elseif (in_array($field, ['id_tipo_persona', 'es_contribuyente', 'id_genero', 'id_estado', 'id_departamento', 'id_municipio'])) {
                 $query->where($field, $value);
