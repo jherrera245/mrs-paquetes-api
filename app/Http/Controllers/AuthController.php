@@ -280,8 +280,10 @@ class AuthController extends Controller
 
         if ($request->type == 0 && !empty($request->id_empleado)) {
             $user->id_empleado = $request->id_empleado;
+            $user->id_cliente = null;
         } else if ($request->type == 1 && !empty($request->id_cliente)) {
             $user->id_cliente = $request->id_cliente;
+            $user->id_empleado = null;
         } else {
             return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
