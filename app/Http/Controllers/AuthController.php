@@ -253,7 +253,6 @@ class AuthController extends Controller
         $validator = Validator::make($data, [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'required|string|min:6|max:50',
             'role_id' => 'required|integer'
         ]);
 
@@ -268,16 +267,30 @@ class AuthController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->id_empleado = $request->id_empleado;
         $user->status = $request->status ? 1 : 0;
-        $user->password =  bcrypt($request->password);
+        $user->type = $request->type;
+
+        if (!empty($request->password)) {
+            $user->password =  bcrypt($request->password);
+        }
+
+        if (empty($request->id_empleado) && empty($request->id_cliente)) {
+            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($request->type == 0 && !empty($request->id_empleado)) {
+            $user->id_empleado = $request->id_empleado;
+        } else if ($request->type == 1 && !empty($request->id_cliente)) {
+            $user->id_cliente = $request->id_cliente;
+        } else {
+            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $user->save();
 
-        if ($user->type == 0) {
-            $role = Role::find($request->role_id);
-            $user->roles()->detach();
-            $user->assignRole($role);
-        }
+        $role = Role::find($request->role_id);
+        $user->roles()->detach();
+        $user->assignRole($role);
 
         if ($user) {
             return response()->json(['message' => 'Users updated successfully'], Response::HTTP_OK);
