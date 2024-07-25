@@ -267,7 +267,6 @@ class AuthController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->id_empleado = $request->id_empleado;
         $user->status = $request->status ? 1 : 0;
         $user->type = $request->type;
 
