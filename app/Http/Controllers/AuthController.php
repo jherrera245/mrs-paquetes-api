@@ -275,7 +275,7 @@ class AuthController extends Controller
         }
 
         if (empty($request->id_empleado) && empty($request->id_cliente)) {
-            return response()->json(['error' => 'Faild to create user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if ($request->type == 0 && !empty($request->id_empleado)) {
@@ -283,7 +283,7 @@ class AuthController extends Controller
         } else if ($request->type == 1 && !empty($request->id_cliente)) {
             $user->id_cliente = $request->id_cliente;
         } else {
-            return response()->json(['error' => 'Faild to create user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $user->save();
