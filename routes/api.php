@@ -22,6 +22,9 @@ use App\Http\Controllers\IncidenciaController;
 use App\Http\Controllers\HistorialPaqueteController;
 use App\Http\Controllers\DetalleOrdenController;
 use App\Http\Controllers\OrdenController;
+
+use App\Http\Controllers\ForgetPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,7 +38,9 @@ use App\Http\Controllers\OrdenController;
 Route::post('login',  [AuthController::class, 'authenticate']);
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
-
+ //
+ Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
+ Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Routes users api
@@ -97,7 +102,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('vehiculo/{vehiculo}', [VehiculoController::class, 'destroy'])->middleware('permission:vehiculo-destroy');
 
     // Empleados
-    Route::get('/empleados/relacion', [EmpleadoController::class, 'relacion']);
+
     Route::get('empleados', [EmpleadoController::class, 'index'])->middleware('permission:empleados-view');
     Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->middleware('permission:empleados-show');
     Route::post('empleados', [EmpleadoController::class, 'store'])->middleware('permission:empleados-create');

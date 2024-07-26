@@ -68,11 +68,11 @@ class Empleado extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'id','name');
     }
     public function roles()
     {
-        return $this->belongsTo(Role::class, 'id');
+        return $this->belongsTo(Role::class, 'id','name');
     }
 
     protected static function boot()

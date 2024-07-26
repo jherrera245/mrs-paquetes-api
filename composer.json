@@ -11,6 +11,7 @@
         "endroid/qr-code": "^4.6",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "ichtrojan/laravel-otp": "1.4",
         "intervention/image": "^2.7",
         "khanamiryan/qrcode-detector-decoder": "^1.0",
         "laravel/framework": "^8.75",
