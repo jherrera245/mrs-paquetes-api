@@ -66,14 +66,7 @@ class Empleado extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id','name');
-    }
-    public function roles()
-    {
-        return $this->belongsTo(Role::class, 'id','name');
-    }
+
 
     protected static function boot()
     {
@@ -114,7 +107,7 @@ class Empleado extends Model
             $query->where('id_estado', $filters['id_estado']);
         }
 
-        return $query->with(['genero', 'estado', 'cargo', 'departamento', 'municipio','user','roles'],)->get();
+        return $query->with(['genero', 'estado', 'cargo', 'departamento', 'municipio'],)->get();
     }
 
 }

@@ -102,7 +102,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('vehiculo/{vehiculo}', [VehiculoController::class, 'destroy'])->middleware('permission:vehiculo-destroy');
 
     // Empleados
-
+    Route::get('/empleados/relacion', [EmpleadoController::class, 'relacion']);
     Route::get('empleados', [EmpleadoController::class, 'index'])->middleware('permission:empleados-view');
     Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->middleware('permission:empleados-show');
     Route::post('empleados', [EmpleadoController::class, 'store'])->middleware('permission:empleados-create');

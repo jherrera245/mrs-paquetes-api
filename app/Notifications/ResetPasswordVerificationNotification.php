@@ -8,6 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Otp;
 
+
 class ResetPasswordVerificationNotification extends Notification
 {
     use Queueable;
@@ -50,13 +51,13 @@ class ResetPasswordVerificationNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $otp = $this->otp->generate($notifiable->email,6 ,60);
+        $otp = $this->otp->generate($notifiable->email,4,60);
         return (new MailMessage)
-        ->mailer('smtp')
-        ->subject($this->subject)
-        ->greeting('hello')
-        ->line($this->message)
-        ->line('code; '. $otp->token);
+                ->mailer('smtp')
+                ->subject($this->subject)
+                ->greeting('hello')
+                ->line($this->message)
+                ->line('code; '. $otp->token);
     }
     /**
      * Get the array representation of the notification.
