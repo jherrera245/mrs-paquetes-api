@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class validNit implements Rule
 {
     protected $municipios;
+
     /**
      * Create a new rule instance.
      *
@@ -32,22 +33,47 @@ class validNit implements Rule
      */
     public function passes($attribute, $value)
     {
-        // Remover cualquier caracter no numérico
+        // Remover cualquier carácter no numérico
         $formattedValue = preg_replace('/[^0-9]/', '', $value);
 
-        // Obtener los primeros cuatro dígitos del NIT
+        // Verificar si el NIT tiene la longitud correcta
+        if (strlen($formattedValue) < 13) {
+            return false;
+        }
+
+        // Obtener los primeros cuatro dígitos del NIT (código de municipio)
         $codigoMunicipio = substr($formattedValue, 0, 4);
 
         // Verificar si el código de municipio existe en la lista
+        $municipioValido = false;
         foreach ($this->municipios as $municipio) {
             if ($municipio['codigo'] === $codigoMunicipio) {
-                return true;
+                $municipioValido = true;
+                break;
             }
         }
-        // verificar si el código de municipio existe en la lista
-        throw new \Exception("Código de municipio no encontrado: {$codigoMunicipio}");
 
-        return false;
+        if (!$municipioValido) {
+            throw new \Exception("Código de municipio no encontrado: {$codigoMunicipio}");
+        }
+
+        // Verificar la fecha de nacimiento en el NIT
+        $dia = intval(substr($formattedValue, 4, 2));
+        $mes = intval(substr($formattedValue, 6, 2));
+        $anio = intval(substr($formattedValue, 8, 2));
+
+        // Validar día y mes
+        if ($dia < 1 || $dia > 31) {
+            return false;
+        }
+        if ($mes < 1 || $mes > 12) {
+            return false;
+        }
+
+        // Validar año (opcional, dependiendo de los requisitos)
+        // Aquí podrías agregar una validación adicional para el año si lo deseas
+
+        return true;
     }
 
     /**
@@ -57,6 +83,6 @@ class validNit implements Rule
      */
     public function message()
     {
-        return 'El NIT no pertenece al pais.';
+        return 'El NIT no es válido. Verifique el formato y la fecha de nacimiento.';
     }
 }

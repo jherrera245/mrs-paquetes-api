@@ -41,8 +41,6 @@ class ClientesController extends Controller
                 function ($attribute, $value, $fail) {
                     if (!empty($value) && !preg_match('/^\d{8}-\d$/', $value)) {
                         $fail('El formato del DUI no es válido. Debe ser en formato 12345678-9.');
-                    }else{
-
                     }
                 },
             ],
@@ -56,15 +54,9 @@ class ClientesController extends Controller
             'id_municipio' => 'required|exists:municipios,id',
             'nit' => [
                 'nullable',
-                new validNit,
                 'string',
                 'max:20',
-                'regex:/^\d{4}-\d{6}-\d{3}-\d$/',
-                function ($attribute, $value, $fail) {
-                    if (!preg_match('/^\d{4}-\d{6}-\d{3}-\d$/', $value)) {
-                        $fail('El formato del NIT no es válido. Debe ser en formato 1234-123456-123-0.');
-                    }
-                },
+                new validNit, // Usa solo la regla personalizada
             ],
             'nrc' => 'nullable|string|max:20',
             'giro' => 'nullable|string|max:255',
@@ -72,15 +64,15 @@ class ClientesController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
-        $cliente = Clientes::create($data);
+        $clientes = Clientes::create($data);
 
-        return response()->json($cliente, 200);
+        return response()->json($clientes, 201); // Código de respuesta 201 para creación exitosa
     }
 
-    public function update(Request $request, Clientes $cliente)
+    public function update(Request $request, Clientes $clientes)
     {
         $data = $request->only([
             'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
@@ -112,12 +104,7 @@ class ClientesController extends Controller
                 'nullable',
                 'string',
                 'max:20',
-                'regex:/^\d{4}-\d{6}-\d{3}-\d$/',
-                function ($attribute, $value, $fail) {
-                    if (!preg_match('/^\d{4}-\d{6}-\d{3}-\d$/', $value)) {
-                        $fail('El formato del NIT no es válido. Debe ser en formato 1234-123456-123-0.');
-                    }
-                },
+                new validNit, // Usa solo la regla personalizada
             ],
             'nrc' => 'nullable|string|max:20',
             'giro' => 'nullable|string|max:255',
@@ -125,28 +112,28 @@ class ClientesController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
-        $cliente->update($data);
+        $clientes->update($data);
 
-        return response()->json($cliente, 200);
+        return response()->json($clientes, 200);
     }
 
     public function show($id)
     {
-        $cliente = Clientes::find($id);
+        $clientes = Clientes::find($id);
 
-        if (!$cliente) {
-            return response()->json(['message' => 'Cliente no encontrado', 'status' => 404], 404);
+        if (!$clientes) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        return response()->json(['cliente' => $cliente, 'status' => 200], 200);
+        return response()->json(['cliente' => $clientes], 200);
     }
 
-    public function destroy(Clientes $cliente)
+    public function destroy(Clientes $clientes)
     {
-        if ($cliente->delete()) {
+        if ($clientes->delete()) {
             return response()->json(['success' => 'Cliente eliminado correctamente'], 200);
         }
         

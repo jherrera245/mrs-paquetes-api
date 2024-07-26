@@ -78,16 +78,22 @@ class Clientes extends Model
 
     // Mutador para formatear el NIT 
     public function setNitAttribute($value)
-    {
-        // Remover cualquier caracter no numérico
-        $formattedValue = preg_replace('/[^0-9]/', '', $value);
+{
+    if (is_null($value) || trim($value) === '') {
+        $this->attributes['nit'] = null;
+        return;
+    }
 
-        // Aplicar el formato 1234-123456-123-0
-        $this->attributes['nit'] = substr($formattedValue, 0, 4) . '-' . 
+    // Remover cualquier carácter no numérico
+    $formattedValue = preg_replace('/[^0-9]/', '', $value);
+
+    // Aplicar el formato 1234-123456-123-0
+    $this->attributes['nit'] = substr($formattedValue, 0, 4) . '-' . 
                                 substr($formattedValue, 4, 6) . '-' . 
                                 substr($formattedValue, 10, 3) . '-' . 
                                 substr($formattedValue, 13, 1);
-    }
+}
+
 
 
     public function tipoPersona()
