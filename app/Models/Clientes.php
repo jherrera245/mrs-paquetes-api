@@ -41,13 +41,13 @@ class Clientes extends Model
 
         static::creating(function ($model) {
             if (auth()->check()) {
-                $model->created_at = auth()->id();
+                $model->created_by = auth()->id();
             }
         });
 
         static::updating(function ($model) {
             if (auth()->check()) {
-                $model->updated_at = auth()->id();
+                $model->updated_by = auth()->id();
             }
         });
     }
