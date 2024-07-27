@@ -16,7 +16,10 @@ class validNit implements Rule
      */
     public function __construct()
     {
-        $json = Storage::get('municipios.json');
+        // Ruta hacia el archivo JSON con los municipios app/json/municipios.json
+        //toma en cuenta la carpeta raiz del proyecto /mrs-paquetes-api.
+        $json = file_get_contents(base_path('app/json/municipios.json'));
+        // $json = Storage::get('municipios.json');
         $this->municipios = json_decode($json, true);
 
         if (empty($this->municipios)) {
