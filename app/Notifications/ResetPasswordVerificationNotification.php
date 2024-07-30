@@ -57,7 +57,7 @@ class ResetPasswordVerificationNotification extends Notification
                 ->subject($this->subject)
                 ->greeting('hello')
                 ->line($this->message)
-                ->line('code; '. $otp->token);
+                ->line('code: '. $otp->token);
     }
     /**
      * Get the array representation of the notification.

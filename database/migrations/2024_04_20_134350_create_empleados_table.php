@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('id_cargo');
             $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
+            $table->string('direccion', 100);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
