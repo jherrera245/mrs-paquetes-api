@@ -41,6 +41,7 @@ class EmpleadoController extends Controller
             'id_estado' => 'required',
             'id_cargo' => 'required',
             'id_departamento' => 'required',
+            'direccion' => 'required|max:255',
             'id_municipio' => 'required'
         ]);
 
@@ -66,7 +67,8 @@ class EmpleadoController extends Controller
             'id_estado' => $request->id_estado,
             'id_cargo' => $request->id_cargo,
             'id_departamento' => $request->id_departamento,
-            'id_municipio' => $request->id_municipio
+            'id_municipio' => $request->id_municipio,
+            'direccion' => $request->direccion
         ]);
 
         if (!$empleado) {
@@ -181,7 +183,9 @@ class EmpleadoController extends Controller
         'id_estado' => 'required',
         'id_cargo' => 'required',
         'id_departamento' => 'required',
-        'id_municipio' => 'required'
+        'id_municipio' => 'required',
+        'direccion' => 'required'
+
     ]);
 
     if ($validator->fails()) {
@@ -204,6 +208,7 @@ class EmpleadoController extends Controller
     $empleado->id_cargo = $request->id_cargo;
     $empleado->id_departamento = $request->id_departamento;
     $empleado->id_municipio = $request->id_municipio;
+    $empleado->direccion = $request->direccion;
 
     $empleado->save();
 
@@ -235,6 +240,7 @@ public function updatePartial(Request $request, $id)
         'dui' => 'digits:9|unique:empleados,dui,'.$id,
         'telefono' => 'digits:8',
         'email' => 'email|unique:empleados,email,'.$id,
+        'direccion' => 'max:255',
         'language' => 'in:English,Spanish,French'
     ]);
 
@@ -267,6 +273,9 @@ public function updatePartial(Request $request, $id)
         $empleado->email = $request->email;
     }
 
+    if ($request->has('direccion')) {
+        $empleado->direccion = $request->direccion;
+    }
     if ($request->has('language')) {
         $empleado->language = $request->language;
     }
