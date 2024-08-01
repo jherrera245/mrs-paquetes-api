@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Clientes extends Model
 {
@@ -100,6 +101,11 @@ class Clientes extends Model
     {
         return $this->belongsTo(TipoPersona::class, 'id_tipo_persona');
     }
+
+    public function ordenes()
+	{
+		return $this->hasMany(Orden::class, 'id_cliente');
+	}
 
     public static function filter($filters)
     {

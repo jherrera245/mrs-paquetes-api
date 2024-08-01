@@ -24,16 +24,17 @@ class Orden extends Model
     ];
 
     public function cliente(): BelongsTo{
-        return $this->belongsTo(Clientes::class);
+        return $this->belongsTo(Clientes::class, 'id');
     }
 
     public function tipo_pago(): BelongsTo
     {
         return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
     }
-    
-    public function direccion():BelongsTo{
-        return $this->belongsTo(Direcciones::class);
+
+    public function direccion(): BelongsTo
+    {
+        return $this->belongsTo(Direcciones::class, 'id');
     }
 
     public function detalles()

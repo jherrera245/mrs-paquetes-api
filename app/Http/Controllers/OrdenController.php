@@ -279,11 +279,13 @@ class OrdenController extends Controller
 
     public function show($id)
     {
-        $orden = Orden::with(['direccion','tipo_pago'])->find($id);
+        $orden = Orden::find($id);
 
         if (!$orden) {
             return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
         }
+
+        $direccion = Direcciones::find($orden->id_direccion);
 
         // Estructurar la respuesta
         $response = [
@@ -292,8 +294,20 @@ class OrdenController extends Controller
             'tipo_pago' => $orden->tipo_pago->pago ?? 'NA',
             'total_pagar' => $orden->total_pagar,
             'costo_adicional' => $orden->costo_adicional,
+            'id_direccion' => $orden->id_direccion,
             'concepto' => $orden->concepto,
-            'detalles' => $orden->detalles,
+            'direccion_emisor' => [
+                'id_direccion' => $direccion->id,
+                'direccion' => $direccion->direccion,
+                'nombre_cliente' => $direccion->cliente->nombre,
+                'apellido_cliente' => $direccion->cliente->apellido,
+                'nombre_contacto' => $direccion->nombre_contacto,
+                'telefono' => $direccion->telefono,
+                'id_departamento' => $direccion->departamento->nombre,
+                'id_municipio' => $direccion->municipio->nombre,
+                'referencia' => $direccion->referencia,
+            ],
+            'detalles' => $orden->detalles
         ];
 
         return response()->json($response, Response::HTTP_OK);
