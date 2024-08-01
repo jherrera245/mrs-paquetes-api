@@ -27,7 +27,7 @@ class Direcciones extends Model
 
 	public function cliente()
 	{
-		return $this->belongsTo(Cliente::class, 'id_cliente');
+		return $this->belongsTo(Clientes::class, 'id_cliente');
 	}
 
 	public function departamento()
@@ -42,7 +42,7 @@ class Direcciones extends Model
 
 	public function ordenes()
 	{
-		return $this->hasMany(Ordene::class, 'id_direccion');
+		return $this->hasMany(Orden::class, 'id_direccion');
 	}
 
 	public static function filtrarDirecciones($filters)

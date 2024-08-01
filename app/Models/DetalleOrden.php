@@ -43,9 +43,14 @@ class DetalleOrden extends Model
         return $this->belongsTo(Clientes::class);
     }
     
-    public function direcciones():BelongsTo
+    public function direccion():BelongsTo
     {
         return $this->belongsTo(Direcciones::class);
+    }
+    //relacion para tipo entrega.
+    public function tipo_entrega():BelongsTo
+    {
+        return $this->belongsTo(TipoEntrega::class);
     }
     
     public static function filterByOrderAndPackage($idOrden = null, $idPaquete = null)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Orden extends Model
 {
@@ -26,11 +27,17 @@ class Orden extends Model
         return $this->belongsTo(Clientes::class);
     }
 
-    public function tipo_pago(): BelongsTo{
-        return $this->belongsTo(Clientes::class);
+    public function tipo_pago(): BelongsTo
+    {
+        return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
     }
     
-    public function direcciones():BelongsTo{
+    public function direccion():BelongsTo{
         return $this->belongsTo(Direcciones::class);
+    }
+
+    public function detalles()
+    {
+        return $this->hasMany(DetalleOrden::class, 'id_orden');
     }
 }

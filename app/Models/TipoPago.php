@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TipoPago extends Model
 {
@@ -16,7 +16,8 @@ class TipoPago extends Model
         'pago'
     ];
 
-    public function ordenes(){
-        return $this->hasMany(Orden::class);
+    public function ordenes(): HasMany
+    {
+        return $this->hasMany(Orden::class, 'id');
     }
 }

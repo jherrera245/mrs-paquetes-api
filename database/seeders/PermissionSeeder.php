@@ -95,6 +95,11 @@ class PermissionSeeder extends Seeder
             'incidencias-show',
             'incidencias-update',
             'incidencias-destroy',
+            'orden-view',
+            'orden-show',
+            'orden-create',
+            'orden-update',
+            'orden-destroy',
         ];
 
         foreach ($permissions as $permission) {

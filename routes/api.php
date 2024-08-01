@@ -87,6 +87,13 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::put('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'update'])->middleware('permission:modeloVehiculo-update');
     Route::delete('modeloVehiculo/{modeloVehiculo}', [ModeloVehiculoController::class, 'destroy'])->middleware('permission:modeloVehiculo-destroy');
 
+    // Modelo Ordenes
+    Route::get('ordenes', [OrdenController::class, 'index'])->middleware('permission:orden-view');
+    Route::get('ordenes/{ordenes}', [OrdenController::class, 'show'])->middleware('permission:orden-show');
+    Route::post('ordenes', [OrdenController::class, 'store'])->middleware('permission:orden-create');
+    Route::put('ordenes/{ordenes}', [OrdenController::class, 'update'])->middleware('permission:orden-update');
+    Route::delete('ordenes/{ordenes}', [OrdenController::class, 'destroy'])->middleware('permission:orden-destroy');
+
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');
     Route::get('marcaVehiculo/{marcaVehiculo}', [MarcaVehiculoController::class, 'show'])->middleware('permission:marcaVehiculo-show');
