@@ -25,6 +25,7 @@ class Empleado extends Model
         'id_cargo',
         'id_departamento',
         'id_municipio',
+        'direccion',
         'created_by',
         'updated_by'
     ];
