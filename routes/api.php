@@ -53,6 +53,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update');
     Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store');
     Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy');
+    Route::get('auth/get_assigned_permissions_to_role/{id}', [AuthController::class, 'getAssignedPermissionsToRole']);
 
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');

@@ -198,6 +198,33 @@ class AuthController extends Controller
         return response()->json(['message' => 'Permissions assigned successfully'], Response::HTTP_OK);
     }
 
+    public function getAssignedPermissionsToRole($id)
+    {
+        // Verificar si el rol existe en la base de datos
+        $role = Role::find($id);
+
+        if (!$role) {
+            return response()->json(['error' => 'Role not found'], 404);
+        }
+
+
+        $permissions = Permission::all();
+        $result = [];
+
+        foreach($permissions as $permission)
+        {
+            $assigned = $role->hasPermissionTo($permission);
+
+            $result[] = [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'assigned' => $assigned,
+            ];
+        }
+
+        return response()->json(['permissions' => $result], Response::HTTP_OK);
+    }
+
     public function store(Request $request)
     {
         //Indicamos que solo queremos recibir name, email y password de la request
