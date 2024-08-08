@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Clientes extends Model
@@ -36,6 +37,11 @@ class Clientes extends Model
         'direccion',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -55,8 +61,8 @@ class Clientes extends Model
 
     public function setTelefonoAttribute($value)
     {
-        $this->attributes['telefono'] = preg_match('/^\d{4}-\d{4}$/', $value) 
-            ? $value 
+        $this->attributes['telefono'] = preg_match('/^\d{4}-\d{4}$/', $value)
+            ? $value
             : preg_replace('/(\d{4})(\d{4})/', '$1-$2', $value);
     }
 
@@ -77,7 +83,7 @@ class Clientes extends Model
         $this->attributes['dui'] = $formattedDui;
     }
 
-    // Mutador para formatear el NIT 
+    // Mutador para formatear el NIT
     public function setNitAttribute($value)
 {
     if (is_null($value) || trim($value) === '') {
@@ -89,9 +95,9 @@ class Clientes extends Model
     $formattedValue = preg_replace('/[^0-9]/', '', $value);
 
     // Aplicar el formato 1234-123456-123-0
-    $this->attributes['nit'] = substr($formattedValue, 0, 4) . '-' . 
-                                substr($formattedValue, 4, 6) . '-' . 
-                                substr($formattedValue, 10, 3) . '-' . 
+    $this->attributes['nit'] = substr($formattedValue, 0, 4) . '-' .
+                                substr($formattedValue, 4, 6) . '-' .
+                                substr($formattedValue, 10, 3) . '-' .
                                 substr($formattedValue, 13, 1);
 }
 
@@ -122,3 +128,4 @@ class Clientes extends Model
         return $query;
     }
 }
+

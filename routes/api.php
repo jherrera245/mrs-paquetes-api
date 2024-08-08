@@ -38,9 +38,11 @@ use App\Http\Controllers\ResetPasswordController;
 Route::post('login',  [AuthController::class, 'authenticate']);
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
- //
+ //restablecer password
  Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
  Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
+ //registro de cliente
+ Route::post('register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Routes users api

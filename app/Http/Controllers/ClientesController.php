@@ -12,7 +12,7 @@ class ClientesController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -27,7 +27,7 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -75,7 +75,7 @@ class ClientesController extends Controller
     public function update(Request $request, Clientes $clientes)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -136,7 +136,7 @@ class ClientesController extends Controller
         if ($clientes->delete()) {
             return response()->json(['success' => 'Cliente eliminado correctamente'], 200);
         }
-        
+
         return response()->json(['error' => 'No se pudo eliminar el cliente'], 400);
     }
 }
