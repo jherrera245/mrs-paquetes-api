@@ -319,29 +319,38 @@ class OrdenController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    
+
     public function generatePDF($id)
-    {
-        // Cargar la orden junto con sus relaciones
-        $orden = Orden::with(['cliente', 'direccion', 'tipoPago', 'detalles'])
-                      ->find($id);
+{
+    $orden = Orden::with([
+        'cliente:id,nombre,apellido', // Asegura que cargas el nombre del cliente
+        'direccion:id,direccion,nombre_contacto,telefono,referencia', // Carga la dirección con sus detalles
+        'detalles:id,id_orden,id_paquete,id_tipo_entrega,descripcion,precio',
+        'detalles.paquete:id,descripcion_contenido,peso',
+        'tipoPago:id,pago' // Carga el nombre del tipo de pago
+    ])->find($id);
 
-        // Manejar el caso donde la orden no se encuentra
-        if (!$orden) {
-            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-
-        // Obtener la dirección del emisor
-        $direccion_emisor = $orden->direccion;
-
-        // Cargar la vista y generar el PDF
-        $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
-
-        // Devolver el PDF como string base64 para que el frontend pueda manejarlo
-        $pdfContent = $pdf->output();
-
-        // Devolver la respuesta con el PDF codificado en base64
-        return response()->json(['pdf' => base64_encode($pdfContent)], 200);
+    // Manejar el caso donde la orden no se encuentra
+    if (!$orden) {
+        return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
     }
+
+    // Obtener la dirección del emisor
+    $direccion_emisor = $orden->direccion;
+
+    // Cargar la vista y generar el PDF
+    $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
+
+    // Devolver el PDF como string base64 para que el frontend pueda manejarlo
+     $pdfContent = $pdf->output();
+    
+    // Devolver la respuesta con el PDF codificado en base64
+     return response()->json(['pdf' => base64_encode($pdfContent)], 200);
+
+    // Devolver el PDF sin codificación, directamente como un archivo PDF
+   // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
+}
 
     /**
      * Requerimiento 8: Mostrar órdenes del cliente autenticado.
