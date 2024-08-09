@@ -8,10 +8,12 @@ use App\Models\Orden;
 use App\Models\Paquete;
 use App\Models\HistorialPaquete;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Support\Str;// Importar el facade de DomPDF
+use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
@@ -155,7 +157,7 @@ class OrdenController extends Controller
             $detalleOrden->descripcion = $detalle['descripcion'];
             $detalleOrden->precio = $detalle['precio'];
             $detalleOrden->fecha_ingreso = now();
-            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];;
+            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
 
             $direccion_receptor = new Direcciones();
             $direccion_receptor->id_cliente = $detalle['id_cliente_entrega'];
@@ -177,7 +179,6 @@ class OrdenController extends Controller
             throw new \Exception('Error al generar el paquete');
         }
     }
-
 
     public function update(Request $request, $id)
     {
@@ -246,7 +247,6 @@ class OrdenController extends Controller
         }
     }
 
-
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -313,4 +313,91 @@ class OrdenController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
+    /**
+     * Requerimiento 2: Genera un PDF con los detalles de la orden especificada.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function generatePDF($id)
+    {
+        // Buscar la orden con sus detalles y dirección
+        $orden = Orden::with(['detalles', 'direccion'])->find($id);
+
+        // Manejar el caso donde la orden no se encuentra
+        if (!$orden) {
+            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Obtener la dirección del emisor
+        $direccion_emisor = $orden->direccion;
+
+        // Verificar que la dirección del emisor no sea nula
+        if (!$direccion_emisor) {
+            return response()->json(['message' => 'Dirección del emisor no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Cargar la vista y generar el PDF
+        $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
+
+        // Devolver el PDF como string base64 para que el frontend pueda manejarlo
+        $pdfContent = $pdf->output();
+
+        // Devolver la respuesta con el PDF codificado en base64
+        return response()->json(['pdf' => base64_encode($pdfContent)], 200);
+    }
+
+    /**
+     * Requerimiento 8: Mostrar órdenes del cliente autenticado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function misOrdenes(Request $request)
+    {
+        // Obtener el cliente autenticado
+        $cliente_id = Auth::id();
+
+        // Buscar las órdenes del cliente autenticado y cargar las relaciones necesarias
+        $ordenes = Orden::where('id_cliente', $cliente_id)
+                        ->with(['detalles', 'direccion', 'tipoPago', 'cliente'])
+                        ->get();
+
+        // Verificar si el cliente tiene órdenes
+        if ($ordenes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron órdenes'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Formatear la respuesta para incluir los nombres en lugar de los IDs
+        $ordenes = $ordenes->map(function($orden) {
+            return [
+                'id' => $orden->id,
+                'cliente' => optional($orden->cliente)->nombre, // Usar optional para manejar nulos
+                'direccion' => [
+                    'nombre_contacto' => optional($orden->direccion)->nombre_contacto,
+                    'telefono' => optional($orden->direccion)->telefono,
+                    'direccion' => optional($orden->direccion)->direccion,
+                    'referencia' => optional($orden->direccion)->referencia,
+                ],
+                'tipo_pago' => optional($orden->tipoPago)->pago, // Usar optional para manejar nulos
+                'total_pagar' => $orden->total_pagar,
+                'costo_adicional' => $orden->costo_adicional,
+                'concepto' => $orden->concepto,
+                'finished' => $orden->finished,
+                'created_at' => $orden->created_at,
+                'updated_at' => $orden->updated_at,
+                'detalles' => $orden->detalles->map(function($detalle) {
+                    return [
+                        'id_paquete' => $detalle->id_paquete,
+                        'descripcion' => $detalle->descripcion,
+                        'precio' => $detalle->precio,
+                    ];
+                }),
+            ];
+        });
+
+        // Devolver las órdenes del cliente
+        return response()->json($ordenes, Response::HTTP_OK);
+    }
+    
 }

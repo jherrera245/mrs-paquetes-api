@@ -16,8 +16,9 @@ class TipoPago extends Model
         'pago'
     ];
 
-    public function ordenes(): HasMany
-    {
-        return $this->hasMany(Orden::class, 'id');
-    }
+     // Relación con el modelo Orden
+     public function ordenes()
+     {
+         return $this->hasMany(Orden::class, 'id_tipo_pago');
+     }
 }

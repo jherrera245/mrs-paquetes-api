@@ -206,4 +206,13 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_estado_empleados', [DropdownController::class, 'getEstadoEmpleados']);
     Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
     Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
+
+
+
+
+    // Requerimiento 2: Generar PDF de la orden
+    Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('auth:api');
+
+    // Requerimiento 8: Mostrar órdenes del cliente autenticado
+    Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('auth:api');
 });
