@@ -321,8 +321,9 @@ class OrdenController extends Controller
      */
     public function generatePDF($id)
     {
-        // Buscar la orden con sus detalles y dirección
-        $orden = Orden::with(['detalles', 'direccion'])->find($id);
+        // Cargar la orden junto con sus relaciones
+        $orden = Orden::with(['cliente', 'direccion', 'tipoPago', 'detalles'])
+                      ->find($id);
 
         // Manejar el caso donde la orden no se encuentra
         if (!$orden) {
@@ -331,11 +332,6 @@ class OrdenController extends Controller
 
         // Obtener la dirección del emisor
         $direccion_emisor = $orden->direccion;
-
-        // Verificar que la dirección del emisor no sea nula
-        if (!$direccion_emisor) {
-            return response()->json(['message' => 'Dirección del emisor no encontrada'], Response::HTTP_NOT_FOUND);
-        }
 
         // Cargar la vista y generar el PDF
         $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
