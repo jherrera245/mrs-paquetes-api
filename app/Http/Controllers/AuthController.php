@@ -12,6 +12,7 @@ use JWTAuth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
+use App\Notifications\EmailVerificationNotification;
 
 class AuthController extends Controller
 {
@@ -21,14 +22,14 @@ class AuthController extends Controller
 
          $r_user = 2;
          //Indicamos que solo queremos recibir name, email y password de la request
-        $data = $request->only('name', 'email', 'password', 'id_empleado', 'id_cliente',
+        $data = $request->only('email', 'password', 'id_empleado', 'id_cliente',
                             'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
                             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
                             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc',
                             'giro', 'nombre_empresa', 'direccion');
         //Realizamos las validaciones
         $validator = Validator::make($data, [
-            'name' => 'required|string',
+
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
             'id_empleado' => 'id_empleado|unique:users',
@@ -83,7 +84,7 @@ class AuthController extends Controller
         $cliente->save();
 
 
-        $user->name = $request->name;
+        $user->name = $request->nombre.' '.$request->apellido;
         $user->email = $request->email;
         $user->password =  bcrypt($request->password);
         $user->type = 1;
@@ -94,6 +95,8 @@ class AuthController extends Controller
         $role = $r_user;
         $user->roles()->detach();
         $user->assignRole($role);
+
+        $user->notify(new EmailVerificationNotification());
 
         return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
     }

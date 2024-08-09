@@ -25,6 +25,7 @@ use App\Http\Controllers\OrdenController;
 
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\EmailVerificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,11 +39,11 @@ use App\Http\Controllers\ResetPasswordController;
 Route::post('login',  [AuthController::class, 'authenticate']);
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
- //restablecer password
- Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
- Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
- //registro de cliente
- Route::post('register', [AuthController::class, 'register']);
+//restablecer password
+Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
+Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
+//registro de cliente
+Route::post('register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Routes users api
@@ -56,6 +57,9 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store');
     Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy');
     Route::get('auth/get_assigned_permissions_to_role/{id}', [AuthController::class, 'getAssignedPermissionsToRole']);
+    //verificar email
+    Route::post('email-verification',[EmailVerificationController::class, 'email_verification']);
+    Route::post('send-email-verification',[EmailVerificationController::class, 'sendEmailVerification']);
 
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');

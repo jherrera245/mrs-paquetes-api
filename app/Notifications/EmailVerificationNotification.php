@@ -8,8 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Otp;
 
-
-class ResetPasswordVerificationNotification extends Notification
+class EmailVerificationNotification extends Notification
 {
     use Queueable;
     public $message;
@@ -17,7 +16,6 @@ class ResetPasswordVerificationNotification extends Notification
     public $fromEmail;
     public $mailer;
     private $otp;
-
     /**
      * Create a new notification instance.
      *
@@ -25,8 +23,8 @@ class ResetPasswordVerificationNotification extends Notification
      */
     public function __construct()
     {
-        $this->message = 'Usa el codigo para restablecer tu clave, el codigo expira en 10 minutos';
-        $this->subject = 'Restablecer clave';
+        $this->message = 'Usa el codigo para verficar tu correo electronico, el codigo expira en 10 minutos';
+        $this->subject = 'verificacion de correo electronico';
         $this->fromEmail = "soportemrspaquetes@gmail.com";
         $this->mailer = 'smtp';
         $this->otp = new Otp;
@@ -55,10 +53,11 @@ class ResetPasswordVerificationNotification extends Notification
         return (new MailMessage)
                 ->mailer('smtp')
                 ->subject($this->subject)
-                ->greeting('Hola querido usuario')
+                ->greeting('Hola '.$notifiable->name)
                 ->line($this->message)
                 ->line('codigo: '. $otp->token);
     }
+
     /**
      * Get the array representation of the notification.
      *
