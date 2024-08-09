@@ -24,9 +24,10 @@ class Orden extends Model
     ];
 
     public function cliente(): BelongsTo{
-        return $this->belongsTo(Clientes::class, 'id');
+        return $this->belongsTo(Clientes::class, 'id_cliente');
     }
 
+     
     // Relación con el modelo TipoPago
         public function tipoPago()
         {
@@ -36,7 +37,7 @@ class Orden extends Model
 
     public function direccion(): BelongsTo
     {
-        return $this->belongsTo(Direcciones::class, 'id');
+        return $this->belongsTo(Direcciones::class, 'id_direccion');
     }
 
     public function detalles()
