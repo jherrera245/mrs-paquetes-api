@@ -12,7 +12,7 @@ class ClientesController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -27,7 +27,7 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -38,13 +38,23 @@ class ClientesController extends Controller
             'nombre_comercial' => 'nullable|string|max:255',
             'dui' => [
                 'nullable',
+                'string',
+                'regex:/^\d{8}-\d$/',
                 function ($attribute, $value, $fail) {
-                    if (!empty($value) && !preg_match('/^\d{8}-\d$/', $value)) {
-                        $fail('El formato del DUI no es válido. Debe ser en formato 12345678-9.');
+                    if (!empty($value) && Clientes::where('dui', $value)->exists()) {
+                        $fail('El DUI ya está registrado.');
                     }
                 },
             ],
-            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+            'telefono' => [
+                'required',
+                'regex:/^\d{4}-?\d{4}$/',
+                function ($attribute, $value, $fail) {
+                    if (Clientes::where('telefono', $value)->exists()) {
+                        $fail('El teléfono ya está registrado.');
+                    }
+                },
+            ],
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
             'id_genero' => 'required|exists:genero,id',
@@ -56,7 +66,12 @@ class ClientesController extends Controller
                 'nullable',
                 'string',
                 'max:20',
-                new validNit, // Usa solo la regla personalizada
+                new validNit,
+                function ($attribute, $value, $fail) {
+                    if (!empty($value) && Clientes::where('nit', $value)->exists()) {
+                        $fail('El NIT ya está registrado.');
+                    }
+                },
             ],
             'nrc' => 'nullable|string|max:20',
             'giro' => 'nullable|string|max:255',
@@ -69,13 +84,13 @@ class ClientesController extends Controller
 
         $clientes = Clientes::create($data);
 
-        return response()->json($clientes, 201); // Código de respuesta 201 para creación exitosa
+        return response()->json($clientes, 201);
     }
 
     public function update(Request $request, Clientes $clientes)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
             'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -86,13 +101,23 @@ class ClientesController extends Controller
             'nombre_comercial' => 'nullable|string|max:255',
             'dui' => [
                 'nullable',
-                function ($attribute, $value, $fail) {
-                    if (!empty($value) && !preg_match('/^\d{8}-\d$/', $value)) {
-                        $fail('El formato del DUI no es válido. Debe ser en formato 12345678-9.');
+                'string',
+                'regex:/^\d{8}-\d$/',
+                function ($attribute, $value, $fail) use ($clientes) {
+                    if (!empty($value) && Clientes::where('dui', $value)->where('id', '!=', $clientes->id)->exists()) {
+                        $fail('El DUI ya está registrado.');
                     }
                 },
             ],
-            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+            'telefono' => [
+                'required',
+                'regex:/^\d{4}-?\d{4}$/',
+                function ($attribute, $value, $fail) use ($clientes) {
+                    if (Clientes::where('telefono', $value)->where('id', '!=', $clientes->id)->exists()) {
+                        $fail('El teléfono ya está registrado.');
+                    }
+                },
+            ],
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
             'id_genero' => 'required|exists:genero,id',
@@ -104,7 +129,12 @@ class ClientesController extends Controller
                 'nullable',
                 'string',
                 'max:20',
-                new validNit, // Usa solo la regla personalizada
+                new validNit,
+                function ($attribute, $value, $fail) use ($clientes) {
+                    if (!empty($value) && Clientes::where('nit', $value)->where('id', '!=', $clientes->id)->exists()) {
+                        $fail('El NIT ya está registrado.');
+                    }
+                },
             ],
             'nrc' => 'nullable|string|max:20',
             'giro' => 'nullable|string|max:255',
@@ -136,7 +166,7 @@ class ClientesController extends Controller
         if ($clientes->delete()) {
             return response()->json(['success' => 'Cliente eliminado correctamente'], 200);
         }
-
+        
         return response()->json(['error' => 'No se pudo eliminar el cliente'], 400);
     }
 }
