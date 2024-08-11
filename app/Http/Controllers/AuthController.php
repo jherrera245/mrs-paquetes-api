@@ -129,6 +129,12 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
+        if ($user->status != 1) {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json(['message' => 'Account is inactive'], Response::HTTP_FORBIDDEN);
+        }
+
         $roleName = $user->getRoleNames()->first();
         $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->toArray();
         $permissionsByModule = [];
