@@ -20,25 +20,29 @@ class PaqueteController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'tipo_paquete', 'empaque', 'peso', 'estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido', 'palabra_clave'
+            'tipo_paquete',
+            'empaque',
+            'peso',
+            'estado_paquete',
+            'fecha_envio_desde',
+            'fecha_envio_hasta',
+            'fecha_entrega_estimada_desde',
+            'fecha_entrega_estimada_hasta',
+            'descripcion_contenido',
+            'palabra_clave'
         ]);
 
         $perPage = $request->input('per_page', 10);
 
-        // Filtrar los paquetes utilizando el método search del modelo Paquete
         $paquetesQuery = Paquete::search($filters);
-
-        // Aplicar paginación después de la búsqueda
         $paquetes = $paquetesQuery->paginate($perPage);
 
-        // Verificar si hay resultados
         if ($paquetes->isEmpty()) {
             return response()->json(['message' => 'No se encontraron coincidencias.'], 404);
         }
 
-        // Transformar la colección de paquetes antes de devolverla como JSON
         $paquetes->getCollection()->transform(function ($paquete) {
-            return $this->transformPaquete($paquete); // Asegúrate de que $this esté vinculado correctamente aquí
+            return $this->transformPaquete($paquete);
         });
 
         return response()->json($paquetes, 200);

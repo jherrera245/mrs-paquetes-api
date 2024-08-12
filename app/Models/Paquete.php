@@ -87,11 +87,17 @@ class Paquete extends Model
                     case 'peso':
                         $query->where('peso', $value);
                         break;
-                    case 'fecha_envio':
-                        $query->whereDate('fecha_envio', $value);
+                    case 'fecha_envio_desde':
+                        $query->whereDate('fecha_envio', '>=', $value);
                         break;
-                    case 'fecha_entrega_estimada':
-                        $query->whereDate('fecha_entrega_estimada', $value);
+                    case 'fecha_envio_hasta':
+                        $query->whereDate('fecha_envio', '<=', $value);
+                        break;
+                    case 'fecha_entrega_estimada_desde':
+                        $query->whereDate('fecha_entrega_estimada', '>=', $value);
+                        break;
+                    case 'fecha_entrega_estimada_hasta':
+                        $query->whereDate('fecha_entrega_estimada', '<=', $value);
                         break;
                     case 'palabra_clave':
                         $query->where(function ($q) use ($value) {
