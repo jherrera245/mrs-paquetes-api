@@ -17,4 +17,8 @@ class TipoEntrega extends Model
     public function ordenes(){
         return $this->hasMany(Orden::class);
     }
+    public function detalleOrden(): HasMany
+    {
+        return $this->hasMany(DetalleOrden::class, 'id_tipo_entrega');
+    }
 }
