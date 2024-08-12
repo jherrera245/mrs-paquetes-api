@@ -25,7 +25,29 @@ class OrdenController extends Controller
 {
     public function index(Request $request)
     {
-        // Implementación del método index
+        $filters = $request->only([
+            'id_cliente',
+            'estado_pago',
+            'fecha_inicio',
+            'fecha_fin'
+        ]);
+
+        $perPage = $request->input('per_page', 10);
+
+        $ordenesQuery = Orden::with(['cliente', 'tipoPago', 'direccion', 'detalles'])
+        ->search($filters);
+
+        $ordenes = $ordenesQuery->paginate($perPage);
+
+        if ($ordenes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron órdenes.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $ordenes->getCollection()->transform(function ($orden) {
+            return $this->transformOrden($orden);
+        });
+
+        return response()->json($ordenes, Response::HTTP_OK);
     }
 
     public function store(Request $request)
@@ -404,5 +426,100 @@ class OrdenController extends Controller
         // Devolver las órdenes del cliente
         return response()->json($ordenes, Response::HTTP_OK);
     }
+
+    private function transformOrden($orden)
+    {
+        $direccion = $orden->direccion;
+
+        return [
+            'id' => $orden->id,
+            'id_cliente' => $orden->id_cliente,
+            'cliente' => [
+                'nombre' => $orden->cliente->nombre,
+                'apellido' => $orden->cliente->apellido,
+            ],
+            'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+            'total_pagar' => $orden->total_pagar,
+            'costo_adicional' => $orden->costo_adicional,
+            'concepto' => $orden->concepto,
+            'estado_pago' => $orden->estado_pago,
+            'direccion_emisor' => [
+                'id_direccion' => $direccion->id,
+                'direccion' => $direccion->direccion,
+                'nombre_contacto' => $direccion->nombre_contacto,
+                'telefono' => $direccion->telefono,
+                'departamento' => $direccion->departamento->nombre,
+                'municipio' => $direccion->municipio->nombre,
+                'referencia' => $direccion->referencia,
+            ],
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'id_paquete' => $detalle->id_paquete,
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                ];
+            }),
+            'created_at' => $orden->created_at,
+            'updated_at' => $orden->updated_at,
+        ];
+    }
+
+    public function procesarPago(Request $request, $id)
+    {
+        $orden = Orden::findOrFail($id);
+
+        if ($orden->estado_pago === 'pagado') {
+            return response()->json(['message' => 'Esta orden ya ha sido pagada'], 400);
+        }
+
+        // Aquí iría la lógica de procesamiento del pago
+        // Por ahora, simplemente marcaremos la orden como pagada
+
+        $orden->estado_pago = 'pagado';
+        $orden->save();
+
+        return response()->json(['message' => 'Pago procesado con éxito'], 200);
+    }
+
+    public function generarComprobante($id)
+    {
+        $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
+
+        if ($orden->estado_pago !== 'pagado') {
+            return response()->json(['error' => 'La orden aún no ha sido pagada'], 400);
+        }
+
+        $subtotal = $orden->total_pagar / 1.13; // Asumiendo que el total incluye IVA
+        $iva = $orden->total_pagar - $subtotal;
+
+        $data = [
+            'numeroFactura' => 'F-' . str_pad($orden->id, 6, '0', STR_PAD_LEFT),
+            'fecha' => date('d/m/Y', strtotime($orden->fecha_pago)),
+            'cliente' => [
+                'nombre' => $orden->cliente->nombre . ' ' . $orden->cliente->apellido,
+                'nit' => $orden->cliente->nit,
+                'direccion' => $orden->cliente->direccion,
+            ],
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                ];
+            }),
+            'subtotal' => $subtotal,
+            'iva' => $iva,
+            'total' => $orden->total_pagar,
+            'metodoPago' => $orden->tipoPago->pago,
+        ];
+
+        $pdf = PDF::loadView('pdf.comprobante_pago', $data);
+
+        $output = $pdf->output();
+
+        return response()->json([
+            'comprobante' => base64_encode($output)
+        ]);
+    }
+
     
 }

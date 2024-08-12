@@ -22,7 +22,6 @@ use App\Http\Controllers\IncidenciaController;
 use App\Http\Controllers\HistorialPaqueteController;
 use App\Http\Controllers\DetalleOrdenController;
 use App\Http\Controllers\OrdenController;
-
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
@@ -100,6 +99,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('ordenes', [OrdenController::class, 'store'])->middleware('permission:orden-create');
     Route::put('ordenes/{ordenes}', [OrdenController::class, 'update'])->middleware('permission:orden-update');
     Route::delete('ordenes/{ordenes}', [OrdenController::class, 'destroy'])->middleware('permission:orden-destroy');
+    Route::post('ordenes/{ordenes}/procesar-pago', [OrdenController::class, 'procesarPago'])->middleware('permission:orden-update');
+    Route::get('ordenes/{ordenes}/comprobante', [OrdenController::class, 'generarComprobante'])->middleware('permission:orden-view');
 
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');
