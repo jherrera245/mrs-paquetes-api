@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vehiculo;
+use App\Models\ModeloVehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -75,6 +76,12 @@ class VehiculoController extends Controller
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
+        // Verificar que el modelo pertenece a la marca seleccionada
+        $modelo = ModeloVehiculo::find($request->id_modelo);
+        if ($modelo->id_marca != $request->id_marca) {
+            return response()->json(['error' => 'El modelo seleccionado no pertenece a la marca elegida'], 400);
+        }
+
         $vehiculo = Vehiculo::create($request->all());
         $vehiculo->load(['conductor', 'apoyo', 'estado', 'marca', 'modelo']);
 
@@ -139,4 +146,11 @@ class VehiculoController extends Controller
             'updated_at' => $vehiculo->updated_at,
         ];
     }
+
+    public function getModelosByMarca($marcaId)
+    {
+        $modelos = ModeloVehiculo::where('id_marca', $marcaId)->get();
+        return response()->json($modelos);
+    }
+
 }

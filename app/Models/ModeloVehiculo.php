@@ -14,14 +14,14 @@ class ModeloVehiculo extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
+        'id_marca',
     ];
 
-    /**
-     * Search for modelos based on given filters.
-     *
-     * @param  array  $filters
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
+    public function marca()
+    {
+        return $this->belongsTo(MarcaVehiculo::class, 'id_marca');
+    }
+
     public static function search($filters)
     {
         $query = self::query();
@@ -30,6 +30,8 @@ class ModeloVehiculo extends Model
             if (!empty($value)) {
                 if ($key === 'nombre') {
                     $query->where('nombre', 'like', '%' . $value . '%');
+                } elseif ($key === 'id_marca') {
+                    $query->where('id_marca', $value);
                 }
             }
         }

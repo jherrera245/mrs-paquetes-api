@@ -17,38 +17,31 @@ class ModeloVehiculoController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'nombre'
+            'nombre',
+            'id_marca'
         ]);
 
         $perPage = $request->input('per_page', 10);
 
         $modelosQuery = ModeloVehiculo::search($filters);
 
-        $modelos = $modelosQuery->paginate($perPage);
+        $modelos = $modelosQuery->with('marca')->paginate($perPage);
 
         return response()->json($modelos);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        // Valida los datos del formulario para crear un nuevo modelo de vehículo
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|unique:modelos,nombre',
             'descripcion' => 'required',
+            'id_marca' => 'required|exists:marcas,id',
         ]);
 
-        // Si la validación falla, devuelve un error de validación
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->all()], 400);
         }
 
-        // Crea un nuevo modelo de vehículo y lo devuelve como JSON
         $modelo = ModeloVehiculo::create($request->all());
         return response()->json($modelo, 201);
     }
@@ -101,4 +94,11 @@ class ModeloVehiculoController extends Controller
         $modeloVehiculo->delete();
         return response()->json(["success" => "Modelo de vehículo eliminado correctamente"], 200);
     }
+
+    public function getModelosByMarca($marcaId)
+    {
+        $modelos = ModeloVehiculo::where('id_marca', $marcaId)->get();
+        return response()->json($modelos);
+    }
+    
 }

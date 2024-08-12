@@ -192,6 +192,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_generos', [DropdownController::class, 'getGeneros']);
     Route::get('dropdown/get_marcas', [DropdownController::class, 'getMarcas']);
     Route::get('dropdown/get_modelos', [DropdownController::class, 'getModelos']);
+    Route::get('dropdown/get_modelos/{marcaId}', [DropdownController::class, 'getModelosPorMarca']);
     Route::get('dropdown/get_estados', [DropdownController::class, 'getEstados']);
     Route::get('dropdown/get_estado_paquete', [DropdownController::class, 'getEstadoPaquete']);
     Route::get('dropdown/get_paquetes', [DropdownController::class, 'getPaquetes']);

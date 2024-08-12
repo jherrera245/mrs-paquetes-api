@@ -44,14 +44,22 @@ class DropdownController extends Controller
     }
     public function getMarcas()
     {
-        $marca = DB::table('marcas')->select('id', 'nombre','descripcion')->get();
-        return response()->json(["marcas" => $marca]);
-
+        $marcas = DB::table('marcas')->select('id', 'nombre', 'descripcion')->get();
+        return response()->json(["marcas" => $marcas]);
     }
 
     public function getModelos()
     {
         $modelos = DB::table('modelos')->select('id', 'nombre', 'descripcion')->get();
+        return response()->json(["modelos" => $modelos]);
+    }
+
+    public function getModelosPorMarca($marcaId)
+    {
+        $modelos = DB::table('modelos')
+        ->where('id_marca', $marcaId)
+            ->select('id', 'nombre', 'descripcion')
+            ->get();
         return response()->json(["modelos" => $modelos]);
     }
 
