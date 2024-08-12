@@ -101,6 +101,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('ordenes/{ordenes}', [OrdenController::class, 'destroy'])->middleware('permission:orden-destroy');
     Route::post('ordenes/{ordenes}/procesar-pago', [OrdenController::class, 'procesarPago'])->middleware('permission:orden-update');
     Route::get('ordenes/{ordenes}/comprobante', [OrdenController::class, 'generarComprobante'])->middleware('permission:orden-view');
+    Route::get('ordenes/{ordenes}/visualizar-comprobante', [OrdenController::class, 'visualizarComprobante'])->middleware('permission:orden-view');
 
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');

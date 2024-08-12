@@ -472,16 +472,40 @@ class OrdenController extends Controller
             return response()->json(['message' => 'Esta orden ya ha sido pagada'], 400);
         }
 
-        // Aquí iría la lógica de procesamiento del pago
-        // Por ahora, simplemente marcaremos la orden como pagada
+        $tipoPago = $orden->tipoPago->pago;
 
+        if ($tipoPago === 'Tarjeta') {
+            $validator = Validator::make($request->all(), [
+                'nombre_titular' => 'required|string|max:255',
+                'numero_tarjeta' => 'required|string|size:16',
+                'fecha_vencimiento' => 'required|date_format:m/Y|after:today',
+                'cvv' => 'required|string|size:3',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Aquí iría la lógica de procesamiento del pago con tarjeta
+            // Por ahora, simularemos un pago exitoso
+        }
+
+        // Procesar el pago (simulado)
         $orden->estado_pago = 'pagado';
         $orden->save();
 
-        return response()->json(['message' => 'Pago procesado con éxito'], 200);
+        // Generar comprobante
+        $comprobante = $this->generarComprobante($orden->id);
+
+        return response()->json([
+            'message' => 'Pago procesado con éxito',
+            'comprobante' => $comprobante
+        ],
+            200
+        );
     }
 
-    public function generarComprobante($id)
+    private function generarComprobante($id)
     {
         $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
 
@@ -494,7 +518,7 @@ class OrdenController extends Controller
 
         $data = [
             'numeroFactura' => 'F-' . str_pad($orden->id, 6, '0', STR_PAD_LEFT),
-            'fecha' => date('d/m/Y', strtotime($orden->fecha_pago)),
+            'fecha' => date('d/m/Y'),
             'cliente' => [
                 'nombre' => $orden->cliente->nombre . ' ' . $orden->cliente->apellido,
                 'nit' => $orden->cliente->nit,
@@ -516,10 +540,43 @@ class OrdenController extends Controller
 
         $output = $pdf->output();
 
-        return response()->json([
-            'comprobante' => base64_encode($output)
-        ]);
+        return base64_encode($output);
     }
 
+    public function visualizarComprobante($id)
+    {
+        $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
+
+        if ($orden->estado_pago !== 'pagado') {
+            return response()->json(['error' => 'La orden aún no ha sido pagada'], 400);
+        }
+
+        $subtotal = $orden->total_pagar / 1.13; // Asumiendo que el total incluye IVA
+        $iva = $orden->total_pagar - $subtotal;
+
+        $data = [
+            'numeroFactura' => 'F-' . str_pad($orden->id, 6, '0', STR_PAD_LEFT),
+            'fecha' => date('d/m/Y'),
+            'cliente' => [
+                'nombre' => $orden->cliente->nombre . ' ' . $orden->cliente->apellido,
+                'nit' => $orden->cliente->nit,
+                'direccion' => $orden->cliente->direccion,
+            ],
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                ];
+            }),
+            'subtotal' => $subtotal,
+            'iva' => $iva,
+            'total' => $orden->total_pagar,
+            'metodoPago' => $orden->tipoPago->pago,
+        ];
+
+        $pdf = PDF::loadView('pdf.comprobante_pago', $data);
+
+        return $pdf->stream('comprobante.pdf');
+    }
     
 }
