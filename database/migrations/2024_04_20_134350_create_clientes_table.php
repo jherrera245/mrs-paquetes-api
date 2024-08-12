@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_user')->unique();
             $table->string('nombre', 100);
             $table->string('apellido', 100);
             $table->string('nombre_comercial', 45);
