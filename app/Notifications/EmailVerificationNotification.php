@@ -53,7 +53,7 @@ class EmailVerificationNotification extends Notification
         return (new MailMessage)
                 ->mailer('smtp')
                 ->subject($this->subject)
-                ->greeting('Hola '.$notifiable->name)
+                ->greeting('Hola querido usuario')
                 ->line($this->message)
                 ->line('codigo: '. $otp->token);
     }

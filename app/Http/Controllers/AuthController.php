@@ -53,6 +53,82 @@ class AuthController extends Controller
         return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
     }
 
+    public function login_cliente(Request $request)
+    {
+        // Obtener credenciales del request
+    $credentials = $request->only('email', 'password');
+
+    // Validar credenciales
+    $validator = Validator::make($credentials, [
+        'email' => 'required|email',
+        'password' => 'required|string|min:6|max:50',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    try {
+        // Intentar autenticar al usuario
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['message' => 'Login failed'], Response::HTTP_BAD_REQUEST);
+        }
+    } catch (JWTException $e) {
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $e->getMessage(),
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    // Obtener usuario autenticado
+    $user = Auth::user();
+
+    // Verificar si el usuario ha verificado su email
+    if (!$user->email_verified_at) {
+        return response()->json(['message' => 'Email no verificado'], Response::HTTP_FORBIDDEN);
+    }
+
+    // Verificar si la cuenta está activa
+    if ($user->status != 1) {
+        return response()->json(['message' => 'Account is inactive'], Response::HTTP_FORBIDDEN);
+    }
+
+    // Obtener nombre del rol y permisos del usuario
+    $roleName = $user->getRoleNames()->first();
+    $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->toArray();
+
+    // Mapear permisos por módulo
+    $permissionsMap = [];
+    foreach ($rolePermissions as $permission) {
+        [$module, $actionPermission] = explode('-', $permission, 2);
+
+        if (!isset($permissionsMap[$module])) {
+            $permissionsMap[$module] = [
+                'modulo' => $module,
+                'permissions' => []
+            ];
+        }
+
+        $permissionsMap[$module]['permissions'][$actionPermission] = true;
+    }
+
+    // Formatear permisos
+    $formattedPermissions = array_values($permissionsMap);
+
+    // Eliminar datos sensibles del usuario
+    $user->makeHidden(['roles']);
+
+    // Preparar la carga útil de la respuesta
+    $payload = [
+        'user' => $user,
+        'role' => $roleName,
+        'permissions' => $formattedPermissions,
+        'token' => $token,
+    ];
+
+    return response()->json($payload);
+    }
+
     public function authenticate(Request $request)
     {
         $credentials = $request->only('email', 'password');

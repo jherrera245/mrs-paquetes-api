@@ -17,9 +17,18 @@ class EmailVerificationController extends Controller
     }
 
     public function sendEmailVerification(Request $request) {
-       $request->user()->notify(new EmailVerificationNotification());
-       $success['success']= true;
-       return response()->json($success,200);
+        //validamos el email con la variable request
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+        //utilizamoa el email como dato de entrada y que exista dentro de la tbl
+        $user = User::where('email', $request->input('email'))->first();
+        //envia el correo al usuario
+        $user->notify(new EmailVerificationNotification());
+
+        // Return success response
+        $success['success'] = true;
+        return response()->json($success, 200);
     }
 
     public function email_verification(EmailVerificationRequest $request){

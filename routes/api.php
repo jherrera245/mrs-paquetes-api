@@ -36,6 +36,13 @@ use App\Http\Controllers\EmailVerificationController;
 |
 */
 Route::post('login',  [AuthController::class, 'authenticate']);
+//inicia sesion el cliente
+Route::post('login-cliente',[AuthController::class, 'login_cliente']);
+
+  //verificar email
+Route::post('email-verification',[EmailVerificationController::class, 'email_verification']);
+Route::post('send-email-verification',[EmailVerificationController::class, 'sendEmailVerification']);
+
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
 //restablecer password
@@ -56,9 +63,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store');
     Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy');
     Route::get('auth/get_assigned_permissions_to_role/{id}', [AuthController::class, 'getAssignedPermissionsToRole']);
-    //verificar email
-    Route::post('email-verification',[EmailVerificationController::class, 'email_verification']);
-    Route::post('send-email-verification',[EmailVerificationController::class, 'sendEmailVerification']);
 
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');
