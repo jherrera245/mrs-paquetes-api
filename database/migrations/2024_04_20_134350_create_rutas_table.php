@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('id_destino');
             $table->string('nombre');
             $table->foreignId('id_bodega');
-            $table->foreignId('id_estado');
+            $table->tinyInteger('estado');
             $table->decimal('distancia_km', 10);
             $table->decimal('duracion_aproximada', 5);
             $table->date('fecha_programada');

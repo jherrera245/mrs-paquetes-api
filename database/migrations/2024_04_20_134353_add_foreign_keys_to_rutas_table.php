@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::table('rutas', function (Blueprint $table) {
             $table->foreign(['id_bodega'], 'rutas_fk_id_rutas')->references(['id'])->on('bodegas');
             $table->foreign(['id_destino'], 'rutas_fk_id_destino')->references(['id'])->on('destinos');
-            $table->foreign(['id_estado'], 'rutas_id_estado')->references(['id'])->on('estado_rutas');
         });
     }
 

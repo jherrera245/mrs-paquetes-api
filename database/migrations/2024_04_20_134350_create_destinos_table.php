@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('descripcion');
+            // asignamos tipo tinyint para que sea un campo booleano.
+            $table->tinyInteger('estado');
             $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
-            $table->foreignId('id_estado');
             $table->timestamps();
         });
     }
