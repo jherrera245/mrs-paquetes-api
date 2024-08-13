@@ -194,7 +194,8 @@ class AsignacionRutasController extends Controller
     // funcion para determinar los estados de los paquetes asignados a una ruta, recibe el id de la ruta como parámetro.
     public function estadoPaquetes($id)
     {
-        $asignacionRuta = AsignacionRutas::find($id);
+        // Se realiza un select en asignacion_rutas donde se filtra por el id de la ruta.
+        $asignacionRuta = AsignacionRutas::find()->where('id_ruta', $id);
 
         if (!$asignacionRuta) {
             $data = [
