@@ -48,6 +48,11 @@ class Paquete extends Model
         return $this->belongsTo(Empaquetado::class, 'id_empaque');
     }
 
+    public function cliente()
+{
+    return $this->belongsTo(Clientes::class, 'id_cliente');
+}
+
     public function estado()
     {
         return $this->belongsTo(EstadoPaquete::class, 'id_estado_paquete');
