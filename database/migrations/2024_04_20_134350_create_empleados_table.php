@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('nombres', 100);
             $table->string('apellidos', 100);
-            $table->foreignId('id_genero');
             $table->string('dui', 10)->unique('dui');
             $table->string('telefono', 9);
             $table->date('fecha_nacimiento');

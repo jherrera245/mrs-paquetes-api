@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('telefono', 9);
             $table->foreignId('id_tipo_persona');
             $table->boolean('es_contribuyente')->nullable()->default(0);
-            $table->foreignId('id_genero');
             $table->datetime('fecha_registro');
             $table->foreignId('id_estado');
             $table->foreignId('id_departamento');

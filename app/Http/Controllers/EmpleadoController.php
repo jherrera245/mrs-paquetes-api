@@ -33,7 +33,6 @@ class EmpleadoController extends Controller
         $validator = Validator::make($request->all(), [
             'nombres' => 'required|max:255',
             'apellidos' => 'required|max:255',
-            'id_genero' => 'required',
             'dui' => 'required|digits:9|unique:empleados',
             'telefono' => 'required|digits:8',
             'fecha_nacimiento' => 'required|date',
@@ -59,7 +58,7 @@ class EmpleadoController extends Controller
         $empleado = Empleado::create([
             'nombres' => $request->nombres,
             'apellidos' => $request->apellidos,
-            'id_genero' => $request->id_genero,
+
             'dui' => $request->dui,
             'telefono' => $request->telefono,
             'fecha_nacimiento' => $request->fecha_nacimiento,
@@ -175,7 +174,6 @@ class EmpleadoController extends Controller
     $validator = Validator::make($request->all(), [
         'nombres' => 'required|max:255',
         'apellidos' => 'required|max:255',
-        'id_genero' => 'required',
         'dui' => 'required|digits:9|unique:empleados,dui,'.$id,
         'telefono' => 'required|digits:8',
         'fecha_nacimiento' => 'required|date',
@@ -199,7 +197,6 @@ class EmpleadoController extends Controller
 
     $empleado->nombres = $request->nombres;
     $empleado->apellidos = $request->apellidos;
-    $empleado->id_genero = $request->id_genero;
     $empleado->dui = $request->dui;
     $empleado->telefono = $request->telefono;
     $empleado->fecha_nacimiento = $request->fecha_nacimiento;

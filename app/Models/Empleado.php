@@ -16,7 +16,6 @@ class Empleado extends Model
     protected $fillable = [
         'nombres',
         'apellidos',
-        'id_genero',
         'dui',
         'telefono',
         'fecha_nacimiento',
@@ -29,11 +28,6 @@ class Empleado extends Model
         'created_by',
         'updated_by'
     ];
-
-    public function genero()
-    {
-        return $this->belongsTo(Genero::class, 'id_genero');
-    }
 
     public function estado()
     {

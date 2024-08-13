@@ -9,11 +9,45 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientesController extends Controller
 {
+    public function perfiles_clientes()  {
+        $filters = $request->only([
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'id_tipo_persona', 'es_contribuyente', 'fecha_registro',
+            'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
+        ]);
+
+        $perPage = $request->input('per_page', 10);
+
+        $query = Clientes::filter($filters)->paginate($perPage);
+
+        $clientes = $query->get()->map(function ($item) {
+            return
+            [
+            'id'=> $item->id,
+            'orden' => $item->orden->id,
+            'paquete' =>  $item->paquete->tipoPaquete->nombre,
+            'tipoEntrega' => $item->tipoEntrega->entrega,
+            'estadoEntrega' => $item->estadoEntrega->nombre,
+            'clienteEntrega' => $item->clienteEntrega->nombre.' '.$item->clienteEntrega->apellido,
+            'direccionEntrega' =>   $item->clienteEntrega->direccion.' '.
+                                    $item->departamentoEntrega->nombre. ' '.
+                                    $item->municipioEntrega->nombre,
+            'validacion_entrega' => $item->validacion_entrega,
+            'instrucciones_entrega' => $item->instrucciones_entrega,
+            'descripcion' => $item->descripcion,
+            'precio' => $item->precio,
+            'fecha_ingreso' => $item->fecha_ingreso,
+            'fecha_entrega' => $item->fecha_entrega,
+            ];
+        });
+
+        return response()->json($clientes,200);
+    }
     public function index(Request $request)
     {
         $filters = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
-            'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'id_tipo_persona', 'es_contribuyente', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
 
@@ -27,7 +61,7 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'id_user','nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
+            'id_user','nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
             'id_tipo_persona', 'es_contribuyente', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
@@ -89,8 +123,8 @@ class ClientesController extends Controller
     public function update(Request $request, Clientes $clientes)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
-            'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
+            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'id_tipo_persona', 'es_contribuyente', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
 
@@ -119,7 +153,6 @@ class ClientesController extends Controller
             ],
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
-            'id_genero' => 'required|exists:genero,id',
             'fecha_registro' => 'required|date',
             'id_estado' => 'required|exists:estado_clientes,id',
             'id_departamento' => 'required|exists:departamento,id',
@@ -165,7 +198,7 @@ class ClientesController extends Controller
         if ($clientes->delete()) {
             return response()->json(['success' => 'Cliente eliminado correctamente'], 200);
         }
-        
+
         return response()->json(['error' => 'No se pudo eliminar el cliente'], 400);
     }
 }
