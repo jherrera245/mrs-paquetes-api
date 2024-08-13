@@ -22,7 +22,6 @@ class Clientes extends Model
         'telefono',
         'id_tipo_persona',
         'es_contribuyente',
-        'id_genero',
         'fecha_registro',
         'id_estado',
         'id_departamento',
@@ -121,7 +120,7 @@ class Clientes extends Model
         foreach ($filters as $field => $value) {
             if (in_array($field, ['nombre', 'apellido', 'nombre_comercial', 'telefono', 'dui', 'nit', 'nrc', 'fecha_registro'])) {
                 $query->where($field, 'like', '%' . $value . '%');
-            } elseif (in_array($field, ['id_tipo_persona', 'es_contribuyente', 'id_genero', 'id_estado', 'id_departamento', 'id_municipio'])) {
+            } elseif (in_array($field, ['id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio'])) {
                 $query->where($field, $value);
             }
         }

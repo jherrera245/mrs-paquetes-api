@@ -269,6 +269,76 @@ class OrdenController extends Controller
         }
     }
 
+    // funcion para actualizar estado de entrega.
+    public function updateEstadoEntrega(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'validacion_entrega' => 'required|integer',
+            'id_estado_paquetes' => 'required|integer',
+            'fecha_entrega' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        DB::beginTransaction();
+        try {
+            $detalleOrden = DetalleOrden::find($id);
+            if (!$detalleOrden) {
+                return response()->json(['message' => 'Detalle de orden no encontrado'], Response::HTTP_NOT_FOUND);
+            }
+
+            $detalleOrden->validacion_entrega = $request->input('validacion_entrega');
+            $detalleOrden->id_estado_paquetes = $request->input('id_estado_paquetes');
+            $detalleOrden->fecha_entrega = $request->input('fecha_entrega');
+            $detalleOrden->save();
+
+            DB::commit();
+            return response()->json(['message' => 'Estado de entrega actualizado con éxito'], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'message' => 'Error',
+                    'error' => $e->getMessage(),
+                ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+    }
+
+    // funcion para listar los paquetes y sus estados de entrega segun la ruta a la que fueron asignados.
+    public function listarPaquetesRuta($id)
+    {
+        $detalleOrden = DetalleOrden::where('id_ruta', $id)->get();
+
+        if ($detalleOrden->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron paquetes en la ruta'], Response::HTTP_NOT_FOUND);
+        }
+
+        $detalleOrden->transform(function ($detalle) {
+            return [
+                'id' => $detalle->id,
+                'id_paquete' => $detalle->id_paquete,
+                'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                'id_cliente_entrega' => $detalle->id_cliente_entrega,
+                'validacion_entrega' => $detalle->validacion_entrega,
+                'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                'descripcion' => $detalle->descripcion,
+                'precio' => $detalle->precio,
+                'fecha_ingreso' => $detalle->fecha_ingreso,
+                'fecha_entrega' => $detalle->fecha_entrega,
+                'direccion_entrega' => $detalle->direccion_entrega,
+                'paquete' => $detalle->paquete,
+            ];
+        });
+
+        return response()->json($detalleOrden, Response::HTTP_OK);
+    }
+
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -344,35 +414,35 @@ class OrdenController extends Controller
     
 
     public function generatePDF($id)
-{
-    $orden = Orden::with([
-        'cliente:id,nombre,apellido', // Asegura que cargas el nombre del cliente
-        'direccion:id,direccion,nombre_contacto,telefono,referencia', // Carga la dirección con sus detalles
-        'detalles:id,id_orden,id_paquete,id_tipo_entrega,descripcion,precio',
-        'detalles.paquete:id,descripcion_contenido,peso',
-        'tipoPago:id,pago' // Carga el nombre del tipo de pago
-    ])->find($id);
+    {
+        $orden = Orden::with([
+            'cliente:id,nombre,apellido', // Asegura que cargas el nombre del cliente
+            'direccion:id,direccion,nombre_contacto,telefono,referencia', // Carga la dirección con sus detalles
+            'detalles:id,id_orden,id_paquete,id_tipo_entrega,descripcion,precio',
+            'detalles.paquete:id,descripcion_contenido,peso',
+            'tipoPago:id,pago' // Carga el nombre del tipo de pago
+        ])->find($id);
 
-    // Manejar el caso donde la orden no se encuentra
-    if (!$orden) {
-        return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        // Manejar el caso donde la orden no se encuentra
+        if (!$orden) {
+            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Obtener la dirección del emisor
+        $direccion_emisor = $orden->direccion;
+
+        // Cargar la vista y generar el PDF
+        $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
+
+        // Devolver el PDF como string base64 para que el frontend pueda manejarlo
+        $pdfContent = $pdf->output();
+        
+        // Devolver la respuesta con el PDF codificado en base64
+        return response()->json(['pdf' => base64_encode($pdfContent)], 200);
+
+        // Devolver el PDF sin codificación, directamente como un archivo PDF
+    // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
     }
-
-    // Obtener la dirección del emisor
-    $direccion_emisor = $orden->direccion;
-
-    // Cargar la vista y generar el PDF
-    $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
-
-    // Devolver el PDF como string base64 para que el frontend pueda manejarlo
-     $pdfContent = $pdf->output();
-    
-    // Devolver la respuesta con el PDF codificado en base64
-     return response()->json(['pdf' => base64_encode($pdfContent)], 200);
-
-    // Devolver el PDF sin codificación, directamente como un archivo PDF
-   // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
-}
 
     /**
      * Requerimiento 8: Mostrar órdenes del cliente autenticado.

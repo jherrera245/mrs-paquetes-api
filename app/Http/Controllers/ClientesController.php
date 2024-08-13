@@ -27,8 +27,8 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
-            'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
+            'id_user','nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 
+            'id_tipo_persona', 'es_contribuyente', 'fecha_registro',
             'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
         ]);
 
@@ -57,7 +57,6 @@ class ClientesController extends Controller
             ],
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
-            'id_genero' => 'required|exists:genero,id',
             'fecha_registro' => 'required|date',
             'id_estado' => 'required|exists:estado_clientes,id',
             'id_departamento' => 'required|exists:departamento,id',

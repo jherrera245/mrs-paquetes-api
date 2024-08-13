@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             EstadoPaquetesSeeder::class,
             EstadoRutasSeeder::class,
             EstadoVehiculosSeeder::class,
-            GeneroSeeder::class,
             MunicipioSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
