@@ -232,4 +232,6 @@ class RutasController extends Controller
             'estado_ruta' => $ruta->estado_ruta,
         ];
     }
+
+    
 }
