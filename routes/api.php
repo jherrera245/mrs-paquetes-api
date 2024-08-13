@@ -227,5 +227,12 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Requerimiento 8: Mostrar órdenes del cliente autenticado
     Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('auth:api');
 
+    //Requerimiento #3
+    Route::get('/orden/hoja-de-trabajo/{idRuta}', [OrdenController::class, 'generarHojaDeTrabajo']);
+
+    // Requerimiento #7
+    Route::get('/ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
+
+
 
 });

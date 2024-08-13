@@ -648,5 +648,79 @@ class OrdenController extends Controller
 
         return $pdf->stream('comprobante.pdf');
     }
-    
+
+    public function generarHojaDeTrabajo($idRuta)
+    {
+        // Obtén los paquetes asignados a la ruta
+        $asignaciones = AsignacionRutas::with(['paquete', 'paquete.tipoPaquete', 'paquete.empaquetado', 'paquete.estado', 'ruta', 'vehiculo'])
+            ->where('id_ruta', $idRuta)
+            ->get();
+
+        if ($asignaciones->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron paquetes para esta ruta'], 404);
+        }
+
+        // Genera el PDF
+        $pdf = Pdf::loadView('pdf.hoja_de_trabajo', ['asignaciones' => $asignaciones]);
+
+        // Convierte el PDF a base64
+        $pdfContent = $pdf->output();
+        $pdfBase64 = base64_encode($pdfContent);
+
+        // Retorna el PDF en formato base64
+        $data = [
+            'pdf_base64' => $pdfBase64,
+            'status' => 200
+        ];
+
+        return response()->json($data, 200);
+    }
+
+    public function misOrdenesAsignadas(Request $request)
+    {
+        // Validar los parámetros de la solicitud
+        $request->validate([
+            'id_ruta' => 'required|exists:rutas,id',
+        ]);
+
+        // Obtener los filtros de la solicitud
+        $filters = $request->only([
+            'uuid', 
+            'fecha', 
+            'nombre_cliente_entrega', 
+            'nombre_cliente_recibe', 
+            'id_ruta'
+        ]);
+
+        // Obtener las órdenes asignadas con los filtros aplicados
+        $ordenes = Orden::whereHas('detalles', function ($query) use ($filters) {
+                $query->whereHas('asignacionRuta', function ($subq) use ($filters) {
+                    $subq->where('id_ruta', $filters['id_ruta'])
+                        ->when(isset($filters['uuid']), function ($q) use ($filters) {
+                            $q->whereHas('paquete', function ($q) use ($filters) {
+                                $q->where('uuid', 'like', '%' . $filters['uuid'] . '%');
+                            });
+                        })
+                        ->when(isset($filters['fecha']), function ($q) use ($filters) {
+                            $q->whereDate('fecha', $filters['fecha']);
+                        });
+                });
+            })
+            ->when(isset($filters['nombre_cliente_entrega']) || isset($filters['nombre_cliente_recibe']), function ($query) use ($filters) {
+                $query->whereHas('cliente', function ($subq) use ($filters) {
+                    if (isset($filters['nombre_cliente_entrega'])) {
+                        $subq->where('nombre', 'like', '%' . $filters['nombre_cliente_entrega'] . '%');
+                    }
+                    if (isset($filters['nombre_cliente_recibe'])) {
+                        $subq->where('nombre', 'like', '%' . $filters['nombre_cliente_recibe'] . '%');
+                    }
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($ordenes);
+    }
 }
+
+    

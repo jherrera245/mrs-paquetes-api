@@ -37,7 +37,14 @@ class DetalleOrden extends Model
     public function paquete(): BelongsTo
     {
         return $this->belongsTo(Paquete::class, 'id_paquete');
+
     }
+
+    public function asignacionRuta()
+{
+    return $this->belongsTo(AsignacionRutas::class, 'id_asignacion_ruta');
+}
+
 
     public function tipoEntrega(): BelongsTo
     {
