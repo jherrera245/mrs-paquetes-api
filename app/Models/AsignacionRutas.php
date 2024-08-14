@@ -28,7 +28,7 @@ class AsignacionRutas extends Model
 
 	public function estado_ruta()
 	{
-		return $this->belongsTo(EstadoRuta::class, 'id_estado');
+		return $this->belongsTo(EstadoRuta::class, 'id');
 	}
 
 	public function ruta()

@@ -14,7 +14,7 @@ class Rutas extends Model
 	protected $casts = [
 		'id_destino' => 'int',
 		'id_bodega' => 'int',
-		'id_estado' => 'int',
+		'estado' => 'int',
 		'distancia_km' => 'float',
 		'duracion_aproximada' => 'float',
 		'fecha_programada' => 'datetime'
@@ -24,7 +24,7 @@ class Rutas extends Model
 		'id_destino',
 		'nombre',
 		'id_bodega',
-		'id_estado',
+		'estado',
 		'distancia_km',
 		'duracion_aproximada',
 		'fecha_programada'
@@ -42,7 +42,7 @@ class Rutas extends Model
 
 	public function estado_ruta()
 	{
-		return $this->belongsTo(EstadoRuta::class, 'id_estado');
+		return $this->belongsTo(EstadoRuta::class, 'estado');
 	}
 
 	public function asignacion_rutas()
@@ -56,7 +56,7 @@ class Rutas extends Model
 
 		foreach ($filters as $key => $value) {
 			if (!empty($value)) {
-				if ($key === 'id_destino' || $key === 'id_bodega' || $key === 'id_estado') {
+				if ($key === 'id_destino' || $key === 'id_bodega' || $key === 'estado') {
 					$query->where($key, $value);
 				} elseif ($key === 'nombre') {
 					$query->where('nombre', 'like', '%' . $value . '%');

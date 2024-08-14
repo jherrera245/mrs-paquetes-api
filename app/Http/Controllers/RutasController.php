@@ -21,7 +21,7 @@ class RutasController extends Controller
             'id_destino',
             'nombre',
             'id_bodega',
-            'id_estado',
+            'estado',
             'distancia_km',
             'duracion_aproximada',
             'fecha_programada',
@@ -56,7 +56,7 @@ class RutasController extends Controller
             'id_destino' => 'required',
             'nombre' => 'required|max:255',
             'id_bodega' => 'required',
-            'id_estado' => 'required',
+            'estado' => 'required',
             'distancia_km' => 'required|numeric',
             'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
@@ -75,7 +75,7 @@ class RutasController extends Controller
             'id_destino' => $request->id_destino,
             'nombre'=> $request->nombre,
             'id_bodega' => $request->id_bodega,
-            'id_estado' => $request->id_estado,
+            'estado' => $request->estado,
             'distancia_km' => $request->distancia_km,
             'duracion_aproximada' => $request->duracion_aproximada,
             'fecha_programada' => $request->fecha_programada
@@ -153,7 +153,7 @@ class RutasController extends Controller
             'id_destino' => 'required',
             'nombre' => 'required|max:255',
             'id_bodega' => 'required',
-            'id_estado' => 'required',
+            'estado' => 'required',
             'distancia_km' => 'required|numeric',
             'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
@@ -171,7 +171,7 @@ class RutasController extends Controller
         $ruta->id_destino = $request->id_destino;
         $ruta->nombre = $request->nombre;
         $ruta->id_bodega = $request->id_bodega;
-        $ruta->id_estado = $request->id_estado;
+        $ruta->estado = $request->estado;
         $ruta->distancia_km = $request->distancia_km;
         $ruta->duracion_aproximada = $request->duracion_aproximada;
         $ruta->fecha_programada = $request->fecha_programada;
@@ -221,7 +221,7 @@ class RutasController extends Controller
             'id_destino' => $ruta->id_destino,
             'nombre' => $ruta->nombre,
             'id_bodega' => $ruta->id_bodega,
-            'id_estado' => $ruta->id_estado,
+            'estado' => $ruta->estado,
             'distancia_km' => $ruta->distancia_km,
             'duracion_aproximada' => $ruta->duracion_aproximada,
             'fecha_programada' => $ruta->fecha_programada,

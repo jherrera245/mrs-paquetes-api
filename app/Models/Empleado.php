@@ -20,7 +20,7 @@ class Empleado extends Model
         'telefono',
         'fecha_nacimiento',
         'fecha_contratacion',
-        'id_estado',
+        'estado',
         'id_cargo',
         'id_departamento',
         'id_municipio',
@@ -28,11 +28,6 @@ class Empleado extends Model
         'created_by',
         'updated_by'
     ];
-
-    public function estado()
-    {
-        return $this->belongsTo(EstadoEmpleados::class, 'id_estado');
-    }
 
     public function cargo()
     {

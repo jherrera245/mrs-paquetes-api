@@ -164,6 +164,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Asignación Rutas
     Route::resource('asignacionrutas', 'AsignacionRutasController')->middleware('permission:asignacionrutas-view');
     Route::get('asignacionrutas', [AsignacionRutasController::class, 'index'])->middleware('permission:asignacionrutas-view');
+    
+    Route::get('asignacionrutas/estadoPaquetes/{id}', [AsignacionRutasController::class, 'estadoPaquetes'])->middleware('permission:asignacionrutas-view');
     Route::get('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'show'])->middleware('permission:asignacionrutas-show');
     Route::post('asignacionrutas', [AsignacionRutasController::class, 'store'])->middleware('permission:asignacionrutas-create');
     Route::put('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update'])->middleware('permission:asignacionrutas-update');

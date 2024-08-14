@@ -194,24 +194,33 @@ class AsignacionRutasController extends Controller
     // funcion para determinar los estados de los paquetes asignados a una ruta, recibe el id de la ruta como parámetro.
     public function estadoPaquetes($id)
     {
-        // Se realiza un select en asignacion_rutas donde se filtra por el id de la ruta.
-        $asignacionRuta = AsignacionRutas::find()->where('id_ruta', $id);
+        // Obtener todas las asignaciones de la ruta específica
+        $asignacionesRuta = AsignacionRutas::where('id_ruta', $id)->get();
 
-        if (!$asignacionRuta) {
-            $data = [
-                'message' => 'ruta no encontrada',
+        if ($asignacionesRuta->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron asignaciones para la ruta especificada',
                 'status' => 404
-            ];
-            return response()->json($data, 404);
+            ], 404);
         }
 
-        $paquetes = $asignacionRuta->paquetes;
+        // Preparar datos de salida
+        $paquetes = $asignacionesRuta->map(function ($asignacion) {
+            return [
+                'codigo_unico_asignacion' => $asignacion->codigo_unico_asignacion,
+                'placa_vehiculo' => $asignacion->vehiculo->placa,
+                'id_paquete' => $asignacion->paquete->uuid,
+                'fecha' => $asignacion->fecha,
+                'estado' => $asignacion->estado_ruta->estado,
+                'created_at' => $asignacion->created_at,
+                'updated_at' => $asignacion->updated_at
+            ];
+        });
 
-        $data = [
+        return response()->json([
             'paquetes' => $paquetes,
             'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        ], 200);
     }
+
 }
