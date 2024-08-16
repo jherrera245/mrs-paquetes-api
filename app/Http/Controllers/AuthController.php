@@ -285,7 +285,7 @@ class AuthController extends Controller
         }
     
         if ($startDate && $endDate) {
-            $users->whereBetween('users.created_at', [$startDate, $endDate]);
+            $users->whereBetween(DB::raw('DATE(users.created_at)'), [$startDate, $endDate]);
         }
     
         $users = $users->get();
