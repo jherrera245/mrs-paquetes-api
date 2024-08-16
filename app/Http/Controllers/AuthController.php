@@ -19,8 +19,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-
-         $r_user = 2;
+        $r_user = 2;
          //Indicamos que solo queremos recibir name, email y password de la request
         $data = $request->only('email', 'password');
 
@@ -41,7 +40,6 @@ class AuthController extends Controller
         $user->password =  bcrypt($request->password);
         $user->type = 1;
 
-
         $user->save();
 
         $role = $r_user;
@@ -53,6 +51,142 @@ class AuthController extends Controller
         return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
     }
 
+    public function crearClientePerfil(Request $request)
+    {
+         //Indicamos que solo queremos recibir name, email y password de la request
+            $data = $request->only( 'email', 'password', 'id_user',
+                                'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+                                'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro',
+                                'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc',
+                                'giro', 'nombre_empresa', 'direccion');
+
+        //Realizamos las validaciones
+        $validator = Validator::make($data, [
+            'id_user'  => 'required|string|max:255',
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'nombre_comercial' => 'nullable|string|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes',
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+            'id_tipo_persona' => 'required|exists:tipo_persona,id',
+            'es_contribuyente' => 'required|boolean',
+            'id_genero' => 'required|exists:genero,id',
+            'fecha_registro' => 'required|date',
+            'id_estado' => 'required|exists:estado_clientes,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
+            'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
+            'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
+            'giro' => 'required|string',
+            'nombre_empresa' => 'required|string',
+            'direccion' => 'required|string'
+        ]);
+
+        //Devolvemos un error si fallan las validaciones
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $user = new User();
+        $cliente = new Clientes();
+
+        $cliente->id_user= $user->id;
+        $cliente->nombre = $request->nombre;
+        $cliente->apellido = $request->apellido;
+        $cliente->nombre_comercial = $request->nombre_comercial;
+        $cliente->dui = $request->dui;
+        $cliente->telefono = $request->telefono;
+        $cliente->id_tipo_persona = $request->id_tipo_persona;
+        $cliente->es_contribuyente = $request->es_contribuyente;
+        $cliente->id_genero = $request->id_genero;
+        $cliente->fecha_registro = $request->fecha_registro;
+        $cliente->id_estado = $request->id_estado;
+        $cliente->id_departamento = $request->id_departamento;
+        $cliente->id_municipio = $request->id_municipio;
+        $cliente->nit = $request->nit;
+        $cliente->nrc = $request->nrc;
+        $cliente->giro = $request->giro;
+        $cliente->nombre_empresa = $request->nombre_empresa;
+        $cliente->direccion = $request->direccion;
+        $cliente->save();
+
+        return response()->json(['message' => 'perfil creado con exito'], Response::HTTP_OK);
+    }
+
+    public function actualizarClientePerfil(Request $request, $id)
+    {
+        // Validate the incoming request data
+        $data = $request->only([
+            'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono',
+            'id_tipo_persona', 'es_contribuyente', 'id_genero', 'fecha_registro', 'id_estado',
+            'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
+        ]);
+
+        $validator = Validator::make($data, [
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'nombre_comercial' => 'nullable|string|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui,' . $id,
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+            'id_tipo_persona' => 'required|exists:tipo_persona,id',
+            'es_contribuyente' => 'required|boolean',
+            'id_genero' => 'required|exists:genero,id',
+            'fecha_registro' => 'required|date',
+            'id_estado' => 'required|exists:estado_clientes,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
+            'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
+            'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
+            'giro' => 'required|string',
+            'nombre_empresa' => 'required|string',
+            'direccion' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        //id del cliente
+        $cliente = Clientes::find($id);
+
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
+        // si cambia email o clave
+        if ($request->has('email')) {
+            $user = User::find($cliente->id_cliente);
+            if ($user) {
+                $user->email = $request->email;
+                if ($request->has('password')) {
+                    $user->password = bcrypt($request->password);
+                }
+                $user->save();
+            }
+        }
+
+        // Update the client profile
+        $cliente->nombre = $request->nombre;
+        $cliente->apellido = $request->apellido;
+        $cliente->nombre_comercial = $request->nombre_comercial;
+        $cliente->dui = $request->dui;
+        $cliente->telefono = $request->telefono;
+        $cliente->id_tipo_persona = $request->id_tipo_persona;
+        $cliente->es_contribuyente = $request->es_contribuyente;
+        $cliente->id_genero = $request->id_genero;
+        $cliente->fecha_registro = $request->fecha_registro;
+        $cliente->id_estado = $request->id_estado;
+        $cliente->id_departamento = $request->id_departamento;
+        $cliente->id_municipio = $request->id_municipio;
+        $cliente->nit = $request->nit;
+        $cliente->nrc = $request->nrc;
+        $cliente->giro = $request->giro;
+        $cliente->nombre_empresa = $request->nombre_empresa;
+        $cliente->direccion = $request->direccion;
+        $cliente->save();
+
+        return response()->json(['message' => 'Perfil actualizado con éxito'], Response::HTTP_OK);
+    }
     public function login_cliente(Request $request)
     {
         // Obtener credenciales del request

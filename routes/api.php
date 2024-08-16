@@ -36,8 +36,6 @@ use App\Http\Controllers\EmailVerificationController;
 |
 */
 Route::post('login',  [AuthController::class, 'authenticate']);
-//inicia sesion el cliente
-Route::post('login-cliente',[AuthController::class, 'login_cliente']);
 
   //verificar email
 Route::post('email-verification',[EmailVerificationController::class, 'email_verification']);
@@ -45,9 +43,18 @@ Route::post('send-email-verification',[EmailVerificationController::class, 'send
 
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
+
+
+//creacion del perfil del cliente
+Route::post('crear-perfil-cliente', [AuthController::class,'crearPerfilCliente']);
+Route::post('actualizar-perfil-cliente', [AuthController::class,'actualizarPerfilCliente']);
+
 //restablecer password
 Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
 Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
+
+//inicia sesion el cliente
+Route::post('login-cliente',[AuthController::class, 'login_cliente']);
 //registro de cliente
 Route::post('register', [AuthController::class, 'register']);
 
