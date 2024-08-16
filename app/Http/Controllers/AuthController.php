@@ -255,12 +255,43 @@ class AuthController extends Controller
         return response()->json(['user' => $user]);
     }
 
-    // Función para obtener todos los usuarios
-    public function getUsers()
+    public function getUsers(Request $request)
     {
-        $users = User::all();
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        $users = DB::table('users')
+            ->select(
+                'users.id', 
+                'users.name', 
+                'users.email', 
+                'roles.name as role_name', 
+                'users.status', 
+                'users.created_at', 
+                'users.updated_at'
+            )
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('model_has_roles.model_type', 'App\\Models\\User');
+    
+        if ($name) {
+            $users->where('users.name', 'like', '%' . $name . '%');
+        }
+    
+        if ($email) {
+            $users->where('users.email', 'like', '%' . $email . '%');
+        }
+    
+        if ($startDate && $endDate) {
+            $users->whereBetween('users.created_at', [$startDate, $endDate]);
+        }
+    
+        $users = $users->get();
+    
         return response()->json(['users' => $users]);
-    }
+    }    
 
     // Función para asignar roles a un usuario
     public function assignUserRole(Request $request, $id)
