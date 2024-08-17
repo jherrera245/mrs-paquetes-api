@@ -17,7 +17,7 @@ use App\Notifications\EmailVerificationNotification;
 class AuthController extends Controller
 {
     public function adminClienteRegistrar(Request $request)
-{
+    {
     $r_user = 2;
 
     // Indicamos que solo queremos recibir  email y password de la request
@@ -31,15 +31,15 @@ class AuthController extends Controller
         'apellido' => 'required|string|max:255',
         'nombre_comercial' => 'nullable|string|max:255',
         'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
-        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
         'id_tipo_persona' => 'required|exists:tipo_persona,id',
         'es_contribuyente' => 'required|boolean',
-        'fecha_registro' => 'required',
+        'fecha_registro' => 'nullable|date_format:Y-m-d',
         'id_estado' => 'required|exists:estado_clientes,id',
         'id_departamento' => 'required|exists:departamento,id',
         'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
-        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
+        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
         'giro' => 'required|string',
         'nombre_empresa' => 'required|string',
         'direccion' => 'required|string'
@@ -136,22 +136,22 @@ class AuthController extends Controller
     
         // Realizamos las validaciones
         $validator = Validator::make($data, [ 
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'nombre_comercial' => 'nullable|string|max:255',
-            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
-            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
-            'id_tipo_persona' => 'required|exists:tipo_persona,id',
-            'es_contribuyente' => 'required|boolean',
-            'fecha_registro' => 'required',
-            'id_estado' => 'required|exists:estado_clientes,id',
-            'id_departamento' => 'required|exists:departamento,id',
-            'id_municipio' => 'required|exists:municipios,id',
-            'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
-            'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
-            'giro' => 'required|string',
-            'nombre_empresa' => 'required|string',
-            'direccion' => 'required|string'
+        'nombre' => 'required|string|max:255',
+        'apellido' => 'required|string|max:255',
+        'nombre_comercial' => 'nullable|string|max:255',
+        'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
+        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
+        'id_tipo_persona' => 'required|exists:tipo_persona,id',
+        'es_contribuyente' => 'required|boolean',
+        'fecha_registro' => 'nullable|date_format:Y-m-d',
+        'id_estado' => 'required|exists:estado_clientes,id',
+        'id_departamento' => 'required|exists:departamento,id',
+        'id_municipio' => 'required|exists:municipios,id',
+        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
+        'giro' => 'required|string',
+        'nombre_empresa' => 'required|string',
+        'direccion' => 'required|string'
         ]);
     
         if ($validator->fails()) {
@@ -212,7 +212,7 @@ class AuthController extends Controller
     // Obtener los datos de la solicitud
     $data = $request->only([
         'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 
-        'telefono', 'id_tipo_persona', 'es_contribuyente', 'fecha_registro', 'id_estado', 
+        'telefono', 'id_tipo_persona', 'es_contribuyente','id_estado', 
         'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
     ]);
 
@@ -227,7 +227,6 @@ class AuthController extends Controller
         'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
         'id_tipo_persona' => 'required|exists:tipo_persona,id',
         'es_contribuyente' => 'required|boolean',
-        'fecha_registro' => 'required',
         'id_estado' => 'required|exists:estado_clientes,id',
         'id_departamento' => 'required|exists:departamento,id',
         'id_municipio' => 'required|exists:municipios,id',
@@ -267,7 +266,6 @@ class AuthController extends Controller
             $cliente->telefono = $request->input('telefono', $cliente->telefono);
             $cliente->id_tipo_persona = $request->input('id_tipo_persona', $cliente->id_tipo_persona);
             $cliente->es_contribuyente = $request->input('es_contribuyente', $cliente->es_contribuyente);
-            $cliente->fecha_registro = $request->input('fecha_registro', $cliente->fecha_registro);
             $cliente->id_estado = $request->input('id_estado', $cliente->id_estado);
             $cliente->id_departamento = $request->input('id_departamento', $cliente->id_departamento);
             $cliente->id_municipio = $request->input('id_municipio', $cliente->id_municipio);
