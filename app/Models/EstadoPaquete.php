@@ -16,9 +16,9 @@ class EstadoPaquete extends Model
         'descripcion'
     ];
 
-    // relacion con paquetes.
     public function paquete()
     {
         return $this->hasMany(Paquete::class, 'id_estado_paquete');
     }
+
 }

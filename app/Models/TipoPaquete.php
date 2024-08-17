@@ -16,7 +16,6 @@ class TipoPaquete extends Model
         'descripcion',
     ];
 
-    // relacion con paquetes.
     public function paquete()
     {
         return $this->hasMany(Paquete::class, 'id_tipo_paquete');
