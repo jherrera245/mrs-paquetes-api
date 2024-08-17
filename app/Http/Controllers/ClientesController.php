@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Clientes;
 use App\Rules\validNit;
+use App\Models\Orden;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,6 +44,40 @@ class ClientesController extends Controller
 
         return response()->json($clientes,200);
     }
+
+    public function estado_paquetes_cliente($id_cliente) {
+        // Obtener todas las órdenes asociadas a un cliente particular incluyendo los detalles de orden
+        $ordenes = Orden::with(['detalles.paquete.tipoPaquete', 'detalles.paquete.estado'])
+                        ->where('id_cliente', $id_cliente)
+                        ->get();
+    
+        if ($ordenes->isEmpty()) {
+            return response()->json(['message' => 'No hay órdenes para este cliente'], 404);
+        }
+    
+        // Mapear los detalles requeridos de las órdenes y los paquetes asociados
+        $resultados = $ordenes->map(function ($orden) {
+            $paquetesDetalles = $orden->detalles->map(function ($detalle) {
+                return [
+                    'id_paquete' => $detalle->paquete->id,
+                    'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
+                    'estado_entrega' => $detalle->paquete->estado->nombre,
+                    'descripcion_contenido' => $detalle->paquete->descripcion_contenido,
+                    'fecha_envio' => $detalle->paquete->fecha_envio,
+                    'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada
+                ];
+            });
+    
+            return [
+                'id_orden' => $orden->id,
+                'fecha_orden' => $orden->created_at->toDateString(),
+                'paquetes' => $paquetesDetalles
+            ];
+        });
+    
+        return response()->json(['ordenes' => $resultados], 200);
+    }    
+
     public function index(Request $request)
     {
         $filters = $request->only([

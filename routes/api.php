@@ -93,6 +93,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Clientes
     Route::get('clientes', [ClientesController::class, 'index'])->middleware('permission:clientes-view');
     Route::get('clientes/{cliente}', [ClientesController::class, 'show'])->middleware('permission:clientes-view');
+    Route::get('clientes/estado_paquetes_cliente/{cliente}', [ClientesController::class, 'estado_paquetes_cliente'])->middleware('permission:clientes-view');
     Route::post('clientes', [ClientesController::class, 'store'])->middleware('permission:clientes-create');
     Route::put('clientes/{clientes}', [ClientesController::class, 'update'])->middleware('permission:clientes-update');
     Route::delete('clientes/{clientes}', [ClientesController::class, 'destroy'])->middleware('permission:clientes-destroy');
