@@ -16,11 +16,86 @@ use App\Notifications\EmailVerificationNotification;
 
 class AuthController extends Controller
 {
+    public function adminClienteRegistrar(Request $request)
+{
+    $r_user = 2;
+
+    // Indicamos que solo queremos recibir  email y password de la request
+    $data = $request->only('email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion');
+
+    // Realizamos las validaciones
+    $validator = Validator::make($data, [
+        'email' => 'required|email|unique:users',
+        'password' => 'required|string|min:6|max:50',
+        'nombre' => 'required|string|max:255',
+        'apellido' => 'required|string|max:255',
+        'nombre_comercial' => 'nullable|string|max:255',
+        'dui' => 'nullable|string|max:10',
+        'telefono' => 'nullable|string|max:15',
+        'id_tipo_persona' => 'required|integer',
+        'es_contribuyente' => 'required|boolean',
+        'id_estado' => 'required|integer',
+        'id_departamento' => 'required|integer',
+        'id_municipio' => 'required|integer',
+        'nit' => 'nullable|string|max:20',
+        'nrc' => 'nullable|string|max:20',
+        'giro' => 'nullable|string|max:255',
+        'nombre_empresa' => 'nullable|string|max:255',
+        'direccion' => 'nullable|string|max:255',
+    ]);
+
+    // Devolvemos un error si fallan las validaciones
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    // Crear usuario
+    $user = new User();
+    $user->email = $request->email;
+    $user->password = bcrypt($request->password);
+    $user->type = 1;
+    $user->save();
+
+    // Asignar rol
+    $role = $r_user;
+    $user->roles()->detach();
+    $user->assignRole($role);
+
+    // Notificar al usuario
+    $user->notify(new EmailVerificationNotification());
+
+    // Crear cliente
+    $client = new Clientes();
+    
+    $client->id_user = $user->id;
+    $client->nombre = $request->nombre;
+    $client->apellido = $request->apellido;
+    $client->nombre_comercial = $request->nombre_comercial;
+    $client->dui = $request->dui;
+    $client->telefono = $request->telefono;
+    $client->id_tipo_persona = $request->id_tipo_persona;
+    $client->es_contribuyente = $request->es_contribuyente;
+    $client->id_estado = $request->id_estado;
+    $client->id_departamento = $request->id_departamento;
+    $client->id_municipio = $request->id_municipio;
+    $client->nit = $request->nit;
+    $client->nrc = $request->nrc;
+    $client->giro = $request->giro;
+    $client->nombre_empresa = $request->nombre_empresa;
+    $client->direccion = $request->direccion;
+    $client->fecha_registro = now(); // Puedes usar la fecha actual
+    $client->created_by = $user->id;
+    $client->updated_by = $user->id;
+    $client->save();
+
+    return response()->json(['message' => 'usuario creado exitosamente'], Response::HTTP_OK);
+}
+
 
     public function register(Request $request)
     {
         $r_user = 2;
-         //Indicamos que solo queremos recibir name, email y password de la request
+         //Indicamos que solo queremos recibir email y password de la request
         $data = $request->only('email', 'password');
 
         //Realizamos las validaciones
@@ -35,7 +110,6 @@ class AuthController extends Controller
         }
 
         $user = new User();
-        $user->name = null;
         $user->email = $request->email;
         $user->password =  bcrypt($request->password);
         $user->type = 1;
@@ -174,7 +248,7 @@ class AuthController extends Controller
         }
 
         if ($request->has('password')) {
-            $user->password = $request->input('password');
+            $user->password = bcrypt($request->input('password'));
         }
 
         $user->save();
@@ -185,24 +259,24 @@ class AuthController extends Controller
             return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        $cliente->nombre = $request->input('nombre', $cliente->nombre);
-        $cliente->apellido = $request->input('apellido', $cliente->apellido);
-        $cliente->nombre_comercial = $request->input('nombre_comercial', $cliente->nombre_comercial);
-        $cliente->dui = $request->input('dui', $cliente->dui);
-        $cliente->telefono = $request->input('telefono', $cliente->telefono);
-        $cliente->id_tipo_persona = $request->input('id_tipo_persona', $cliente->id_tipo_persona);
-        $cliente->es_contribuyente = $request->input('es_contribuyente', $cliente->es_contribuyente);
-        $cliente->fecha_registro = $request->input('fecha_registro', $cliente->fecha_registro);
-        $cliente->id_estado = $request->input('id_estado', $cliente->id_estado);
-        $cliente->id_departamento = $request->input('id_departamento', $cliente->id_departamento);
-        $cliente->id_municipio = $request->input('id_municipio', $cliente->id_municipio);
-        $cliente->nit = $request->input('nit', $cliente->nit);
-        $cliente->nrc = $request->input('nrc', $cliente->nrc);
-        $cliente->giro = $request->input('giro', $cliente->giro);
-        $cliente->nombre_empresa = $request->input('nombre_empresa', $cliente->nombre_empresa);
-        $cliente->direccion = $request->input('direccion', $cliente->direccion);
+            $cliente->nombre = $request->input('nombre', $cliente->nombre);
+            $cliente->apellido = $request->input('apellido', $cliente->apellido);
+            $cliente->nombre_comercial = $request->input('nombre_comercial', $cliente->nombre_comercial);
+            $cliente->dui = $request->input('dui', $cliente->dui);
+            $cliente->telefono = $request->input('telefono', $cliente->telefono);
+            $cliente->id_tipo_persona = $request->input('id_tipo_persona', $cliente->id_tipo_persona);
+            $cliente->es_contribuyente = $request->input('es_contribuyente', $cliente->es_contribuyente);
+            $cliente->fecha_registro = $request->input('fecha_registro', $cliente->fecha_registro);
+            $cliente->id_estado = $request->input('id_estado', $cliente->id_estado);
+            $cliente->id_departamento = $request->input('id_departamento', $cliente->id_departamento);
+            $cliente->id_municipio = $request->input('id_municipio', $cliente->id_municipio);
+            $cliente->nit = $request->input('nit', $cliente->nit);
+            $cliente->nrc = $request->input('nrc', $cliente->nrc);
+            $cliente->giro = $request->input('giro', $cliente->giro);
+            $cliente->nombre_empresa = $request->input('nombre_empresa', $cliente->nombre_empresa);
+            $cliente->direccion = $request->input('direccion', $cliente->direccion);
 
-        $cliente->save();
+            $cliente->save();
 
         return response()->json(['message' => 'Perfil actualizado con éxito'], Response::HTTP_OK);
 

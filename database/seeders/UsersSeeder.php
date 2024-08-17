@@ -17,7 +17,6 @@ class UsersSeeder extends Seeder
     public function run()
     {
         $id = DB::table('users')->insertGetId([
-            'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('admin1234'),
         ]);
