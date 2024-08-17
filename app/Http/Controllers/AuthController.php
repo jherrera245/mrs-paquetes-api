@@ -38,10 +38,10 @@ class AuthController extends Controller
         'id_estado' => 'required|exists:estado_clientes,id',
         'id_departamento' => 'required|exists:departamento,id',
         'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
-        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
-        'giro' => 'required|string',
-        'nombre_empresa' => 'required|string',
+        'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+        'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
+        'giro' => 'nullable|string',
+        'nombre_empresa' => 'nullable|string',
         'direccion' => 'required|string'
     ]);
 
@@ -147,10 +147,10 @@ class AuthController extends Controller
         'id_estado' => 'required|exists:estado_clientes,id',
         'id_departamento' => 'required|exists:departamento,id',
         'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
-        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
-        'giro' => 'required|string',
-        'nombre_empresa' => 'required|string',
+        'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+        'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
+        'giro' => 'nullable|string',
+        'nombre_empresa' => 'nullable|string',
         'direccion' => 'required|string'
         ]);
     
@@ -177,7 +177,7 @@ class AuthController extends Controller
                 'telefono' => $request->telefono,
                 'id_tipo_persona' => $request->id_tipo_persona,
                 'es_contribuyente' => $request->es_contribuyente,
-                'fecha_registro' => $request->fecha_registro,
+                'fecha_registro' =>  now(),
                 'id_estado' => $request->id_estado,
                 'id_departamento' => $request->id_departamento,
                 'id_municipio' => $request->id_municipio,
