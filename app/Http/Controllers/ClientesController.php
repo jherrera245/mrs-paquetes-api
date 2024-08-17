@@ -45,14 +45,41 @@ class ClientesController extends Controller
         return response()->json($clientes,200);
     }
 
-    public function estado_paquetes_cliente($id_cliente) {
-        // Obtener todas las órdenes asociadas a un cliente particular incluyendo los detalles de orden
-        $ordenes = Orden::with(['detalles.paquete.tipoPaquete', 'detalles.paquete.estado'])
-                        ->where('id_cliente', $id_cliente)
-                        ->get();
+    public function estado_paquetes_cliente(Request $request, $id_cliente) {
+        // Construir la consulta inicial
+        $query = Orden::with(['detalles.paquete.tipoPaquete', 'detalles.paquete.estado'])
+                    ->where('id_cliente', $id_cliente);
     
+        // Aplicar filtros si se proporcionan
+        if ($request->has('tipo_paquete') && $request->input('tipo_paquete') !== '') {
+            $query->whereHas('detalles.paquete.tipoPaquete', function($q) use ($request) {
+                $q->where('nombre', $request->input('tipo_paquete'));
+            });
+        }
+    
+        if ($request->has('estado_entrega') && $request->input('estado_entrega') !== '') {
+            $query->whereHas('detalles.paquete.estado', function($q) use ($request) {
+                $q->where('nombre', $request->input('estado_entrega'));
+            });
+        }
+    
+        if ($request->has('fecha_entrega_estimada') && $request->input('fecha_entrega_estimada') !== '') {
+            $query->whereHas('detalles.paquete', function($q) use ($request) {
+                $q->whereDate('fecha_entrega_estimada', '=', $request->input('fecha_entrega_estimada'));
+            });
+        }
+    
+        if ($request->has('orden_id') && $request->input('orden_id') !== '') {
+            $query->where('id', $request->input('orden_id'));
+        }
+    
+        // Aplicar paginación
+        $perPage = $request->input('per_page', 10); // Permite que el cliente elija cuántos resultados por página o usa un valor predeterminado
+        $ordenes = $query->paginate($perPage);
+    
+        // Verificar si hay resultados
         if ($ordenes->isEmpty()) {
-            return response()->json(['message' => 'No hay órdenes para este cliente'], 404);
+            return response()->json(['message' => 'No hay órdenes para este cliente con los filtros aplicados'], 404);
         }
     
         // Mapear los detalles requeridos de las órdenes y los paquetes asociados
@@ -76,7 +103,8 @@ class ClientesController extends Controller
         });
     
         return response()->json(['ordenes' => $resultados], 200);
-    }    
+    }
+    
 
     public function index(Request $request)
     {
