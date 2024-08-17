@@ -46,8 +46,8 @@ Route::apiResource('ordenes', OrdenController::class);
 
 
 //creacion del perfil del cliente
-Route::post('crear-perfil-cliente', [AuthController::class,'crearPerfilCliente']);
-Route::post('actualizar-perfil-cliente', [AuthController::class,'actualizarPerfilCliente']);
+Route::post('crear-perfil-cliente', [AuthController::class,'crearClientePerfil']);
+Route::put('actualizar-perfil-cliente/{id}', [AuthController::class,'actualizarClientePerfil']);
 
 //restablecer password
 Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);

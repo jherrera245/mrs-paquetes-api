@@ -37,6 +37,11 @@ class Clientes extends Model
         'direccion',
     ];
 
+    public function verificarUserId($user_id)
+    {
+        return Clientes::where('id_user', $user_id)->exists();
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class);
