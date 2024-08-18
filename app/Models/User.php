@@ -25,7 +25,6 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'email_verified_at',
         'id_empleado',
-        'type'
     ];
 
     /**
@@ -67,6 +66,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Rol::class, 'id');
     }
+    
     public function empleados()
     {
         return $this->hasMany(Empleado::class, 'id');

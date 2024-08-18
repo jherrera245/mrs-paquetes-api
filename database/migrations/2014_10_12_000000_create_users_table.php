@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->foreignId('id_empleado')->nullable();
             $table->boolean('status')->nullable()->default(true);
-            $table->boolean('type')->nullable()->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

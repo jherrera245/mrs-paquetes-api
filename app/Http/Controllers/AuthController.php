@@ -18,80 +18,78 @@ class AuthController extends Controller
 {
     public function adminClienteRegistrar(Request $request)
     {
-    $r_user = 2;
+        $r_user = 2;
 
-    // Indicamos que solo queremos recibir  email y password de la request
-    $data = $request->only('email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion');
+        // Indicamos que solo queremos recibir  email y password de la request
+        $data = $request->only('email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion');
 
-    // Realizamos las validaciones
-    $validator = Validator::make($data, [
-        'email' => 'required|email|unique:users',
-        'password' => 'required|string|min:6|max:50',
-        'nombre' => 'required|string|max:255',
-        'apellido' => 'required|string|max:255',
-        'nombre_comercial' => 'nullable|string|max:255',
-        'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
-        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
-        'id_tipo_persona' => 'required|exists:tipo_persona,id',
-        'es_contribuyente' => 'required|boolean',
-        'fecha_registro' => 'nullable|date_format:Y-m-d',
-        'id_estado' => 'required|exists:estado_clientes,id',
-        'id_departamento' => 'required|exists:departamento,id',
-        'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
-        'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
-        'giro' => 'nullable|string',
-        'nombre_empresa' => 'nullable|string',
-        'direccion' => 'required|string'
-    ]);
+        // Realizamos las validaciones
+        $validator = Validator::make($data, [
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:50',
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'nombre_comercial' => 'nullable|string|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
+            'id_tipo_persona' => 'required|exists:tipo_persona,id',
+            'es_contribuyente' => 'required|boolean',
+            'fecha_registro' => 'nullable|date_format:Y-m-d',
+            'id_estado' => 'required|exists:estado_clientes,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
+            'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+            'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
+            'giro' => 'nullable|string',
+            'nombre_empresa' => 'nullable|string',
+            'direccion' => 'required|string'
+        ]);
 
-    // Devolvemos un error si fallan las validaciones
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        // Devolvemos un error si fallan las validaciones
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Crear usuario
+        $user = new User();
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        // Asignar rol
+        $role = $r_user;
+        $user->roles()->detach();
+        $user->assignRole($role);
+
+        // Notificar al usuario
+        $user->notify(new EmailVerificationNotification());
+
+        // Crear cliente
+        $client = new Clientes();
+        
+        $client->id_user = $user->id;
+        $client->nombre = $request->nombre;
+        $client->apellido = $request->apellido;
+        $client->nombre_comercial = $request->nombre_comercial;
+        $client->dui = $request->dui;
+        $client->telefono = $request->telefono;
+        $client->id_tipo_persona = $request->id_tipo_persona;
+        $client->es_contribuyente = $request->es_contribuyente;
+        $client->id_estado = $request->id_estado;
+        $client->id_departamento = $request->id_departamento;
+        $client->id_municipio = $request->id_municipio;
+        $client->nit = $request->nit;
+        $client->nrc = $request->nrc;
+        $client->giro = $request->giro;
+        $client->nombre_empresa = $request->nombre_empresa;
+        $client->direccion = $request->direccion;
+        $client->fecha_registro = now(); // Puedes usar la fecha actual
+        $client->created_by = $user->id;
+        $client->updated_by = $user->id;
+        $client->save();
+
+        return response()->json(['message' => 'usuario creado exitosamente'], Response::HTTP_OK);
     }
-
-    // Crear usuario
-    $user = new User();
-    $user->email = $request->email;
-    $user->password = bcrypt($request->password);
-    $user->type = 1;
-    $user->save();
-
-    // Asignar rol
-    $role = $r_user;
-    $user->roles()->detach();
-    $user->assignRole($role);
-
-    // Notificar al usuario
-    $user->notify(new EmailVerificationNotification());
-
-    // Crear cliente
-    $client = new Clientes();
-    
-    $client->id_user = $user->id;
-    $client->nombre = $request->nombre;
-    $client->apellido = $request->apellido;
-    $client->nombre_comercial = $request->nombre_comercial;
-    $client->dui = $request->dui;
-    $client->telefono = $request->telefono;
-    $client->id_tipo_persona = $request->id_tipo_persona;
-    $client->es_contribuyente = $request->es_contribuyente;
-    $client->id_estado = $request->id_estado;
-    $client->id_departamento = $request->id_departamento;
-    $client->id_municipio = $request->id_municipio;
-    $client->nit = $request->nit;
-    $client->nrc = $request->nrc;
-    $client->giro = $request->giro;
-    $client->nombre_empresa = $request->nombre_empresa;
-    $client->direccion = $request->direccion;
-    $client->fecha_registro = now(); // Puedes usar la fecha actual
-    $client->created_by = $user->id;
-    $client->updated_by = $user->id;
-    $client->save();
-
-    return response()->json(['message' => 'usuario creado exitosamente'], Response::HTTP_OK);
-}
-
 
     public function register(Request $request)
     {
@@ -101,8 +99,8 @@ class AuthController extends Controller
 
         //Realizamos las validaciones
         $validator = Validator::make($data, [
-        'email' => 'required|email|unique:users',
-        'password' => 'required|string|min:6|max:50'
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:50'
         ]);
 
         //Devolvemos un error si fallan las validaciones
@@ -113,8 +111,6 @@ class AuthController extends Controller
         $user = new User();
         $user->email = $request->email;
         $user->password =  bcrypt($request->password);
-        $user->type = 1;
-
         $user->save();
 
         $role = $r_user;
@@ -136,22 +132,22 @@ class AuthController extends Controller
     
         // Realizamos las validaciones
         $validator = Validator::make($data, [ 
-        'nombre' => 'required|string|max:255',
-        'apellido' => 'required|string|max:255',
-        'nombre_comercial' => 'nullable|string|max:255',
-        'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
-        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
-        'id_tipo_persona' => 'required|exists:tipo_persona,id',
-        'es_contribuyente' => 'required|boolean',
-        'fecha_registro' => 'nullable|date_format:Y-m-d',
-        'id_estado' => 'required|exists:estado_clientes,id',
-        'id_departamento' => 'required|exists:departamento,id',
-        'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
-        'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
-        'giro' => 'nullable|string',
-        'nombre_empresa' => 'nullable|string',
-        'direccion' => 'required|string'
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'nombre_comercial' => 'nullable|string|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
+            'id_tipo_persona' => 'required|exists:tipo_persona,id',
+            'es_contribuyente' => 'required|boolean',
+            'fecha_registro' => 'nullable|date_format:Y-m-d',
+            'id_estado' => 'required|exists:estado_clientes,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
+            'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
+            'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/|unique:clientes,nrc',
+            'giro' => 'nullable|string',
+            'nombre_empresa' => 'nullable|string',
+            'direccion' => 'required|string'
         ]);
     
         if ($validator->fails()) {
@@ -204,60 +200,60 @@ class AuthController extends Controller
     public function actualizarClientePerfil(Request $request, $id)
     {
         // Obtener el usuario autenticado usando JWT
-    $user = JWTAuth::parseToken()->authenticate();
-    if (!$user) {
-        return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
-    }
-
-    // Obtener los datos de la solicitud
-    $data = $request->only([
-        'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 
-        'telefono', 'id_tipo_persona', 'es_contribuyente','id_estado', 
-        'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
-    ]);
-
-    // Realizar las validaciones
-    $validator = Validator::make($data, [ 
-        'email' => 'nullable|email|unique:users,email,' . $user->id,
-        'password' => 'nullable|min:8',
-        'nombre' => 'required|string|max:255',
-        'apellido' => 'required|string|max:255',
-        'nombre_comercial' => 'nullable|string|max:255',
-        'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui,' . $user->id . ',id_user',
-        'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
-        'id_tipo_persona' => 'required|exists:tipo_persona,id',
-        'es_contribuyente' => 'required|boolean',
-        'id_estado' => 'required|exists:estado_clientes,id',
-        'id_departamento' => 'required|exists:departamento,id',
-        'id_municipio' => 'required|exists:municipios,id',
-        'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
-        'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
-        'giro' => 'required|string',
-        'nombre_empresa' => 'required|string',
-        'direccion' => 'required|string'
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    // Actualizar los datos en la tabla `users`
-    try {
-        if ($request->has('email')) {
-            $user->email = $request->input('email');
+        $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
         }
 
-        if ($request->has('password')) {
-            $user->password = bcrypt($request->input('password'));
+        // Obtener los datos de la solicitud
+        $data = $request->only([
+            'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 
+            'telefono', 'id_tipo_persona', 'es_contribuyente','id_estado', 
+            'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion'
+        ]);
+
+        // Realizar las validaciones
+        $validator = Validator::make($data, [ 
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:8',
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'nombre_comercial' => 'nullable|string|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui,' . $user->id . ',id_user',
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
+            'id_tipo_persona' => 'required|exists:tipo_persona,id',
+            'es_contribuyente' => 'required|boolean',
+            'id_estado' => 'required|exists:estado_clientes,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
+            'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
+            'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
+            'giro' => 'required|string',
+            'nombre_empresa' => 'required|string',
+            'direccion' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $user->save();
+        // Actualizar los datos en la tabla `users`
+        try {
+            if ($request->has('email')) {
+                $user->email = $request->input('email');
+            }
 
-        // Actualizar los datos en la tabla `clientes`
-        $cliente = Clientes::where('id_user', $user->id)->first();
-        if (!$cliente) {
-            return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
-        }
+            if ($request->has('password')) {
+                $user->password = bcrypt($request->input('password'));
+            }
+
+            $user->save();
+
+            // Actualizar los datos en la tabla `clientes`
+            $cliente = Clientes::where('id_user', $user->id)->first();
+            if (!$cliente) {
+                return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
+            }
 
             $cliente->nombre = $request->input('nombre', $cliente->nombre);
             $cliente->apellido = $request->input('apellido', $cliente->apellido);
@@ -277,7 +273,7 @@ class AuthController extends Controller
 
             $cliente->save();
 
-        return response()->json(['message' => 'Perfil actualizado con éxito'], Response::HTTP_OK);
+            return response()->json(['message' => 'Perfil actualizado con éxito'], Response::HTTP_OK);
 
         } catch (\Exception $e) {
             \Log::error('Error actualizando cliente perfil: '.$e->getMessage());
@@ -600,16 +596,13 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         //Indicamos que solo queremos recibir name, email y password de la request
-        $data = $request->only('name', 'email', 'password', 'type', 'role_id');
+        $data = $request->only('name', 'email', 'password', 'role_id');
         //Realizamos las validaciones
         $validator = Validator::make($data, [
-            'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
             'role_id' => 'required|integer',
-            'type' => 'required|integer',
             'id_empleado' => 'id_empleado|unique:users',
-            'id_cliente' => 'id_cliente|unique:users',
         ]);
 
         //Devolvemos un error si fallan las validaciones
@@ -618,23 +611,13 @@ class AuthController extends Controller
         }
 
         $user = new User();
-        $user->name = $request->name;
         $user->email = $request->email;
         $user->password =  bcrypt($request->password);
-        $user->type = $request->type;
 
-        if (empty($request->id_empleado) && empty($request->id_cliente)) {
-            return response()->json(['error' => 'Faild to create user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (empty($request->id_empleado)) {
+            return response()->json(['error' => 'Faild to create user for employee'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        if ($request->type == 0 && !empty($request->id_empleado)) {
-            $user->id_empleado = $request->id_empleado;
-        } else if ($request->type == 1 && !empty($request->id_cliente)) {
-            $user->id_cliente = $request->id_cliente;
-        } else {
-            return response()->json(['error' => 'Faild to create user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
+        $user->id_empleado = $request->id_empleado;
         $user->save();
 
         $role = Role::find($request->role_id);
@@ -650,7 +633,6 @@ class AuthController extends Controller
         $data = $request->only('name', 'email', 'password',  'role_id');
         //Realizamos las validaciones
         $validator = Validator::make($data, [
-            'name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $id,
             'role_id' => 'required|integer'
         ]);
@@ -664,29 +646,18 @@ class AuthController extends Controller
             return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $user->name = $request->name;
         $user->email = $request->email;
         $user->status = $request->status ? 1 : 0;
-        $user->type = $request->type;
 
         if (!empty($request->password)) {
             $user->password =  bcrypt($request->password);
         }
 
-        if (empty($request->id_empleado) && empty($request->id_cliente)) {
-            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (empty($request->id_empleado)) {
+            return response()->json(['error' => 'Faild to updated user for employee'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        if ($request->type == 0 && !empty($request->id_empleado)) {
-            $user->id_empleado = $request->id_empleado;
-            $user->id_cliente = null;
-        } else if ($request->type == 1 && !empty($request->id_cliente)) {
-            $user->id_cliente = $request->id_cliente;
-            $user->id_empleado = null;
-        } else {
-            return response()->json(['error' => 'Faild to updated user for employee or customer'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
+        
+        $user->id_empleado = $request->id_empleado;
         $user->save();
 
         $role = Role::find($request->role_id);

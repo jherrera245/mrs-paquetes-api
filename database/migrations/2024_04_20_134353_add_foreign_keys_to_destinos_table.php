@@ -29,7 +29,6 @@ return new class extends Migration
         Schema::table('destinos', function (Blueprint $table) {
             $table->dropForeign('destinos_fk_id_municipio');
             $table->dropForeign('destinos_fk_id_departamento');
-            $table->dropForeign('destinos_fk_id_estado_ruta');
         });
     }
 };
