@@ -575,7 +575,7 @@ class OrdenController extends Controller
         );
     }
 
-    private function generarComprobante($id)
+    public function generarComprobante($id)
     {
         $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
 
