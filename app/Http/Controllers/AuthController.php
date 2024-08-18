@@ -484,7 +484,6 @@ class AuthController extends Controller
 
     public function getUsers(Request $request)
     {
-        $name = $request->input('name');
         $email = $request->input('email');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -492,7 +491,6 @@ class AuthController extends Controller
         $users = DB::table('users')
             ->select(
                 'users.id', 
-                'users.name', 
                 'users.email', 
                 'roles.name as role_name', 
                 'users.status', 
@@ -502,10 +500,6 @@ class AuthController extends Controller
             ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
             ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
             ->where('model_has_roles.model_type', 'App\\Models\\User');
-    
-        if ($name) {
-            $users->where('users.name', 'like', '%' . $name . '%');
-        }
     
         if ($email) {
             $users->where('users.email', 'like', '%' . $email . '%');
