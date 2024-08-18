@@ -20,7 +20,7 @@ class Empleado extends Model
         'telefono',
         'fecha_nacimiento',
         'fecha_contratacion',
-        'estado',
+        'id_estado',
         'id_cargo',
         'id_departamento',
         'id_municipio',
@@ -80,8 +80,6 @@ class Empleado extends Model
         }
 
         return $query->with([
-            'genero',
-            'estado',
             'cargo',
             'departamento',
             'municipio',
