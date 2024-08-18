@@ -54,9 +54,15 @@ class Empleado extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    // Elimina esta relación si ya no tienes el campo id_empleado en la tabla users
+    // public function user()
+    // {
+    //     return $this->hasOne(User::class, 'id_empleado');
+    // }
+
     public function user()
     {
-        return $this->hasOne(User::class, 'id_empleado');
+        return $this->belongsTo(User::class, 'user_id');  // Asegúrate de que 'user_id' sea la clave correcta
     }
 
     public static function search($filters)
