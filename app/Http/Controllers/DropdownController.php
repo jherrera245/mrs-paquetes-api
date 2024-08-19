@@ -207,41 +207,25 @@ class DropdownController extends Controller
         return response()->json($data);
     }
 
+    // Función para que el conductor pueda ver la lista de las direcciones segun el id del cliente.
     public function getDirecciones($id)
     {
-        // Obtener el nombre del cliente.
-        $cliente = DB::table('clientes')
-            ->where('id', $id)
-            ->select('nombre')
-            ->first(); // Cambio de get() a first() para obtener directamente el objeto.
-
-        // Verificar si el cliente existe
-        if (!$cliente) {
-            return response()->json(['error' => 'Cliente no encontrado'], 404);
-        }
-
-        // Obtener las direcciones del cliente.
+        // Obtener las direcciones del cliente, el nombre del municipio y el nombre del departamento.
         $direcciones = DB::table('direcciones')
+            ->join('municipios', 'direcciones.id_municipio', '=', 'municipios.id')
+            ->join('departamento', 'municipios.id_departamento', '=', 'departamento.id')
             ->where('id_cliente', $id)
-            ->select('direccion')
+            ->select('direcciones.id', 'direcciones.direccion', 'municipios.nombre as municipio', 'departamento.nombre as departamento')
             ->get();
 
-        // Crear un arreglo para estructurar las direcciones con claves personalizadas.
-        $direccionesArray = [];
-        foreach ($direcciones as $index => $direccion) {
-            $direccionesArray['direccion' . ($index + 1)] = $direccion->direccion;
+        // Si no se encuentran direcciones, devolver un mensaje adecuado
+        if ($direcciones->isEmpty()) {
+            return response()->json(['error' => 'No se encontraron direcciones para este cliente'], 404);
         }
 
-        // Preparar la respuesta completa con el nombre del cliente y sus direcciones.
-        $respuesta = [
-            'cliente' => [
-                'nombre' => $cliente->nombre,
-                'direcciones' => $direccionesArray
-            ]
-        ];
-
-        return response()->json($respuesta);
-    }
+        // Devolver solamente las direcciones en un formato adecuado para su uso en un dropdown
+        return response()->json($direcciones);
+}
 
 }
 
