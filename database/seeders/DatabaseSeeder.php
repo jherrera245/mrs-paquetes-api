@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\TipoEntrega;
+use App\Models\TipoPago;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +33,9 @@ class DatabaseSeeder extends Seeder
             TipoIncidenciaSeeder::class,
             TipoPaqueteSeeder::class,
             TipoPersonaSeeder::class,
-            UsersSeeder::class
+            UsersSeeder::class,
+            TipoPagoSeeder::class,
+            TipoEntregaSeeder::class
         ]);
     }
 }
