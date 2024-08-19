@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\AsignacionRutas;
 use App\Models\Direcciones;
 use App\Models\DetalleOrden;
 use App\Models\Orden;
