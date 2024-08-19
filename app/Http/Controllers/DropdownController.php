@@ -206,6 +206,43 @@ class DropdownController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDirecciones($id)
+    {
+        // Obtener el nombre del cliente.
+        $cliente = DB::table('clientes')
+            ->where('id', $id)
+            ->select('nombre')
+            ->first(); // Cambio de get() a first() para obtener directamente el objeto.
+
+        // Verificar si el cliente existe
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        // Obtener las direcciones del cliente.
+        $direcciones = DB::table('direcciones')
+            ->where('id_cliente', $id)
+            ->select('direccion')
+            ->get();
+
+        // Crear un arreglo para estructurar las direcciones con claves personalizadas.
+        $direccionesArray = [];
+        foreach ($direcciones as $index => $direccion) {
+            $direccionesArray['direccion' . ($index + 1)] = $direccion->direccion;
+        }
+
+        // Preparar la respuesta completa con el nombre del cliente y sus direcciones.
+        $respuesta = [
+            'cliente' => [
+                'nombre' => $cliente->nombre,
+                'direcciones' => $direccionesArray
+            ]
+        ];
+
+        return response()->json($respuesta);
+    }
+
 }
 
 

@@ -228,9 +228,12 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_estado_empleados', [DropdownController::class, 'getEstadoEmpleados']);
     Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
     Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
+    Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
 
     Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden'])->middleware('auth:api');
     Route::get('detalle-orden/{id}', [DetalleOrdenController::class,'detalles_orden_id'])->middleware('auth:api');
+
+    
 
     // Requerimiento 2: Generar PDF de la orden
     Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('auth:api');
