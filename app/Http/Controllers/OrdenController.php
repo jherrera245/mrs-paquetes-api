@@ -164,12 +164,21 @@ class OrdenController extends Controller
             $detalleOrden->fecha_ingreso = now();
             $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
             $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
-            
+
+            // Guardar el detalle de la orden para obtener su ID
+            $detalleOrden->save();
+
+            // Generar el número de seguimiento con el formato ORD00000000001
+            $numeroSeguimiento = 'ORD' . str_pad($detalleOrden->id, 10, '0', STR_PAD_LEFT);
+            $detalleOrden->numero_seguimiento = $numeroSeguimiento;
+
+            // Guardar el detalle de la orden con el número de seguimiento
             $detalleOrden->save();
         } else {
             throw new \Exception('Error al generar el paquete');
         }
     }
+
 
     public function update(Request $request, $id)
     {
