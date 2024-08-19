@@ -56,10 +56,7 @@ class OrdenController extends Controller
             'id_cliente' => 'required|integer|exists:clientes,id',
             'nombre_contacto' => 'required|string',
             'telefono' => 'required|string',
-            'id_departamento' => 'required|integer|exists:departamento,id',
-            'id_municipio' => 'required|integer|exists:municipios,id',
-            'direccion' => 'required|string',
-            'referencia' => 'nullable|string',
+            'id_direccion' => 'required|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'total_pagar' => 'required|numeric',
             'costo_adicional' => 'nullable|numeric',
@@ -98,24 +95,10 @@ class OrdenController extends Controller
 
     private function createOrder($request)
     {
-        $direccion_emisor = new Direcciones();
-        $direccion_emisor->id_cliente = $request->input('id_cliente');
-        $direccion_emisor->nombre_contacto = $request->input('nombre_contacto');
-        $direccion_emisor->telefono = $request->input('telefono');
-        $direccion_emisor->id_departamento = $request->input('id_departamento');
-        $direccion_emisor->id_municipio = $request->input('id_municipio');
-        $direccion_emisor->direccion = $request->input('direccion');
-        $direccion_emisor->referencia = $request->input('referencia');
-        $direccion_emisor->save();
-
-        if (!$direccion_emisor) {
-            throw new \Exception('Error al guardar la dirección del cliente emisor');
-        }
-
         $orden = new Orden();
         $orden->id_cliente = $request->input('id_cliente');
         $orden->id_tipo_pago = $request->input('id_tipo_pago');
-        $orden->id_direccion = $direccion_emisor->id;
+        $orden->id_direccion = $request->id_direccion;
         $orden->total_pagar = $request->input('total_pagar');
         $orden->costo_adicional = $request->input('costo_adicional');
         $orden->concepto = $request->input('concepto');
@@ -180,23 +163,9 @@ class OrdenController extends Controller
             $detalleOrden->precio = $detalle['precio'];
             $detalleOrden->fecha_ingreso = now();
             $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
-
-            $direccion_receptor = new Direcciones();
-            $direccion_receptor->id_cliente = $detalle['id_cliente_entrega'];
-            $direccion_receptor->nombre_contacto = $detalle['nombre_contacto'];
-            $direccion_receptor->telefono = $detalle['telefono'];
-            $direccion_receptor->id_departamento = $detalle['id_departamento'];
-            $direccion_receptor->id_municipio = $detalle['id_municipio'];
-            $direccion_receptor->direccion = $detalle['direccion'];
-            $direccion_receptor->referencia = $detalle['referencia'];
-            $direccion_receptor->save();
-
-            if ($direccion_receptor) {
-                $detalleOrden->id_direccion_entrega = $direccion_receptor->id;
-                $detalleOrden->save();
-            } else {
-                throw new \Exception('Error al guardar la dirección del receptor');
-            }
+            $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+            
+            $detalleOrden->save();
         } else {
             throw new \Exception('Error al generar el paquete');
         }
