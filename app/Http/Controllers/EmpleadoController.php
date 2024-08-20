@@ -6,20 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 
 class EmpleadoController extends Controller
 {
     public function index(Request $request)
     {
         $filters = $request->only(['nombres', 'apellidos', 'fecha_contratacion_inicio', 'fecha_contratacion_fin', 'id_estado']);
-        
+
         // Realiza la consulta incluyendo todas las columnas del empleado y los nombres de las relaciones
         $empleados = Empleado::with(['cargo:id,nombre', 'departamento:id,nombre', 'municipio:id,nombre'])->get();
-        
+
         // Transforma la salida para incluir todos los datos del empleado y los nombres de las relaciones
-        $empleados = $empleados->map(function($empleado) {
+        $empleados = $empleados->map(function ($empleado) {
             return [
                 'id' => $empleado->id,
                 'nombres' => $empleado->nombres,
@@ -53,18 +53,19 @@ class EmpleadoController extends Controller
 
     public function store(Request $request)
     {
+        // Valida los datos de entrada, incluyendo la unicidad del teléfono
         $validator = Validator::make($request->all(), [
             'nombres' => 'required|max:255',
             'apellidos' => 'required|max:255',
             'dui' => 'required|digits:9|unique:empleados',
-            'telefono' => 'required|digits:8',
-            'fecha_nacimiento' => 'required|date',
-            'fecha_contratacion' => 'required|date',
-            'id_estado' => 'required',
-            'id_cargo' => 'required',
-            'id_departamento' => 'required',
+            'telefono' => 'required|digits:8|unique:empleados', // Asegura que el teléfono sea único
+            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la persona tenga al menos 18 años
+            'fecha_contratacion' => 'required|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
+            'id_estado' => 'required|exists:estado_empleados,id',
+            'id_cargo' => 'required|exists:cargos,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
             'direccion' => 'required|max:255',
-            'id_municipio' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -76,19 +77,8 @@ class EmpleadoController extends Controller
             return response()->json($data, 400);
         }
 
-        $empleado = Empleado::create([
-            'nombres' => $request->nombres,
-            'apellidos' => $request->apellidos,
-            'dui' => $request->dui,
-            'telefono' => $request->telefono,
-            'fecha_nacimiento' => $request->fecha_nacimiento,
-            'fecha_contratacion' => $request->fecha_contratacion,
-            'id_estado' => $request->id_estado,
-            'id_cargo' => $request->id_cargo,
-            'id_departamento' => $request->id_departamento,
-            'id_municipio' => $request->id_municipio,
-            'direccion' => $request->direccion
-        ]);
+        // Crea el empleado si la validación es exitosa
+        $empleado = Empleado::create($request->all());
 
         if (!$empleado) {
             $data = [
@@ -118,6 +108,7 @@ class EmpleadoController extends Controller
             return response()->json($data, 404);
         }
 
+        // Devolver datos del empleado junto con nombres de relaciones en lugar de IDs
         $data = [
             'empleado' => [
                 'id' => $empleado->id,
@@ -128,17 +119,14 @@ class EmpleadoController extends Controller
                 'fecha_nacimiento' => $empleado->fecha_nacimiento,
                 'fecha_contratacion' => $empleado->fecha_contratacion,
                 'id_estado' => $empleado->id_estado,
-                'id_cargo' => $empleado->id_cargo,
-                'id_departamento' => $empleado->id_departamento,
-                'id_municipio' => $empleado->id_municipio,
+                'cargo' => $empleado->cargo->nombre ?? null,
+                'departamento' => $empleado->departamento->nombre ?? null,
+                'municipio' => $empleado->municipio->nombre ?? null,
                 'direccion' => $empleado->direccion,
                 'created_by' => $empleado->created_by,
                 'updated_by' => $empleado->updated_by,
                 'created_at' => $empleado->created_at,
                 'updated_at' => $empleado->updated_at,
-                'cargo' => $empleado->cargo->nombre ?? null,
-                'departamento' => $empleado->departamento->nombre ?? null,
-                'municipio' => $empleado->municipio->nombre ?? null
             ],
             'status' => 200
         ];
@@ -170,15 +158,39 @@ class EmpleadoController extends Controller
 
     public function relacion()
     {
+        // Actualizo la consulta para que refleje la tabla de relaciones correctamente
         $empleados = DB::table('empleados')
-            ->join('users', 'empleados.id', '=', 'users.id')
-            ->join('roles', 'users.id', '=', 'roles.id')
-            ->select('empleados.*', 'users.name as nombre_usuario', 'roles.name as nombre_rol')
+            ->join('users', 'empleados.id', '=', 'users.id_empleado')
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->join('cargos', 'empleados.id_cargo', '=', 'cargos.id')
+            ->join('departamento', 'empleados.id_departamento', '=', 'departamento.id')  // Aquí cambié 'departamentos' por 'departamento'
+            ->join('municipios', 'empleados.id_municipio', '=', 'municipios.id')
+            ->select(
+                'empleados.id',
+                'empleados.nombres',
+                'empleados.apellidos',
+                'empleados.dui',
+                'empleados.telefono',
+                'empleados.fecha_nacimiento',
+                'empleados.fecha_contratacion',
+                'empleados.direccion',
+                'empleados.created_by',
+                'empleados.updated_by',
+                'empleados.created_at',
+                'empleados.updated_at',
+                'users.email as usuario_email',
+                'roles.name as rol',
+                'cargos.nombre as cargo',
+                'departamento.nombre as departamento',  // Aquí cambié 'departamentos.nombre' por 'departamento.nombre'
+                'municipios.nombre as municipio'
+            )
             ->get();
 
         return response()->json([
-            'empleados' => $empleados
-        ]);
+            'empleados' => $empleados,
+            'status' => 200
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -197,13 +209,13 @@ class EmpleadoController extends Controller
             'nombres' => 'required|max:255',
             'apellidos' => 'required|max:255',
             'dui' => 'required|digits:9|unique:empleados,dui,' . $id,
-            'telefono' => 'required|digits:8',
-            'fecha_nacimiento' => 'required|date',
-            'fecha_contratacion' => 'required|date',
-            'id_estado' => 'required',
-            'id_cargo' => 'required',
-            'id_departamento' => 'required',
-            'id_municipio' => 'required',
+            'telefono' => 'required|digits:8|unique:empleados,telefono,' . $id, // Asegura que el teléfono sea único durante la actualización
+            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'),
+            'fecha_contratacion' => 'required|date|before_or_equal:today',
+            'id_estado' => 'required|exists:estado_empleados,id',
+            'id_cargo' => 'required|exists:cargos,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipios,id',
             'direccion' => 'required|max:255'
         ]);
 
@@ -216,96 +228,42 @@ class EmpleadoController extends Controller
             return response()->json($data, 400);
         }
 
-        $empleado->nombres = $request->nombres;
-        $empleado->apellidos = $request->apellidos;
-        $empleado->dui = $request->dui;
-        $empleado->telefono = $request->telefono;
-        $empleado->fecha_nacimiento = $request->fecha_nacimiento;
-        $empleado->fecha_contratacion = $request->fecha_contratacion;
-        $empleado->id_estado = $request->id_estado;
-        $empleado->id_cargo = $request->id_cargo;
-        $empleado->id_departamento = $request->id_departamento;
-        $empleado->id_municipio = $request->id_municipio;
-        $empleado->direccion = $request->direccion;
-
-        $empleado->save();
+        $empleado->update($request->all());
 
         $data = [
-            'message' => 'Empleado actualizado',
-            'empleado' => $empleado,
+            'message' => 'Empleado actualizado con éxito.',
             'status' => 200
         ];
 
         return response()->json($data, 200);
     }
 
-    public function updatePartial(Request $request, $id)
+    private function validateEmpleado($request, $id = null)
     {
-        $empleado = Empleado::find($id);
-
-        if (!$empleado) {
-            $data = [
-                'message' => 'Empleado no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'nombres' => 'max:255',
-            'apellidos' => 'max:255',
-            'dui' => 'digits:9|unique:empleados,dui,' . $id,
-            'telefono' => 'digits:8',
-            'email' => 'email|unique:empleados,email,' . $id,
-            'direccion' => 'max:255',
-            'language' => 'in:English,Spanish,French'
-        ]);
-
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        if ($request->has('nombres')) {
-            $empleado->nombres = $request->nombres;
-        }
-
-        if ($request->has('apellidos')) {
-            $empleado->apellidos = $request->apellidos;
-        }
-
-        if ($request->has('dui')) {
-            $empleado->dui = $request->dui;
-        }
-
-        if ($request->has('telefono')) {
-            $empleado->telefono = $request->telefono;
-        }
-
-        if ($request->has('email')) {
-            $empleado->email = $request->email;
-        }
-
-        if ($request->has('direccion')) {
-            $empleado->direccion = $request->direccion;
-        }
-
-        if ($request->has('language')) {
-            $empleado->language = $request->language;
-        }
-
-        $empleado->save();
-
-        $data = [
-            'message' => 'Empleado actualizado',
-            'empleado' => $empleado,
-            'status' => 200
+        // Reglas de validación para los datos del empleado
+        $rules = [
+            'nombres' => 'required|max:255',
+            'apellidos' => 'required|max:255',
+            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:empleados,dui,' . $id, // Valida que el DUI sea único, excepto para el empleado que se está actualizando
+            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:empleados,telefono,' . $id, // Valida que el teléfono sea único, excepto para el empleado que se está actualizando
+            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la fecha de nacimiento sea de una persona mayor de 18 años
+            'fecha_contratacion' => 'required|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
+            'id_estado' => 'required|exists:estado,id',
+            'id_cargo' => 'required|exists:cargo,id',
+            'id_departamento' => 'required|exists:departamento,id',
+            'id_municipio' => 'required|exists:municipio,id',
+            'direccion' => 'required|max:255',
         ];
 
-        return response()->json($data, 200);
+        // Mensajes personalizados para las reglas de validación
+        $messages = [
+            'dui.unique' => 'El número de DUI ya está registrado.',
+            'telefono.unique' => 'El número de teléfono ya está registrado.',
+            'fecha_nacimiento.before_or_equal' => 'El empleado debe tener al menos 18 años.',
+            'fecha_contratacion.before_or_equal' => 'La fecha de contratación no puede ser una fecha futura.',
+        ];
+
+        // Devuelve el validador con las reglas y los mensajes personalizados
+        return Validator::make($request->all(), $rules, $messages);
     }
 }
