@@ -44,11 +44,8 @@ Route::post('send-email-verification',[EmailVerificationController::class, 'send
 Route::apiResource('detalle_orden', DetalleOrdenController::class);
 Route::apiResource('ordenes', OrdenController::class);
 
-
 //creacion del perfil del cliente
 Route::post('crear-perfil-cliente', [AuthController::class,'crearClientePerfil']);
-Route::put('actualizar-perfil-cliente/{id}', [AuthController::class,'actualizarClientePerfil']);
-Route::post('admin-registrar-cliente', [AuthController::class,'adminClienteRegistrar']);
 
 //restablecer password
 Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
@@ -67,10 +64,14 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole'])->middleware('permission:auth-assign_user_role');
     Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole'])->middleware('permission:auth-assign_permissions_to_role');
     Route::get('auth/logout', [AuthController::class, 'logout']);
+    Route::get('auth/logout-cliente', [AuthController::class, 'logoutCliente']);
     Route::put('auth/update/{id}', [AuthController::class, 'update'])->middleware('permission:auth-update');
     Route::post('auth/store', [AuthController::class, 'store'])->middleware('permission:auth-store');
     Route::delete('auth/destroy/{id}', [AuthController::class, 'destroy'])->middleware('permission:auth-destroy');
     Route::get('auth/get_assigned_permissions_to_role/{id}', [AuthController::class, 'getAssignedPermissionsToRole']);
+    //registro del cliente
+    Route::post('admin-registrar-cliente', [AuthController::class,'adminClienteRegistrar'])->middleware('permission:auth-adminClienteRegistrar');
+    Route::put('actualizar-perfil-cliente/{id}', [AuthController::class,'actualizarClientePerfil'])->middleware('permission:auth-actualizarClientePerfil');
 
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');
@@ -230,23 +231,19 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
     Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
 
-    Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden'])->middleware('auth:api');
-    Route::get('detalle-orden/{id}', [DetalleOrdenController::class,'detalles_orden_id'])->middleware('auth:api');
+    Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);
+    Route::get('detalle-orden/{id}', [DetalleOrdenController::class,'detalles_orden_id']);
 
     
-
     // Requerimiento 2: Generar PDF de la orden
-    Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('auth:api');
+    Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF']);
 
     // Requerimiento 8: Mostrar órdenes del cliente autenticado
-    Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('auth:api');
+    Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes']);
+
 
     //Requerimiento #3
     Route::get('/orden/hoja-de-trabajo/{idRuta}', [OrdenController::class, 'generarHojaDeTrabajo']);
-
     // Requerimiento #7
     Route::get('/ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
-
-
-
 });

@@ -19,6 +19,8 @@ class PermissionSeeder extends Seeder
             'auth-assign_permissions_to_role',
             'auth-update',
             'auth-store',
+            'auth-adminClienteRegistrar',
+            'auth-actualizarClientePerfil',
             'auth-destroy',
             'roles-view',
             'roles-create',
@@ -119,6 +121,7 @@ class PermissionSeeder extends Seeder
 
         if ($clienteRole) {
             $clienteRole->givePermissionTo([
+                'auth-actualizarClientePerfil',
                 'paquete-view',
                 'incidencias-create',
                 'incidencias-view', // Asumimos que se refiere a las incidencias que el cliente ha reportado
