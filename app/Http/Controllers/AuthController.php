@@ -516,6 +516,8 @@ class AuthController extends Controller
             ->select(
                 'users.id',
                 'users.email',
+                'roles.id as role_id',
+                'users.id_empleado',
                 'roles.name as role_name',
                 'users.status',
                 'users.created_at',
@@ -532,6 +534,8 @@ class AuthController extends Controller
         if ($startDate && $endDate) {
             $users->whereBetween(DB::raw('DATE(users.created_at)'), [$startDate, $endDate]);
         }
+
+        $users->whereNotNull('users.id_empleado');
 
         $users = $users->get();
 
