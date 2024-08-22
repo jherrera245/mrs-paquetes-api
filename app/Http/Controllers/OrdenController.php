@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AsignacionRutas;
 use App\Models\Direcciones;
+use App\Models\Transaccion;
 use App\Models\DetalleOrden;
 use App\Models\Orden;
 use App\Models\Paquete;
@@ -173,6 +174,13 @@ class OrdenController extends Controller
             'fecha_hora' => now(),
             'id_usuario' => $userId,
             'accion' => 'Paquete creado',
+        ]);
+
+        // Creamos la transaccion del paquete.
+        Transaccion::create([
+            'id_paquete' => $paquete->id,
+            'tipoMovimiento' => 'ENTRADA',
+            'fecha' => now(),
         ]);
 
         if ($paquete) {
