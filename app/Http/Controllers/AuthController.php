@@ -342,6 +342,16 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
+        if (!$user->hasRole('cliente')) {
+            try {
+                JWTAuth::invalidate(JWTAuth::getToken());
+                return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+    
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+            }
+        }
+
         if (!$user->email_verified_at) {
             return response()->json(['message' => 'Email no verificado'], Response::HTTP_FORBIDDEN);
         }
@@ -408,6 +418,16 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
+        if ($user->hasRole('cliente')) {
+            try {
+                JWTAuth::invalidate(JWTAuth::getToken());
+                return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+    
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+            }
+        }
 
         if ($user->status != 1) {
             return response()->json(['message' => 'Account is inactive'], Response::HTTP_FORBIDDEN);
