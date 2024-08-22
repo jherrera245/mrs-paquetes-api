@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paquete;
+use App\Models\Clientes;
 use App\Models\HistorialPaquete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
 use Exception;
+use DB;
 
 class PaqueteController extends Controller
 {
@@ -44,6 +47,120 @@ class PaqueteController extends Controller
         $paquetes->getCollection()->transform(function ($paquete) {
             return $this->transformPaquete($paquete);
         });
+
+        return response()->json($paquetes, 200);
+    }
+
+    public function getPaquetesByUser(Request $request)
+    {
+        $user = Auth::user();
+
+        $filters = $request->only([
+            'tipo_paquete',
+            'empaque',
+            'peso',
+            'estado_paquete',
+            'fecha_envio_desde',
+            'fecha_envio_hasta',
+            'fecha_entrega_estimada_desde',
+            'fecha_entrega_estimada_hasta',
+            'descripcion_contenido',
+            'palabra_clave'
+        ]);
+
+        $perPage = $request->input('per_page', 10);
+
+        $query = DB::table('paquetes')
+        ->select([
+            'paquetes.id',
+            'tipo_paquete.nombre as empaque',
+            'paquetes.peso',
+            'paquetes.uuid',
+            'paquetes.tag',
+            'estado_paquetes.nombre as estado_paquete',
+            'paquetes.fecha_envio',
+            'paquetes.fecha_entrega_estimada',
+            'paquetes.descripcion_contenido',
+            'paquetes.created_at',
+            'paquetes.updated_at',
+        ])
+        ->join('tipo_paquete', 'paquetes.id_tipo_paquete', '=', 'tipo_paquete.id')
+        ->join('empaquetado', 'paquetes.id_empaque', '=', 'tipo_paquete.id')
+        ->join('estado_paquetes', 'paquetes.id_estado_paquete', '=', 'estado_paquetes.id')
+        ->join('detalle_orden', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+        ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden');
+
+        if ($user->hasRole('cliente')) {
+            $cliente = Cliente::find($user->id);
+            $query->where('ordenes.id_cliente', $cliente->id);
+        }
+
+        foreach ($filters as $key => $value) {
+            if (!empty($value)) {
+                switch ($key) {
+                    case 'tipo_paquete':
+                        $query->where(function ($q) use ($value) {
+                            $q->where('tipo_paquete.nombre', 'like', '%' . $value . '%')
+                              ->orWhere('paquetes.id_tipo_paquete', $value);
+                        });
+                        break;
+        
+                    case 'empaque':
+                        $query->where(function ($q) use ($value) {
+                            $q->where('empaquetado.nombre', 'like', '%' . $value . '%')
+                              ->orWhere('paquetes.id_empaque', $value);
+                        });
+                        break;
+        
+                    case 'estado_paquete':
+                        $query->where(function ($q) use ($value) {
+                            $q->where('estado_paquetes.nombre', 'like', '%' . $value . '%')
+                              ->orWhere('paquetes.id_estado_paquete', $value);
+                        });
+                        break;
+        
+                    case 'descripcion_contenido':
+                        $query->where('paquetes.descripcion_contenido', 'like', '%' . $value . '%');
+                        break;
+        
+                    case 'peso':
+                        $query->where('paquetes.peso', $value);
+                        break;
+        
+                    case 'fecha_envio_desde':
+                        $query->whereDate('paquetes.fecha_envio', '>=', $value);
+                        break;
+        
+                    case 'fecha_envio_hasta':
+                        $query->whereDate('paquetes.fecha_envio', '<=', $value);
+                        break;
+        
+                    case 'fecha_entrega_estimada_desde':
+                        $query->whereDate('paquetes.fecha_entrega_estimada', '>=', $value);
+                        break;
+        
+                    case 'fecha_entrega_estimada_hasta':
+                        $query->whereDate('paquetes.fecha_entrega_estimada', '<=', $value);
+                        break;
+        
+                    case 'palabra_clave':
+                        $query->where(function ($q) use ($value) {
+                            $q->where('paquetes.descripcion_contenido', 'like', '%' . $value . '%')
+                              ->orWhere('paquetes.uuid', 'like', '%' . $value . '%')
+                              ->orWhere('paquetes.tag', 'like', '%' . $value . '%')
+                              ->orWhere('tipo_paquete.nombre', 'like', '%' . $value . '%')
+                              ->orWhere('empaquetado.nombre', 'like', '%' . $value . '%')
+                              ->orWhere('estado_paquetes.nombre', 'like', '%' . $value . '%');
+                        });
+                        break;
+        
+                    default:
+                        break;
+                }
+            }
+        }
+
+        $paquetes = $query->paginate($perPage);
 
         return response()->json($paquetes, 200);
     }

@@ -31,10 +31,6 @@ class CheckUserAccess
                 return response()->json(['message' => 'Account is inactive'], Response::HTTP_FORBIDDEN);
             }
 
-            if ($user->hasAccessChanged()) {
-                JWTAuth::invalidate(JWTAuth::getToken());
-                return response()->json(['message' => 'Access changed. Please log in again.'], Response::HTTP_UNAUTHORIZED);
-            }
         } catch (\Exception $e) {
             return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
         }

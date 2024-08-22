@@ -140,7 +140,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->middleware('permission:empleados-destroy');
 
     // Rutas
-    Route::resource('rutas', 'RutasController')->middleware('permission:rutas-view');
     Route::get('rutas', [RutasController::class, 'index'])->middleware('permission:rutas-view');
     Route::get('rutas/{ruta}', [RutasController::class, 'show'])->middleware('permission:rutas-show');
     Route::post('rutas', [RutasController::class, 'store'])->middleware('permission:rutas-create');
@@ -148,7 +147,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('rutas/{ruta}', [RutasController::class, 'destroy'])->middleware('permission:rutas-destroy');
 
     // Direcciones
-    Route::resource('direcciones', 'DireccionesController')->middleware('permission:direcciones-view');
     Route::get('direcciones', [DireccionesController::class, 'index'])->middleware('permission:direcciones-view');
     Route::get('direcciones/{direccione}', [DireccionesController::class, 'show'])->middleware('permission:direcciones-show');
     Route::post('direcciones', [DireccionesController::class, 'store'])->middleware('permission:direcciones-create');
@@ -156,7 +154,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('direcciones/{direccione}', [DireccionesController::class, 'destroy'])->middleware('permission:direcciones-destroy');
 
     // Destinos
-    Route::resource('destinos', 'DestinosController')->middleware('permission:destinos-view');
     Route::get('destinos', [DestinosController::class, 'index'])->middleware('permission:destinos-view');
     Route::get('destinos/{destino}', [DestinosController::class, 'show'])->middleware('permission:destinos-show');
     Route::post('destinos', [DestinosController::class, 'store'])->middleware('permission:destinos-create');
@@ -164,7 +161,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('destinos/{destino}', [DestinosController::class, 'destroy'])->middleware('permission:destinos-destroy');
 
     // Bodegas
-    Route::resource('bodegas', 'BodegasController')->middleware('permission:bodegas-view');
     Route::get('bodegas', [BodegasController::class, 'index'])->middleware('permission:bodegas-view');
     Route::get('bodegas/{bodega}', [BodegasController::class, 'show'])->middleware('permission:bodegas-show');
     Route::post('bodegas', [BodegasController::class, 'store'])->middleware('permission:bodegas-create');
@@ -172,7 +168,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('bodegas/{bodega}', [BodegasController::class, 'destroy'])->middleware('permission:bodegas-destroy');
 
     // Asignación Rutas
-    Route::resource('asignacionrutas', 'AsignacionRutasController')->middleware('permission:asignacionrutas-view');
     Route::get('asignacionrutas', [AsignacionRutasController::class, 'index'])->middleware('permission:asignacionrutas-view');
     
     Route::get('asignacionrutas/estadoPaquetes/{id}', [AsignacionRutasController::class, 'estadoPaquetes'])->middleware('permission:asignacionrutas-view');
@@ -182,6 +177,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::delete('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy'])->middleware('permission:asignacionrutas-destroy');
 
     // Paquete
+    Route::get('paquete/get_paquetes_by_user', [PaqueteController::class, 'getPaquetesByUser']);
     Route::get('paquete', [PaqueteController::class, 'index'])->middleware('permission:paquete-view');
     Route::get('paquete/{paquete}', [PaqueteController::class, 'show'])->middleware('permission:paquete-show');
     Route::post('paquete', [PaqueteController::class, 'store'])->middleware('permission:paquete-create');

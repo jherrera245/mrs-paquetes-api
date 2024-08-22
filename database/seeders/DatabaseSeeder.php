@@ -35,7 +35,8 @@ class DatabaseSeeder extends Seeder
             TipoPersonaSeeder::class,
             UsersSeeder::class,
             TipoPagoSeeder::class,
-            TipoEntregaSeeder::class
+            TipoEntregaSeeder::class,
+            VehicleSeeder::class
         ]);
     }
 }
