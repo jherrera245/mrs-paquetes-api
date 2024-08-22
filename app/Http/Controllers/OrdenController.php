@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\AsignacionRutas;
 use App\Models\Direcciones;
 use App\Models\DetalleOrden;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;// Importar el facade de DomPDF
+use Illuminate\Support\Str; // Importar el facade de DomPDF
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -35,7 +36,7 @@ class OrdenController extends Controller
         $perPage = $request->input('per_page', 10);
 
         $ordenesQuery = Orden::with(['cliente', 'tipoPago', 'direccion', 'detalles'])
-        ->search($filters);
+            ->search($filters);
 
         $ordenes = $ordenesQuery->paginate($perPage);
 
@@ -44,7 +45,28 @@ class OrdenController extends Controller
         }
 
         $ordenes->getCollection()->transform(function ($orden) {
-            return $this->transformOrden($orden);
+            return [
+                'id' => $orden->id,
+                'id_cliente' => $orden->id_cliente,
+                'cliente' => [
+                    'nombre' => $orden->cliente->nombre,
+                    'apellido' => $orden->cliente->apellido,
+                ],
+                'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+                'total_pagar' => $orden->total_pagar,
+                'costo_adicional' => $orden->costo_adicional,
+                'concepto' => $orden->concepto,
+                'numero_seguimiento' => $orden->numero_seguimiento,
+                'detalles' => $orden->detalles->map(function ($detalle) {
+                    return [
+                        'id_paquete' => $detalle->id_paquete,
+                        'descripcion' => $detalle->descripcion,
+                        'precio' => $detalle->precio,
+                    ];
+                }),
+                'created_at' => $orden->created_at,
+                'updated_at' => $orden->updated_at,
+            ];
         });
 
         return response()->json($ordenes, Response::HTTP_OK);
@@ -72,15 +94,17 @@ class OrdenController extends Controller
         try {
             $orden = $this->createOrder($request);
 
-            if ($orden) {
-                foreach ($request->input('detalles') as $detalle) {
-                    $this->createOrderDetail($orden, $detalle);
-                }
+            // Generar el número de seguimiento con el formato ORD00000000001
+            $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
+            $orden->numero_seguimiento = $numeroSeguimiento;
+            $orden->save();
 
-                DB::commit();
-                return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
+            foreach ($request->input('detalles') as $detalle) {
+                $this->createOrderDetail($orden, $detalle);
             }
 
+            DB::commit();
+            return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -92,6 +116,7 @@ class OrdenController extends Controller
             );
         }
     }
+
 
     private function createOrder($request)
     {
@@ -168,12 +193,7 @@ class OrdenController extends Controller
             // Guardar el detalle de la orden para obtener su ID
             $detalleOrden->save();
 
-            // Generar el número de seguimiento con el formato ORD00000000001
-            $numeroSeguimiento = 'ORD' . str_pad($detalleOrden->id, 10, '0', STR_PAD_LEFT);
-            $detalleOrden->numero_seguimiento = $numeroSeguimiento;
-
-            // Guardar el detalle de la orden con el número de seguimiento
-            $detalleOrden->save();
+           
         } else {
             throw new \Exception('Error al generar el paquete');
         }
@@ -210,6 +230,8 @@ class OrdenController extends Controller
             $orden->concepto = $request->input('concepto');
             $orden->save();
 
+
+
             $direccion_emisior = Direcciones::find($orden->id_direccion);
             if (!$direccion_emisior) {
                 return response()->json(['message' => 'Dirección no encontrada'], Response::HTTP_NOT_FOUND);
@@ -234,7 +256,6 @@ class OrdenController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Orden actualizada con éxito'], Response::HTTP_OK);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -274,7 +295,6 @@ class OrdenController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Estado de entrega actualizado con éxito'], Response::HTTP_OK);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -334,7 +354,6 @@ class OrdenController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Orden eliminada.'], Response::HTTP_OK);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -349,7 +368,7 @@ class OrdenController extends Controller
 
     public function show($id)
     {
-        $orden = Orden::find($id);
+        $orden = Orden::with('detalles')->find($id);
 
         if (!$orden) {
             return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
@@ -366,6 +385,7 @@ class OrdenController extends Controller
             'costo_adicional' => $orden->costo_adicional,
             'id_direccion' => $orden->id_direccion,
             'concepto' => $orden->concepto,
+            'numero_seguimiento' => $orden->numero_seguimiento,
             'direccion_emisor' => [
                 'id_direccion' => $direccion->id,
                 'direccion' => $direccion->direccion,
@@ -382,14 +402,13 @@ class OrdenController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
-
     /**
      * Requerimiento 2: Genera un PDF con los detalles de la orden especificada.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    
+
 
     public function generatePDF($id)
     {
@@ -414,12 +433,12 @@ class OrdenController extends Controller
 
         // Devolver el PDF como string base64 para que el frontend pueda manejarlo
         $pdfContent = $pdf->output();
-        
+
         // Devolver la respuesta con el PDF codificado en base64
         return response()->json(['pdf' => base64_encode($pdfContent)], 200);
 
         // Devolver el PDF sin codificación, directamente como un archivo PDF
-    // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
+        // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
     }
 
     /**
@@ -435,8 +454,8 @@ class OrdenController extends Controller
 
         // Buscar las órdenes del cliente autenticado y cargar las relaciones necesarias
         $ordenes = Orden::where('id_cliente', $cliente_id)
-                        ->with(['detalles', 'direccion', 'tipoPago', 'cliente'])
-                        ->get();
+            ->with(['detalles', 'direccion', 'tipoPago', 'cliente'])
+            ->get();
 
         // Verificar si el cliente tiene órdenes
         if ($ordenes->isEmpty()) {
@@ -444,7 +463,7 @@ class OrdenController extends Controller
         }
 
         // Formatear la respuesta para incluir los nombres en lugar de los IDs
-        $ordenes = $ordenes->map(function($orden) {
+        $ordenes = $ordenes->map(function ($orden) {
             return [
                 'id' => $orden->id,
                 'cliente' => optional($orden->cliente)->nombre, // Usar optional para manejar nulos
@@ -461,7 +480,7 @@ class OrdenController extends Controller
                 'finished' => $orden->finished,
                 'created_at' => $orden->created_at,
                 'updated_at' => $orden->updated_at,
-                'detalles' => $orden->detalles->map(function($detalle) {
+                'detalles' => $orden->detalles->map(function ($detalle) {
                     return [
                         'id_paquete' => $detalle->id_paquete,
                         'descripcion' => $detalle->descripcion,
@@ -545,10 +564,11 @@ class OrdenController extends Controller
         // Generar comprobante
         $comprobante = $this->generarComprobante($orden->id);
 
-        return response()->json([
-            'message' => 'Pago procesado con éxito',
-            'comprobante' => $comprobante
-        ],
+        return response()->json(
+            [
+                'message' => 'Pago procesado con éxito',
+                'comprobante' => $comprobante
+            ],
             200
         );
     }
@@ -663,27 +683,27 @@ class OrdenController extends Controller
 
         // Obtener los filtros de la solicitud
         $filters = $request->only([
-            'uuid', 
-            'fecha', 
-            'nombre_cliente_entrega', 
-            'nombre_cliente_recibe', 
+            'uuid',
+            'fecha',
+            'nombre_cliente_entrega',
+            'nombre_cliente_recibe',
             'id_ruta'
         ]);
 
         // Obtener las órdenes asignadas con los filtros aplicados
         $ordenes = Orden::whereHas('detalles', function ($query) use ($filters) {
-                $query->whereHas('asignacionRuta', function ($subq) use ($filters) {
-                    $subq->where('id_ruta', $filters['id_ruta'])
-                        ->when(isset($filters['uuid']), function ($q) use ($filters) {
-                            $q->whereHas('paquete', function ($q) use ($filters) {
-                                $q->where('uuid', 'like', '%' . $filters['uuid'] . '%');
-                            });
-                        })
-                        ->when(isset($filters['fecha']), function ($q) use ($filters) {
-                            $q->whereDate('fecha', $filters['fecha']);
+            $query->whereHas('asignacionRuta', function ($subq) use ($filters) {
+                $subq->where('id_ruta', $filters['id_ruta'])
+                    ->when(isset($filters['uuid']), function ($q) use ($filters) {
+                        $q->whereHas('paquete', function ($q) use ($filters) {
+                            $q->where('uuid', 'like', '%' . $filters['uuid'] . '%');
                         });
-                });
-            })
+                    })
+                    ->when(isset($filters['fecha']), function ($q) use ($filters) {
+                        $q->whereDate('fecha', $filters['fecha']);
+                    });
+            });
+        })
             ->when(isset($filters['nombre_cliente_entrega']) || isset($filters['nombre_cliente_recibe']), function ($query) use ($filters) {
                 $query->whereHas('cliente', function ($subq) use ($filters) {
                     if (isset($filters['nombre_cliente_entrega'])) {
@@ -700,5 +720,3 @@ class OrdenController extends Controller
         return response()->json($ordenes);
     }
 }
-
-    

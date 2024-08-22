@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('costo_adicional', 10);
             $table->longText('concepto');
             $table->boolean('finished')->default(0);
+            $table->string('numero_seguimiento')->nullable(); 
             $table->timestamps();
         });
     }

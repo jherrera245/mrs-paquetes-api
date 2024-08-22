@@ -27,11 +27,9 @@ return new class extends Migration
             $table->decimal('precio', 10);
             $table->dateTime('fecha_ingreso');
             $table->dateTime('fecha_entrega');
-            $table->string('numero_seguimiento')->nullable(); 
             $table->timestamps();
 
-            // Agregar la columna numero_seguimiento para almacenar el código de seguimiento único
-          //  $table->string('numero_seguimiento')->unique()->nullable()->after('id_paquete');
+         
         });
     }
 
