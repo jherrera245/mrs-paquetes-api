@@ -35,6 +35,22 @@ class Bodegas extends Model
 	{
 		return $this->hasMany(Ruta::class, 'id_bodega');
 	}
+	/**
+	 * Relación con la tabla Pasillo
+	 */
+	public function pasillos()
+	{
+		return $this->hasMany(Pasillo::class, 'id_bodega');
+	}
+
+	/**
+	 * Relacion con la tabla transaccion
+	 */
+	public function transacciones()
+	{
+		return $this->hasMany(Transaccion::class, 'id_bodega');
+	}
+
 
 	public static function buscarConFiltros($nombre = null, $id_departamento = null, $id_municipio = null)
     {

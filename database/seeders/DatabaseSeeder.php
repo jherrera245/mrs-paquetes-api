@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
 
     public function run()
     {
+        DB::statement('ALTER TABLE pasillos AUTO_INCREMENT = 1;');
+        DB::statement('ALTER TABLE anaqueles AUTO_INCREMENT = 1;');
+        DB::statement('ALTER TABLE transacciones AUTO_INCREMENT = 1;');
+        
         // Lista de seeders a ejecutar
         $this->call([
             CargosTableSeeder::class,
@@ -36,7 +40,10 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
-            VehicleSeeder::class
+            VehicleSeeder::class,
+            BodegaSeeder::class,
+            PasilloSeeder::class,
+            AnaquelSeeder::class,
         ]);
     }
 }
