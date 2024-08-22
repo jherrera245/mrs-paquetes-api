@@ -22,6 +22,8 @@ class CreateAnaquelesTable extends Migration
             $table->integer('paquetes_actuales')->nullable();
             // estado -> 1: activo, 0: inactivo.
             $table->integer('estado');
+            // relacion con paquetes.
+            $table->foreignId('id_paquete')->nullable()->constrained('paquetes');
             $table->timestamps();
         });
     }

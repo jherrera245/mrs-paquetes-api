@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bodegas;
+use App\Models\Transaccion;
+use App\Models\Paquete;
+use App\Models\Pasillo;
+use App\Models\Anaquel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -161,6 +165,64 @@ class BodegasController extends Controller
     ];
 
     return response()->json($data, 200);
+    }
+
+    // Función para agregar paquetes a bodega.
+    public function agregarPaquete(Request $request)
+    {
+        try {
+            // Validar que los campos no estén vacíos
+            $validator = Validator::make($request->all(), [
+                'uuid' => 'required|string',
+                'id_bodega' => 'required',
+                'id_pasillo' => 'required',
+                'id_anaquel' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Error en la validación de los datos',
+                    'errors' => $validator->errors(),
+                    'status' => 400
+                ], 400);
+            }
+
+            // Buscar el paquete por UUID
+            $paquete = Paquete::where('uuid', $request->uuid)->firstOrFail();
+
+            // Buscar la bodega, pasillo, y anaquel (con manejo de excepciones)
+            $bodega = Bodegas::findOrFail($request->id_bodega);
+            $pasillo = Pasillo::findOrFail($request->id_pasillo);
+            $anaquel = Anaquel::findOrFail($request->id_anaquel);
+
+            
+
+            // Verificar la capacidad del anaquel
+            if ($anaquel->capacidad > $anaquel->paquetes_actuales) {
+                $anaquel->paquetes_actuales++;
+                $anaquel->save();
+
+                // Crear la transacción
+                Transaccion::create([
+                    'id_paquete' => $paquete->id,
+                    'id_bodega' => $bodega->id,
+                    'id_pasillo' => $pasillo->id,
+                    'id_anaquel' => $anaquel->id,
+                    'tipoMovimiento' => 'ENTRADA',
+                    'fecha' => now(),
+                ]);
+
+                return response()->json(['message' => 'Paquete agregado a la bodega exitosamente'], 201);
+            } else {
+                return response()->json(['error' => 'No hay espacio en el anaquel'], 400);
+            }
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Manejo de excepción si no se encuentra un modelo (paquete, bodega, pasillo, anaquel)
+            return response()->json(['error' => 'Elemento no encontrado: ' . $e->getMessage()], 404);
+        } catch (\Exception $e) {
+            // Manejo de cualquier otra excepción
+            return response()->json(['error' => 'Ocurrió un error inesperado: ' . $e->getMessage()], 500);
+        }
     }
 
     /**

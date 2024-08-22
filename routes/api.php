@@ -168,6 +168,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('bodegas', [BodegasController::class, 'index'])->middleware('permission:bodegas-view');
     Route::get('bodegas/{bodega}', [BodegasController::class, 'show'])->middleware('permission:bodegas-show');
     Route::post('bodegas', [BodegasController::class, 'store'])->middleware('permission:bodegas-create');
+    Route::post('bodegas/agregarPaquete/', [BodegasController::class, 'agregarPaquete'])->middleware('permission:bodegas-create');
     Route::put('bodegas/{bodega}', [BodegasController::class, 'update'])->middleware('permission:bodegas-update');
     Route::delete('bodegas/{bodega}', [BodegasController::class, 'destroy'])->middleware('permission:bodegas-destroy');
 

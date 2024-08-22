@@ -43,6 +43,18 @@ class Paquete extends Model
         return $this->belongsTo(TipoPaquete::class, 'id_tipo_paquete');
     }
 
+    // Relación con la tabla de transaccion.
+    public function transacciones()
+    {
+        return $this->hasMany(Transaccion::class, 'id_paquete');
+    }
+
+    // relacion con anaquel.
+    public function anaquel()
+    {
+        return $this->hasMany(Anaquel::class, 'id_paquete');
+    }
+
     public function empaquetado()
     {
         return $this->belongsTo(Empaquetado::class, 'id_empaque');

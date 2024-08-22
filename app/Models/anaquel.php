@@ -17,6 +17,7 @@ class Anaquel extends Model
         'capacidad' => 'int',
         'paquetes_actuales' => 'int',
         'estado' => 'int',
+        'id_paquete' => 'int',
     ];
 
     protected $fillable = [
@@ -25,6 +26,7 @@ class Anaquel extends Model
         'capacidad',
         'paquetes_actuales',
         'estado',
+        'id_paquete',
     ];
 
     /**
@@ -33,6 +35,14 @@ class Anaquel extends Model
     public function pasillo()
     {
         return $this->belongsTo(Pasillo::class, 'id_pasillo');
+    }
+
+    /**
+     * Relación con la tabla Paquete
+     */
+    public function paquete()
+    {
+        return $this->belongsTo(Paquete::class, 'id_paquete');
     }
 
     /**
