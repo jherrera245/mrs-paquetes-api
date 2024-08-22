@@ -119,7 +119,7 @@ class AuthController extends Controller
 
         $user->notify(new EmailVerificationNotification());
 
-        return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
+        return response()->json(['message' => 'Usuario registado con exito'], Response::HTTP_OK);
     }
 
     public function crearClientePerfil(Request $request)
@@ -177,6 +177,10 @@ class AuthController extends Controller
             return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
         }
 
+        $clienteCreado= Clientes::where('id_user', $user->id)->first();
+        if ($clienteCreado) {
+            return response()->json(['error' => 'El perfil del cliente ya ha sido creado'], Response::HTTP_CONFLICT);
+        }
         try {
             $cliente = new Clientes();
 
@@ -312,6 +316,31 @@ class AuthController extends Controller
         }
     }
 
+    public function verificarPerfilExistente(Request $request)
+    {
+      
+        $user = JWTAuth::parseToken()->authenticate();
+    
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
+        }
+    
+      
+        $user_id = $user->id;
+        $clienteExiste = Clientes::where('id_user', $user_id)->first();
+    
+        if ($clienteExiste) {
+            return response()->json([
+                'exists' => true,
+                'message' => 'El perfil del cliente ya ha sido creado.'
+            ], Response::HTTP_OK);
+        } else {
+            return response()->json([
+                'exists' => false,
+                'message' => 'El perfil del cliente no ha sido creado.'
+            ], Response::HTTP_OK);
+        }
+    }
 
     public function login_cliente(Request $request)
     {

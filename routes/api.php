@@ -25,6 +25,8 @@ use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
+use Tymon\JWTAuth\Contracts\Providers\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -57,6 +59,8 @@ Route::post('login-cliente',[AuthController::class, 'login_cliente']);
 Route::post('register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
+
+    Route::get('verificar-perfil', [AuthController::class, 'verificarPerfilExistente']);
     // Routes users api
     Route::get('auth/get_user', [AuthController::class, 'getUser'])->middleware('permission:auth-view_user');
     Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById'])->middleware('permission:auth-get_user_by_id');
