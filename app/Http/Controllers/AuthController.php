@@ -138,7 +138,7 @@ class AuthController extends Controller
             'telefono',
             'id_tipo_persona',
             'es_contribuyente',
-            'fecha_registro',
+          
             'id_departamento',
             'id_municipio',
             'nit',
@@ -153,7 +153,7 @@ class AuthController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'nombre_comercial' => 'nullable|string|max:255',
-            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
+            'dui' => 'nullable|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
             'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
