@@ -22,6 +22,7 @@ class anaquelSeeder extends Seeder
                 'capacidad' => 100,
                 'paquetes_actuales' => 0,
                 'estado' => 1,
+                'fecha_registro' => '2024-08-22',
             ],
             [
                 'id_pasillo' => 1,
@@ -29,6 +30,7 @@ class anaquelSeeder extends Seeder
                 'capacidad' => 100,
                 'paquetes_actuales' => 0,
                 'estado' => 1,
+                'fecha_registro' => '2024-08-22',
             ],
         ];
 
