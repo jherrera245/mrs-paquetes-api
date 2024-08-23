@@ -619,6 +619,57 @@ class OrdenController extends Controller
         return base64_encode($output);
     }
 
+    public function comprobanteConsumidorFinal($id)
+    {
+        $orden = DB::table('ordenes')->where('id', $id)->first();
+        $numero_control = 'DTE-01-M001P0001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
+        $codigo_generacion = Str::uuid();
+        $sello_registro = sha1($codigo_generacion);
+        $sello_registro = date('Y').substr($sello_registro, 0, 36);
+        
+        $cliente = $results = DB::table('clientes as cli')
+        ->join('users as u', 'u.id', '=', 'cli.id_user')
+        ->select(
+            'cli.id',
+            'cli.nombre',
+            'cli.apellido',
+            'cli.nombre_comercial',
+            'cli.nombre_empresa',
+            'cli.direccion',
+            'cli.dui',
+            'cli.nit',
+            'cli.es_contribuyente',
+            'u.email',
+            'cli.telefono'
+        )->where('cli.id', $orden->id_cliente)->first();
+
+        $detalles =  DB::table('detalle_orden as do')
+        ->select(
+            'p.id as codigo_paquete',
+            'p.peso',
+            'p.uuid',
+            'do.descripcion',
+            'do.instrucciones_entrega',
+            'do.precio'
+        )
+        ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
+        ->where('do.id_orden', $id)
+        ->get();
+
+        $pdf = PDF::loadView('pdf.consumidor_final', 
+            [
+                "orden" => $orden, 
+                "numero_control" => $numero_control,
+                "codigo_generacion" => $codigo_generacion,
+                "sello_recepcion" => $sello_registro,
+                "cliente" => $cliente, 
+                "detalles" => $detalles
+            ]
+        );
+
+        return $pdf->download('orden.pdf');
+    }
+
     public function visualizarComprobante($id)
     {
         $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
