@@ -75,8 +75,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('auth/get_assigned_permissions_to_role/{id}', [AuthController::class, 'getAssignedPermissionsToRole']);
     //registro del cliente
     Route::post('admin-registrar-cliente', [AuthController::class,'adminClienteRegistrar'])->middleware('permission:auth-adminClienteRegistrar');
-    Route::put('actualizar-perfil-cliente/{id}', [AuthController::class,'actualizarClientePerfil'])->middleware('permission:auth-actualizarClientePerfil');
-
+    Route::put('actualizar-perfil-cliente', [AuthController::class,'actualizarClientePerfil'])->middleware('permission:auth-actualizarClientePerfil');
+    Route::get('perfil-cliente', [AuthController::class,'verPerfilCliente']);
     // Roles
     Route::get('roles', [RoleController::class, 'index'])->middleware('permission:roles-view');
     Route::post('roles', [RoleController::class, 'store'])->middleware('permission:roles-create');

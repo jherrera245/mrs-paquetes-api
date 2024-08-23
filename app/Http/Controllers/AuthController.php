@@ -18,10 +18,13 @@ class AuthController extends Controller
 {
     public function adminClienteRegistrar(Request $request)
     {
-        $r_user = 2;
 
+    $r_user = 2;
         // Indicamos que solo queremos recibir  email y password de la request
-        $data = $request->only('email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 'nombre_empresa', 'direccion');
+    $data = $request->only( 'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 
+                            'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 
+                            'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 
+                            'nombre_empresa', 'direccion');
 
         // Realizamos las validaciones
         $validator = Validator::make($data, [
@@ -30,10 +33,10 @@ class AuthController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'nombre_comercial' => 'nullable|string|max:255',
-            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
+            'dui' => 'nullable|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui',
             'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:clientes,telefono',
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
-            'es_contribuyente' => 'required|boolean',
+            'es_contribuyente' => 'nullable|boolean',
             'fecha_registro' => 'nullable|date_format:Y-m-d',
             'id_estado' => 'required|exists:estado_clientes,id',
             'id_departamento' => 'required|exists:departamento,id',
@@ -136,7 +139,6 @@ class AuthController extends Controller
             'id_tipo_persona',
             'es_contribuyente',
             'fecha_registro',
-            'id_estado',
             'id_departamento',
             'id_municipio',
             'nit',
@@ -156,7 +158,6 @@ class AuthController extends Controller
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
             'es_contribuyente' => 'required|boolean',
             'fecha_registro' => 'nullable|date_format:Y-m-d',
-            'id_estado' => 'required|exists:estado_clientes,id',
             'id_departamento' => 'required|exists:departamento,id',
             'id_municipio' => 'required|exists:municipios,id',
             'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/|unique:clientes,nit',
@@ -194,7 +195,7 @@ class AuthController extends Controller
                 'id_tipo_persona' => $request->id_tipo_persona,
                 'es_contribuyente' => $request->es_contribuyente,
                 'fecha_registro' =>  now(),
-                'id_estado' => $request->id_estado,
+                'id_estado' => 1,
                 'id_departamento' => $request->id_departamento,
                 'id_municipio' => $request->id_municipio,
                 'nit' => $request->nit,
@@ -215,8 +216,44 @@ class AuthController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    
+    public function verPerfilCliente()
+    {
+        //obtener el usuario autenticado
+        $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
+        }
 
-    public function actualizarClientePerfil(Request $request, $id)
+        $cliente = Clientes::where('id_user', $user->id)->first();
+
+        if (!$cliente) {
+        return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+        
+        $datosCliente = [
+           'email' => $user->email,
+            'nombre' => $cliente->nombre,
+            'apellido' => $cliente->apellido,
+            'nombre_comercial' => $cliente->nombre_comercial,
+            'dui' => $cliente->dui,
+            'telefono' => $cliente->telefono,
+            'id_tipo_persona' => $cliente->id_tipo_persona,
+            'es_contribuyente' => $cliente->es_contribuyente,
+            'id_departamento' => $cliente->id_departamento,
+            'id_municipio' => $cliente->id_municipio,
+            'nit' => $cliente->nit,
+            'nrc' => $cliente->nrc,
+            'giro' => $cliente->giro,
+            'nombre_empresa' => $cliente->nombre_empresa,
+            'direccion' => $cliente->direccion
+        ];
+        return response()->json([
+            'cliente' =>  $datosCliente
+        ], Response::HTTP_OK);
+    }
+
+    public function actualizarClientePerfil(Request $request)
     {
         // Obtener el usuario autenticado usando JWT
         $user = JWTAuth::parseToken()->authenticate();
@@ -235,7 +272,6 @@ class AuthController extends Controller
             'telefono',
             'id_tipo_persona',
             'es_contribuyente',
-            'id_estado',
             'id_departamento',
             'id_municipio',
             'nit',
@@ -252,17 +288,16 @@ class AuthController extends Controller
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'nombre_comercial' => 'nullable|string|max:255',
-            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui,' . $user->id . ',id_user',
+            'dui' => 'nullable|regex:/^\d{8}-?\d{1}$/|unique:clientes,dui,' . $user->id . ',id_user',
             'telefono' => 'required|regex:/^\d{4}-?\d{4}$/',
             'id_tipo_persona' => 'required|exists:tipo_persona,id',
-            'es_contribuyente' => 'required|boolean',
-            'id_estado' => 'required|exists:estado_clientes,id',
+            'es_contribuyente' => 'nullable|boolean',
             'id_departamento' => 'required|exists:departamento,id',
             'id_municipio' => 'required|exists:municipios,id',
-            'nit' => 'required|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
-            'nrc' => 'required|regex:/^\d{6}-?\d{1}$/',
+            'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
+            'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/',
             'giro' => 'required|string',
-            'nombre_empresa' => 'required|string',
+            'nombre_empresa' => 'nullable|string',
             'direccion' => 'required|string'
         ]);
 
@@ -295,7 +330,6 @@ class AuthController extends Controller
             $cliente->telefono = $request->input('telefono', $cliente->telefono);
             $cliente->id_tipo_persona = $request->input('id_tipo_persona', $cliente->id_tipo_persona);
             $cliente->es_contribuyente = $request->input('es_contribuyente', $cliente->es_contribuyente);
-            $cliente->id_estado = $request->input('id_estado', $cliente->id_estado);
             $cliente->id_departamento = $request->input('id_departamento', $cliente->id_departamento);
             $cliente->id_municipio = $request->input('id_municipio', $cliente->id_municipio);
             $cliente->nit = $request->input('nit', $cliente->nit);
