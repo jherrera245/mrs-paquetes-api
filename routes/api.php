@@ -25,6 +25,7 @@ use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\VinetaController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -121,6 +122,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('ordenes/{ordenes}/comprobante', [OrdenController::class, 'generarComprobante'])->middleware('permission:orden-view');
     Route::get('ordenes/{ordenes}/visualizar-comprobante', [OrdenController::class, 'visualizarComprobante'])->middleware('permission:orden-view');
     Route::get('ordenes/documento/{id}', [OrdenController::class, 'comprobanteConsumidorFinal']);
+    Route::get('/ordenes/{ordenes}/vineta', [VinetaController::class, 'generarVineta']);
 
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');
