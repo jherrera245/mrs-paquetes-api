@@ -778,4 +778,79 @@ class OrdenController extends Controller
 
         return response()->json($ordenes);
     }
+    
+    public function buscarPorNumeroSeguimiento(Request $request)
+    {
+        // Validar el número de seguimiento
+        $request->validate([
+            'numero_seguimiento' => 'required|string|max:255'
+        ]);
+
+        // Buscar la orden por numero_seguimiento
+        $orden = Orden::where('numero_seguimiento', $request->numero_seguimiento)
+                      ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
+                      ->first();
+
+        if ($orden) {
+            // Obtener detalles de la orden (suponiendo que todos los detalles son similares)
+            $detalleOrden = $orden->detalleOrden->first();
+
+            // Extraer paquetes únicos asociados a la orden y eliminar valores nulos
+            $paquetes = $orden->detalleOrden->map(function ($detalle) {
+                return $detalle->paquete;
+            })->filter()->unique('id')->values(); // Usa filter() para eliminar valores nulos y values() para resetear las claves
+
+            // Mapear paquetes con sus estados
+            $paquetesConEstados = $paquetes->map(function ($paquete) {
+                return [
+                    'id' => $paquete->id,
+                    'id_tipo_paquete' => $paquete->id_tipo_paquete,
+                    'id_empaque' => $paquete->id_empaque,
+                    'peso' => $paquete->peso,
+                    'uuid' => $paquete->uuid,
+                    'tag' => $paquete->tag,
+                    'fecha_envio' => $paquete->fecha_envio,
+                    'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
+                    'descripcion_contenido' => $paquete->descripcion_contenido,
+                    'estado' => $paquete->estado ? [
+                        'id' => $paquete->estado->id,
+                        'nombre' => $paquete->estado->nombre
+                    ] : null
+                ];
+            });
+
+            return response()->json([
+                'id' => $orden->id,
+                'id_cliente' => $orden->id_cliente,
+                'id_direccion' => $orden->id_direccion,
+                'id_tipo_pago' => $orden->id_tipo_pago,
+                'total_pagar' => $orden->total_pagar,
+                'costo_adicional' => $orden->costo_adicional,
+                'concepto' => $orden->concepto,
+                'numero_seguimiento' => $orden->numero_seguimiento,
+                'tipo_factura' => $orden->tipo_factura,
+                'estado_pago' => $orden->estado_pago,
+                'created_at' => $orden->created_at,
+                'updated_at' => $orden->updated_at,
+                'detalleOrden' => $detalleOrden ? [
+                    'id' => $detalleOrden->id,
+                    'id_paquete' => $detalleOrden->id_paquete,
+                    'id_tipo_entrega' => $detalleOrden->id_tipo_entrega,
+                    'id_estado_paquete' => $detalleOrden->id_estado_paquete,
+                    'id_cliente_entrega' => $detalleOrden->id_cliente_entrega,
+                    'id_direccion_entrega' => $detalleOrden->id_direccion_entrega,
+                    'validacion_entrega' => $detalleOrden->validacion_entrega,
+                    'instrucciones_entrega' => $detalleOrden->instrucciones_entrega,
+                    'descripcion' => $detalleOrden->descripcion,
+                    'precio' => $detalleOrden->precio,
+                    'fecha_ingreso' => $detalleOrden->fecha_ingreso,
+                    'fecha_entrega' => $detalleOrden->fecha_entrega
+                ] : null,
+                'paquetes' => $paquetesConEstados
+            ]);
+        }
+
+        return response()->json(['message' => 'Orden no encontrada'], 404);
+    }
+
 }

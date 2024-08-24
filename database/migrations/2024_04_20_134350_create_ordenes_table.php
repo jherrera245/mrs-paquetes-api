@@ -23,6 +23,7 @@ return new class extends Migration
             $table->longText('concepto');
             $table->boolean('finished')->default(0);
             $table->string('numero_seguimiento')->nullable(); 
+            $table->enum('tipo_factura', ['consumidor final', 'credito fiscal']);
             $table->timestamps();
         });
     }

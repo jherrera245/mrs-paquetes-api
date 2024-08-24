@@ -53,6 +53,7 @@ Route::post('crear-perfil-cliente', [AuthController::class,'crearClientePerfil']
 //restablecer password
 Route::post('password/forget-password',[ForgetPasswordController::class, 'forgetPassword']);
 Route::post('password/reset',[ResetPasswordController::class, 'passwordReset']);
+Route::get('seguimiento-orden', [OrdenController::class, 'buscarPorNumeroSeguimiento']);
 
 //inicia sesion el cliente
 Route::post('login-cliente',[AuthController::class, 'login_cliente']);

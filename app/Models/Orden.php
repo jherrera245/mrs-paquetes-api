@@ -27,8 +27,10 @@ class Orden extends Model
     public function cliente(): BelongsTo{
         return $this->belongsTo(Clientes::class, 'id_cliente');
     }
-
-     
+    public function paquete()
+    {
+        return $this->belongsTo(Paquete::class, 'id_paquete');
+    }  
     // Relación con el modelo TipoPago
         public function tipoPago()
         {
@@ -42,6 +44,10 @@ class Orden extends Model
     }
 
     public function detalles()
+    {
+        return $this->hasMany(DetalleOrden::class, 'id_orden');
+    }
+    public function detalleOrden()
     {
         return $this->hasMany(DetalleOrden::class, 'id_orden');
     }
