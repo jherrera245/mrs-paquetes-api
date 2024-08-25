@@ -7,7 +7,7 @@
         @page {
             size: letter;
             margin: 1cm;
-            font-family: Century;
+            font-family: 'Roboto', sans-serif;
             font-size: 9pt;
         }
 
@@ -105,21 +105,33 @@
 </head>
 <body>
     <div class="container">
-        <img src="data:image/p{{ $logo }}" alt="QR Code" style="width: 100px; height: 100px;">
-        <h1>DOCUMENTO TRIBUTARIO ELECTRÓNICO FACTURA CONSUMIDOR FINAL</h1>
-        <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 100px; height: 100px;">
+       
+        <table id="logo-table">
+            <tr>
+                <td style="width: 10%">
+                    <img src="{{ $logo }}" alt="Logo" style="width: 100px; height: 100px;">
+                </td>
+                <td style="width: 80%">
+                    <h1>DOCUMENTO TRIBUTARIO ELECTRÓNICO<br>FACTURA CONSUMIDOR FINAL</h1>
+                </td>
+                <td style="width: 10%">
+                    <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 100px; height: 100px;">
+                </td>
+            </tr>
+        </table>
+
         <table id="header-table">
             <tr>
-                <td style="width: 50%"><b>Código Generación</b>: {{$codigo_generacion}}</td>
-                <td style="width: 50%"><b>Modelo de facturación</b>: Transmisión normal</td>
+                <td style="width: 60%"><b>Código Generación</b>: {{$codigo_generacion}}</td>
+                <td style="width: 40%"><b>Modelo de facturación</b>: Transmisión normal</td>
             </tr>
             <tr>
-                <td style="width: 50%"><b>Número de Control</b>: {{$numero_control}}</td>
-                <td style="width: 50%"><b>Tipo de transamisión</b>: Normal</td>
+                <td style="width: 60%"><b>Número de Control</b>: {{$numero_control}}</td>
+                <td style="width: 40%"><b>Tipo de transamisión</b>: Normal</td>
             </tr>
             <tr>
-                <td style="width: 50%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
-                <td style="width: 50%"><b>Fecha y Hora de Generación</b>:</td>
+                <td style="width: 60%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
+                <td style="width: 40%"><b>Fecha y Hora de Generación</b>:</td>
             </tr>
         </table>
 
@@ -137,7 +149,7 @@
                         <p><b>Correo electrónico</b>: soporte.ti@ mrspaquetes.com.sv</p>
                         <p><b>Dirección</b>: San Miguel</p>
                         <p><b>Teléfono</b>:25673383 &nbsp;&nbsp;&nbsp;<b>NRC</b>: 1234567</p>
-                        <p><b>Actividad econoómica</b>: Servicio de entrega a domicilio de paquetes</p>
+                        <p><b>Actividad económica</b>: Servicio de entrega a domicilio de paquetes</p>
                     </td>
                     <td style="width: 50%">
                         <p><b>Nombre</b>: {{$cliente->nombre}} {{$cliente->apellido}}</p>
@@ -165,10 +177,10 @@
             </thead>
             <tbody>
                 @php
-                    $item = 0;
+                    $item = 1;
                     $sumatoria = 0;
                     $iva = 0;
-                    $subtotal = 1;
+                    $subtotal = 0;
                 @endphp
                 @foreach ($detalles as $detalle)
                 <tr>

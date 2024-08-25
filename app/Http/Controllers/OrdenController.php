@@ -640,15 +640,6 @@ class OrdenController extends Controller
             ->build();
 
         $qrCodeBase64 = base64_encode($makeQr->getString());
-        $logoPath = 'public/images/logo-claro.png';
-        $logo = '';
-
-        if (Storage::exists($logoPath)) {
-            $imageContent = Storage::get($logoPath);
-            $mime = Storage::mimeType($imageContent);
-            $base64 = base64_encode($imageContent);
-            $logo = 'data:' . $mime . ';base64,' . $base64;
-        }
         
         $cliente = $results = DB::table('clientes as cli')
         ->join('users as u', 'u.id', '=', 'cli.id_user')
@@ -686,7 +677,7 @@ class OrdenController extends Controller
                 "codigo_generacion" => $codigo_generacion,
                 "sello_recepcion" => $sello_registro,
                 "qrCodeBase64" => $qrCodeBase64,
-                'logo' => $logo,
+                'logo' => 'images/logo-claro.png',
                 "cliente" => $cliente, 
                 "detalles" => $detalles
             ]
