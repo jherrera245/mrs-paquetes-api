@@ -626,6 +626,29 @@ class OrdenController extends Controller
         $codigo_generacion = Str::uuid();
         $sello_registro = sha1($codigo_generacion);
         $sello_registro = date('Y').substr($sello_registro, 0, 36);
+
+        // Generar el código QR
+        $makeQr = Builder::create()
+            ->writer(new PngWriter())
+            ->writerOptions([])
+            ->data($orden->numero_seguimiento)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->size(200)
+            ->margin(10)
+            ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->build();
+
+        $qrCodeBase64 = base64_encode($makeQr->getString());
+        $logoPath = 'public/images/logo-claro.png';
+        $logo = '';
+
+        if (Storage::exists($logoPath)) {
+            $imageContent = Storage::get($logoPath);
+            $mime = Storage::mimeType($imageContent);
+            $base64 = base64_encode($imageContent);
+            $logo = 'data:' . $mime . ';base64,' . $base64;
+        }
         
         $cliente = $results = DB::table('clientes as cli')
         ->join('users as u', 'u.id', '=', 'cli.id_user')
@@ -662,6 +685,8 @@ class OrdenController extends Controller
                 "numero_control" => $numero_control,
                 "codigo_generacion" => $codigo_generacion,
                 "sello_recepcion" => $sello_registro,
+                "qrCodeBase64" => $qrCodeBase64,
+                'logo' => $logo,
                 "cliente" => $cliente, 
                 "detalles" => $detalles
             ]

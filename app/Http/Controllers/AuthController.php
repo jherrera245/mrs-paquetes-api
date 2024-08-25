@@ -635,7 +635,8 @@ class AuthController extends Controller
             )
             ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
             ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-            ->where('model_has_roles.model_type', 'App\\Models\\User');
+            ->where('model_has_roles.model_type', 'App\\Models\\User')
+            ->where('roles.name', '<>', 'cliente');
 
         if ($email) {
             $users->where('users.email', 'like', '%' . $email . '%');
@@ -644,8 +645,6 @@ class AuthController extends Controller
         if ($startDate && $endDate) {
             $users->whereBetween(DB::raw('DATE(users.created_at)'), [$startDate, $endDate]);
         }
-
-        $users->whereNotNull('users.id_empleado');
 
         $users = $users->get();
 

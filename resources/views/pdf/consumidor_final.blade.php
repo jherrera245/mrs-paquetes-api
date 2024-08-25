@@ -105,8 +105,9 @@
 </head>
 <body>
     <div class="container">
+        <img src="data:image/p{{ $logo }}" alt="QR Code" style="width: 100px; height: 100px;">
         <h1>DOCUMENTO TRIBUTARIO ELECTRÓNICO FACTURA CONSUMIDOR FINAL</h1>
-
+        <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 100px; height: 100px;">
         <table id="header-table">
             <tr>
                 <td style="width: 50%"><b>Código Generación</b>: {{$codigo_generacion}}</td>
@@ -167,7 +168,7 @@
                     $item = 0;
                     $sumatoria = 0;
                     $iva = 0;
-                    $subtotal = 0;
+                    $subtotal = 1;
                 @endphp
                 @foreach ($detalles as $detalle)
                 <tr>
