@@ -737,7 +737,7 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         // Indicamos que solo queremos recibir name, email, password, id_empleado y role_id de la request
-        $data = $request->only('name', 'email', 'password', 'role_id', 'id_empleado');
+        $data = $request->only('name', 'email', 'password', 'role_id');
     
         // Realizamos las validaciones con un mensaje personalizado para id_empleado y email
         $validator = Validator::make($data, [
@@ -753,9 +753,7 @@ class AuthController extends Controller
             ],
             'password' => 'required|string|min:6|max:50',
             'role_id' => 'required|integer|exists:roles,id',
-            'id_empleado' => 'required|unique:users,id_empleado',
         ], [
-            'id_empleado.unique' => 'Este empleado ya tiene su usuario.', // Mensaje personalizado
             'email.unique' => 'Este correo electrónico ya está registrado.', // Mensaje personalizado para email
         ]);
     
@@ -767,7 +765,6 @@ class AuthController extends Controller
         $user = new User();
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
-        $user->id_empleado = $request->id_empleado;
         $user->save();
     
         $role = Role::find($request->role_id);
