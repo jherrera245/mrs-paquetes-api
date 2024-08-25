@@ -147,7 +147,7 @@
                 <tr>
                     <td style="width: 50%">
                         <p><b>Nombre</b>: Mrs. Paquetes de S.A de S.V</p>
-                        <p><b>Correo electrónico</b>: soporte.ti@ mrspaquetes.com.sv</p>
+                        <p><b>Correo electrónico</b>: soporte.ti@mrspaquetes.com.sv</p>
                         <p><b>Dirección</b>: San Miguel</p>
                         <p><b>Teléfono</b>:25673383 &nbsp;&nbsp;&nbsp;<b>NRC</b>: 1234567</p>
                         <p><b>Actividad económica</b>: Servicio de entrega a domicilio de paquetes</p>
@@ -198,7 +198,7 @@
                     @php
                         $subtotal += $detalle->precio;
                         $iva += $detalle->precio * 0.13;
-                        $iva_retenido += $detalle->precio * 0.01;
+                        $iva_retenido += 0; //$detalle->precio * 0.01;
                         $sumatoria += $detalle->precio + ($detalle->precio * 0.13);
                     @endphp
                 </tr>
@@ -238,8 +238,18 @@
                         </table>
                     </td>
                 </tr>
+
+                <tr>
+                    <td colspan="8">
+                        {{$total_letras}}
+                    </td>
+                </tr>
             </tfoot>
         </table>
+
+        <p><b>Dirección de casa Matriz</b>:Deparatamento de San Miguel, Distrito San Miguel Centro</p>
+        <p><b>Correo</b>: mister.paquetes@mrspaquetes.com.sv</p>
+        <p><b>Teléfono</b>: 2206-2323</p>
     </div>
 </body>
 </html>

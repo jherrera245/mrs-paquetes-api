@@ -5,131 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viñeta de Envío</title>
     <style>
+        @page {
+            width: 625px; 
+            height: 625px; 
+            page-break-after: always;
+            font-family: Arial, sans-serif; 
+            font-size: 14px;
+        }
+
         body, html { 
             margin: 0; 
             padding: 0; 
-            width: 576px;
-            height: 576px;
         }
-        body { 
-            font-family: Arial, sans-serif; 
-            font-size: 14px;
-            background-color: white;
+
+        body {
+            border-bottom: 1px dashed #ddd;
         }
+
         .container { 
-            width: 576px; 
-            height: 576px; 
+            width:625px; 
+            height: 625px; 
             position: relative; 
             box-sizing: border-box;
             padding: 20px;
         }
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .logo { 
-            font-size: 28px;
-            font-weight: bold;
-            color: #0066cc;
+
+        table, th, td {
+            border: 1px solid #ddd;
         }
-        .contact-info { 
-            font-size: 12px; 
-            text-align: right; 
-            color: #555;
-        }
-        .qr-code { 
-            position: absolute; 
-            top: 120px; 
-            left: 20px; 
-            width: 160px; 
-            height: 160px; 
+
+        th, td {
             padding: 5px;
-            background-color: white;
-            border: 1px solid #e0e0e0;
+            text-align: left;
         }
-        .main-info { 
-            margin-left: 200px; 
-            margin-top: 20px; 
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .tracking { 
-            font-size: 24px; 
-            font-weight: bold; 
-            margin-top: 20px; 
-            margin-bottom: 20px;
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
             text-align: center;
-            background-color: #e6f2ff;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 10px;
         }
-        .destination { 
-            margin-top: 30px; 
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .footer { 
-            position: absolute; 
-            bottom: 20px; 
-            left: 20px;
-            right: 20px;
-            text-align: center; 
-            font-size: 12px; 
-            color: #777;
-            padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .bold { 
-            font-weight: bold; 
-            color: #333;
-        }
-        p {
-            margin: 8px 0;
-        }
+
     </style>
 </head>
+
 <body>
+    @foreach($orden->detalles as $detalle)
     <div class="container">
-        <div class="header">
-            <div class="logo">Mrs.Paquetes</div>
-            <div class="contact-info">
-                <p><span class="bold">Cliente:</span> {{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}</p>
-                <p><span class="bold">Tel:</span> {{ $orden->cliente->telefono }}</p>
-            </div>
-        </div>
-        
-        <div class="qr-code">
-            <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 100%; height: 100%;">
-        </div>
-        
-        <div class="main-info">
-            <p><span class="bold">DESTINO:</span> {{ $orden->direccion->municipio->nombre }}</p>
-            <p><span class="bold">Nombre:</span> {{ $orden->direccion->nombre_contacto }}</p>
-            <p><span class="bold">Contacto:</span> {{ $orden->direccion->telefono }}</p>
-            <p><span class="bold">Dirección:</span> {{ $orden->direccion->direccion }}</p>
-            <p><span class="bold">Referencia:</span> {{ $orden->direccion->referencia }}</p>
-        </div>
-        
-        <div class="tracking">
-            Tracking: {{ $orden->numero_seguimiento }}
-        </div>
-        
-        <div class="destination">
-            <p><span class="bold"><span class="bold">Destino:</span> {{ $orden->direccion->municipio->nombre }}</p>
-            <p><span class="bold">Estado de pago:</span> {{ $mensajePago }}</p>
-            <p><span class="bold">Peso:</span> {{ $orden->detalles->sum('paquete.peso') }} LB</p>
-            <p><span class="bold">Instrucciones:</span> {{ $orden->detalles->first()->instrucciones_entrega ?? 'Ninguna' }}</p>
-        </div>
-        
-        <div class="footer">
-            <p>Fecha: {{ $orden->created_at->format('d/m/Y') }} | No. Orden: {{ $orden->id }} | Tipo de entrega: {{ $orden->detalles->first()->tipoEntrega->entrega }}</p>
-        </div>
+
+        <table>
+            <tr>
+                <td style="text-align:center;">
+                    <img src="{{ $logo }}" alt="logo" style="width: 2.5cm; height: 2.5cm;">
+                </td>
+
+                <td colspan="2" style="text-align: center">
+                    <p>Fecha: {{ $orden->created_at->format('d/m/Y') }} | No. Orden: {{ $orden->id }} | Tipo de entrega: {{ $detalle->tipoEntrega->entrega }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="6" style="width: 10%;">
+                    <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 5cm; height: 5cm;">
+                </td>
+                <td style="width: 15%;"><b>Cliente<b></td>
+                <td>{{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}</td>
+            </tr>
+            <tr>
+                <td><b>Tel<b></td>
+                <td>{{ $orden->cliente->telefono }}</td>
+            </tr>
+            <tr>
+                <td><b>Origen:<b></td>
+                <td> {{ $orden->direccion->municipio->nombre }}</td>
+            </tr>
+            <tr>
+                <td><b>Nombre<b></td>
+                <td>{{ $orden->direccion->municipio->nombre }}</td>
+            </tr>
+            <tr>
+                <td><b>Contacto<b></td>
+                <td>{{ $orden->direccion->telefono }}</td>
+            </tr>
+            <tr>
+                <td><b>Dirección<b></td>
+                <td>{{ $orden->direccion->direccion }}</td>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    Tracking: {{ $orden->numero_seguimiento }}
+                </th>
+            </tr>
+            <tr>
+                <td><b>Destino:</b></td>
+                <td colspan="2">{{ $detalle->direccionEntrega->municipio->nombre }}</td>
+            </tr>
+            <tr>
+                <td><b>Contacto:</b></td>
+                <td colspan="2">{{ $detalle->direccionEntrega->nombre_contacto }}</td>
+            </tr>
+            <tr>
+                <td><b>Teléfono:</b></td>
+                <td colspan="2">{{ $detalle->direccionEntrega->telefono }}</td>
+            </tr>
+            <tr>
+                <td><b>Estado de pago:</b></td>
+                <td colspan="2">{{ $mensajePago }}</td>
+            </tr>
+            <tr>
+                <td><b>Peso:</b></td>
+                <td colspan="2">{{ $detalle->paquete->peso }} LB</td>
+            </tr>
+            <tr>
+                <td><b>Referencia:</b></td>
+                <td colspan="2">{{ $detalle->direccionEntrega->referencia }}</td>
+            </tr>
+            <tr>
+                <td><b>Instrucciones:</b></td>
+                <td colspan="2">{{ $detalle->instrucciones_entrega ?? 'Ninguna' }}</td>
+            </tr>
+        </table>
     </div>
+    @endforeach
 </body>
 </html>

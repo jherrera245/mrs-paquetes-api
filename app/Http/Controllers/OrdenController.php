@@ -22,6 +22,7 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Component\HttpFoundation\Response;
+use App\Libraries\FormatterNumberLetter;
 
 class OrdenController extends Controller
 {
@@ -624,12 +625,20 @@ class OrdenController extends Controller
     public function getComprobante($id)
     {
         $orden = DB::table('ordenes')->where('id', $id)->first();
+
+        if (!$orden) {
+            return response()->json(["error" => "Order not found"], Response::HTTP_NOT_FOUND);
+        }
+
         $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
         $view_render = $tipo_dte == '01' ? 'pdf.consumidor_final' : 'pdf.credito_fiscal';
-        $numero_control = 'DTE-'.$tipo_dte.'-M001P0001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
+        $numero_control = 'DTE-'.$tipo_dte.'-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
         $codigo_generacion = Str::uuid();
         $sello_registro = sha1($codigo_generacion);
         $sello_registro = date('Y').substr($sello_registro, 0, 36);
+
+        $formater = new FormatterNumberLetter();
+        $total_letras = $formater->to_invoice($orden->total_pagar, 2, "DOLARES ESTADOUNIDENSES");
 
         // Generar el código QR
         $makeQr = Builder::create()
@@ -683,7 +692,8 @@ class OrdenController extends Controller
                 "qrCodeBase64" => $qrCodeBase64,
                 'logo' => 'images/logo-claro.png',
                 "cliente" => $cliente, 
-                "detalles" => $detalles
+                "detalles" => $detalles,
+                "total_letras" => $total_letras
             ]
         );
 

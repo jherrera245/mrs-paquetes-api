@@ -37,10 +37,12 @@ class VinetaController extends Controller
             ? 'Paquete pagado' 
             : 'Cobrar a destinatario: $' . number_format($orden->total_pagar, 2);
 
-        // Cargar la vista con los datos
-        $pdf = PDF::loadView('pdf.vineta', compact('orden', 'qrCodeBase64', 'mensajePago'));
+        $logo = 'images/logo-claro.png';
 
-        $pdf->setPaper([0, 0, 475, 475]);
+        // Cargar la vista con los datos
+        $pdf = PDF::loadView('pdf.vineta', compact('orden', 'qrCodeBase64', 'mensajePago', 'logo'));
+
+        $pdf->setPaper([0, 0, 500, 500]);
 
         $filename = 'vineta-' . $orden->numero_seguimiento . '.pdf';
 
