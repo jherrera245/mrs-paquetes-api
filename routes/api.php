@@ -66,6 +66,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Routes users api
     Route::get('auth/get_user', [AuthController::class, 'getUser'])->middleware('permission:auth-view_user');
     Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById'])->middleware('permission:auth-get_user_by_id');
+    Route::get('auth/show/{id}', [AuthController::class, 'show'])->middleware('permission:auth-view_user');;
     Route::get('auth/get_users', [AuthController::class, 'getUsers'])->middleware('permission:auth-get_users');
     Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole'])->middleware('permission:auth-assign_user_role');
     Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole'])->middleware('permission:auth-assign_permissions_to_role');

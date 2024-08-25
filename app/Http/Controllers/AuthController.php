@@ -589,6 +589,33 @@ class AuthController extends Controller
         return response()->json(['user' => $user]);
     }
 
+
+    public function show($id)
+    {
+        $validator = Validator::make(['id' => $id], [
+            'id' => 'required|exists:users,id',
+        ]);
+
+        $user = DB::table('users')
+        ->select(
+            'users.id',
+            'users.email',
+            'roles.id as role_id',
+            'users.id_empleado',
+            'roles.name as role_name',
+            'users.status',
+            'users.created_at',
+            'users.updated_at'
+        )
+        ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+        ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+        ->where('model_has_roles.model_type', 'App\\Models\\User')
+        ->where('users.id', $id)
+        ->first();
+
+        return response()->json(['user' => $user]);
+    }
+
     public function getUsers(Request $request)
     {
         $email = $request->input('email');
