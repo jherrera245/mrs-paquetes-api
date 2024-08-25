@@ -7,6 +7,7 @@ use App\Rules\validNit;
 use App\Models\Orden;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use DB;
 
 class ClientesController extends Controller
 {
@@ -247,7 +248,12 @@ class ClientesController extends Controller
 
     public function show($id)
     {
-        $clientes = Clientes::find($id);
+        $clientes = $clientes = DB::table('clientes as cli')
+        ->select('cli.*', 'dep.nombre as departamento', 'mun.nombre as municipio')
+        ->join('departamento as dep', 'dep.id', '=', 'cli.id_departamento')
+        ->join('municipios as mun', 'mun.id', '=', 'cli.id_municipio')
+        ->where('cli.id',$id)
+        ->first();
 
         if (!$clientes) {
             return response()->json(['message' => 'Cliente no encontrado'], 404);
