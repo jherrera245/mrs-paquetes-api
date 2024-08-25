@@ -84,6 +84,7 @@ class OrdenController extends Controller
             'total_pagar' => 'required|numeric',
             'costo_adicional' => 'nullable|numeric',
             'concepto' => 'required|string',
+            'tipo_documento' => 'required|string',
             'detalles' => 'required|array'
         ]);
 
@@ -128,6 +129,7 @@ class OrdenController extends Controller
         $orden->total_pagar = $request->input('total_pagar');
         $orden->costo_adicional = $request->input('costo_adicional');
         $orden->concepto = $request->input('concepto');
+        $orden->tipo_documento = $request->input('tipo_documento');
         $orden->save();
 
         return $orden;
@@ -844,7 +846,7 @@ class OrdenController extends Controller
                 'costo_adicional' => $orden->costo_adicional,
                 'concepto' => $orden->concepto,
                 'numero_seguimiento' => $orden->numero_seguimiento,
-                'tipo_factura' => $orden->tipo_factura,
+                'tipo_documento' => $orden->tipo_documento,
                 'estado_pago' => $orden->estado_pago,
                 'created_at' => $orden->created_at,
                 'updated_at' => $orden->updated_at,
