@@ -132,7 +132,7 @@
             </tr>
             <tr>
                 <td style="width: 60%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
-                <td style="width: 40%"><b>Fecha y Hora de Generación</b>:</td>
+                <td style="width: 40%"><b>Fecha de Generación</b>: {{$orden->created_at}}</td>
             </tr>
         </table>
 

@@ -621,10 +621,12 @@ class OrdenController extends Controller
         return base64_encode($output);
     }
 
-    public function comprobanteConsumidorFinal($id)
+    public function getComprobante($id)
     {
         $orden = DB::table('ordenes')->where('id', $id)->first();
-        $numero_control = 'DTE-01-M001P0001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
+        $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
+        $view_render = $tipo_dte == '01' ? 'pdf.consumidor_final' : 'pdf.credito_fiscal';
+        $numero_control = 'DTE-'.$tipo_dte.'-M001P0001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
         $codigo_generacion = Str::uuid();
         $sello_registro = sha1($codigo_generacion);
         $sello_registro = date('Y').substr($sello_registro, 0, 36);
@@ -672,7 +674,7 @@ class OrdenController extends Controller
         ->where('do.id_orden', $id)
         ->get();
 
-        $pdf = PDF::loadView('pdf.consumidor_final', 
+        $pdf = PDF::loadView($view_render, 
             [
                 "orden" => $orden, 
                 "numero_control" => $numero_control,

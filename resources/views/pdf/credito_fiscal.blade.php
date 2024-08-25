@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprobante Consumidor Final</title>
+    <title>Comprobante Credito Fiscal</title>
     <style>
         @page {
             size: letter;
@@ -113,7 +113,7 @@
                     <img src="{{ $logo }}" alt="Logo" style="width: 100px; height: 100px;">
                 </td>
                 <td style="width: 80%">
-                    <h1>DOCUMENTO TRIBUTARIO ELECTRÓNICO<br>FACTURA CONSUMIDOR FINAL</h1>
+                    <h1>DOCUMENTO TRIBUTARIO ELECTRÓNICO<br>FACTURA CRÉDITO FISCAL</h1>
                 </td>
                 <td style="width: 10%">
                     <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 100px; height: 100px;">
@@ -132,7 +132,7 @@
             </tr>
             <tr>
                 <td style="width: 60%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
-                <td style="width: 40%"><b>Fecha y Hora de Generación</b>:</td>
+                <td style="width: 40%"><b>Fecha de Generación</b>: {{$orden->created_at}}</td>
             </tr>
         </table>
 
@@ -157,7 +157,7 @@
                         <p><b>Correo electrónico</b>: {{$cliente->email}}</p>
                         <p><b>Dirección</b>: {{$cliente->direccion}}</p>
                         <p><b>Teléfono</b>: {{$cliente->telefono}}</p>
-                        <p><b>DUI</b>: {{$cliente->dui}}</p>
+                        <p><b>NIT</b>: {{$cliente->nit}}</p>
                     </td>
                 </tr>
             </tbody>
