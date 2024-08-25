@@ -206,37 +206,32 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4"></td>
-                    <td colspan="4" style="padding: 0 !important;">
-                        <table>
-                            <tr>
-                                <td>Suma de Ventas</td>
-                                <td></td>
-                                <td></td>
-                                <td style="width: 25.5%">${{ number_format($sumatoria, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Sumatoria de ventas</td>
-                                <td>${{ number_format($sumatoria, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Impuesto al valor agregado</td>
-                                <td>${{ number_format($iva, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>IVA Retenido</td>
-                                <td>${{ number_format($iva_retenido, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Monto Total de la Operación</td>
-                                <td>${{ number_format($sumatoria - $iva_retenido, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Total a Pagar</td>
-                                <td>${{ number_format($sumatoria - $iva_retenido, 2) }}</td>
-                            </tr>
-                        </table>
-                    </td>
+                    <td colspan="4" rowspan="6"></td>
+                    <td>Suma de Ventas</td>
+                    <td></td>
+                    <td></td>
+                    <td style="width: 25.5%">${{ number_format($sumatoria, 2) }}</td>
+                </tr>
+
+                <tr>
+                    <td colspan=3>Sumatoria de ventas</td>
+                    <td>${{ number_format($sumatoria, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan=3>Impuesto al valor agregado</td>
+                    <td>${{ number_format($iva, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan=3>IVA Retenido</td>
+                    <td>${{ number_format($iva_retenido, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan=3>Monto Total de la Operación</td>
+                    <td>${{ number_format($sumatoria - $iva_retenido, 2) }}</td>
+                </tr>
+                <tr>
+                    <td colspan=3>Total a Pagar</td>
+                    <td>${{ number_format($sumatoria - $iva_retenido, 2) }}</td>
                 </tr>
 
                 <tr>
