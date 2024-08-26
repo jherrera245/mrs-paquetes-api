@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('id_paquete');
             $table->foreignId('id_tipo_entrega');
             $table->foreignId('id_estado_paquetes');
-            $table->foreignId('id_cliente_entrega');
             $table->foreignId('id_direccion_entrega');
             $table->string('validacion_entrega');
             $table->text('instrucciones_entrega');
@@ -28,8 +27,6 @@ return new class extends Migration
             $table->dateTime('fecha_ingreso');
             $table->dateTime('fecha_entrega');
             $table->timestamps();
-
-         
         });
     }
 

@@ -83,8 +83,7 @@ class DetalleOrdenController extends Controller
     {
        // Obtener los filtros de la solicitud
        $filters = $request->only([
-        'id', 'id_orden', 'id_paquete', 'id_tipo_entrega', 'id_estado_paquetes',
-        'id_cliente_entrega', 'id_direccion_entrega', 'validacion_entrega',
+        'id', 'id_orden', 'id_paquete', 'id_tipo_entrega', 'id_estado_paquetes', 'id_direccion_entrega', 'validacion_entrega',
         'instrucciones_entrega', 'descripcion', 'precio', 'fecha_ingreso', 'fecha_entrega'
     ]);
 

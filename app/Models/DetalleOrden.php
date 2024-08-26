@@ -19,7 +19,6 @@ class DetalleOrden extends Model
         'id_paquete',
         'id_tipo_entrega',
         'id_estado_paquetes',
-        'id_cliente_entrega',
         'id_direccion_entrega',
         'validacion_entrega',
         'instrucciones_entrega',
@@ -41,10 +40,9 @@ class DetalleOrden extends Model
     }
 
     public function asignacionRuta()
-{
-    return $this->belongsTo(AsignacionRutas::class, 'id_asignacion_ruta');
-}
-
+    {
+        return $this->belongsTo(AsignacionRutas::class, 'id_asignacion_ruta');
+    }
 
     public function tipoEntrega(): BelongsTo
     {
@@ -54,11 +52,6 @@ class DetalleOrden extends Model
     public function estadoEntrega(): BelongsTo
     {
         return $this->belongsTo(EstadoPaquete::class, 'id_estado_paquetes');
-    }
-
-    public function clienteEntrega(): BelongsTo
-    {
-        return $this->belongsTo(Clientes::class, 'id_cliente_entrega');
     }
 
     public function direccionEntrega(): BelongsTo
@@ -104,10 +97,6 @@ class DetalleOrden extends Model
 
         if (isset($filters['id_estado_paquetes'])) {
             $query->where('id_estado_paquetes', $filters['id_estado_paquetes']);
-        }
-
-        if (isset($filters['id_cliente_entrega'])) {
-            $query->where('id_cliente_entrega', $filters['id_cliente_entrega']);
         }
 
 		if (isset($filters['id_direccion_entrega'])) {
