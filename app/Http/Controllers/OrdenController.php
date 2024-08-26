@@ -59,11 +59,23 @@ class OrdenController extends Controller
                 'costo_adicional' => $orden->costo_adicional,
                 'concepto' => $orden->concepto,
                 'numero_seguimiento' => $orden->numero_seguimiento,
+                'estado_pago' => $orden->estado_pago,
                 'detalles' => $orden->detalles->map(function ($detalle) {
                     return [
                         'id_paquete' => $detalle->id_paquete,
                         'descripcion' => $detalle->descripcion,
                         'precio' => $detalle->precio,
+                        'tipo_entrega' => $detalle->tipoEntrega->entrega,
+                        'recibe' => $detalle->direccionEntrega->nombre_contacto,
+                        'telefono' => $detalle->direccionEntrega->telefono,
+                        'departamento' => $detalle->direccionEntrega->departamento->nombre,
+                        'municipio' => $detalle->direccionEntrega->municipio->nombre,
+                        'direccion' => $detalle->direccionEntrega->direccion,
+                        'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
+                        'tipo_caja' => $detalle->paquete->empaquetado->empaquetado,
+                        'peso' => $detalle->paquete->peso,
+                        'estado_paquete' => $detalle->paquete->estado->nombre,
+                        "validacion_entrega" => $detalle->validacion_entrega,
                     ];
                 }),
                 'created_at' => $orden->created_at,
@@ -191,7 +203,6 @@ class OrdenController extends Controller
             $detalleOrden->id_orden = $orden->id;
             $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
             $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
-            $detalleOrden->id_cliente_entrega = $detalle["id_cliente_entrega"];
             $detalleOrden->id_paquete = $paquete->id;
             $detalleOrden->validacion_entrega = 0;
             $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
@@ -333,7 +344,6 @@ class OrdenController extends Controller
                 'id_paquete' => $detalle->id_paquete,
                 'id_tipo_entrega' => $detalle->id_tipo_entrega,
                 'id_estado_paquetes' => $detalle->id_estado_paquetes,
-                'id_cliente_entrega' => $detalle->id_cliente_entrega,
                 'validacion_entrega' => $detalle->validacion_entrega,
                 'instrucciones_entrega' => $detalle->instrucciones_entrega,
                 'descripcion' => $detalle->descripcion,
@@ -408,7 +418,29 @@ class OrdenController extends Controller
                 'id_municipio' => $direccion->municipio->nombre,
                 'referencia' => $direccion->referencia,
             ],
-            'detalles' => $orden->detalles
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'id' => $detalle->id,
+                    'id_orden' => $detalle->id_orden,
+                    'id_paquete' => $detalle->id_paquete,
+                    'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                    'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                    'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                    "validacion_entrega" => $detalle->validacion_entrega,
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                    'tipo_entrega' => $detalle->tipoEntrega->entrega,
+                    'recibe' => $detalle->direccionEntrega->nombre_contacto,
+                    'telefono' => $detalle->direccionEntrega->telefono,
+                    'departamento' => $detalle->direccionEntrega->departamento->nombre,
+                    'municipio' => $detalle->direccionEntrega->municipio->nombre,
+                    'direccion' => $detalle->direccionEntrega->direccion,
+                    'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
+                    'tipo_caja' => $detalle->paquete->empaquetado->empaquetado,
+                    'peso' => $detalle->paquete->peso,
+                    'estado_paquete' => $detalle->paquete->estado->nombre,
+                ];
+            }),
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -867,7 +899,6 @@ class OrdenController extends Controller
                     'id_paquete' => $detalleOrden->id_paquete,
                     'id_tipo_entrega' => $detalleOrden->id_tipo_entrega,
                     'id_estado_paquete' => $detalleOrden->id_estado_paquete,
-                    'id_cliente_entrega' => $detalleOrden->id_cliente_entrega,
                     'id_direccion_entrega' => $detalleOrden->id_direccion_entrega,
                     'validacion_entrega' => $detalleOrden->validacion_entrega,
                     'instrucciones_entrega' => $detalleOrden->instrucciones_entrega,
