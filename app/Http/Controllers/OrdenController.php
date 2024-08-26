@@ -194,13 +194,6 @@ class OrdenController extends Controller
             'accion' => 'Paquete creado',
         ]);
 
-        // Creamos la transaccion del paquete.
-        Transaccion::create([
-            'id_paquete' => $paquete->id,
-            'tipoMovimiento' => 'ENTRADA',
-            'fecha' => now(),
-        ]);
-
         if ($paquete) {
             $detalleOrden = new DetalleOrden();
             $detalleOrden->id_orden = $orden->id;

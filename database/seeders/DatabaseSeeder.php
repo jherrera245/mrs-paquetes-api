@@ -42,8 +42,7 @@ class DatabaseSeeder extends Seeder
             TipoEntregaSeeder::class,
             VehicleSeeder::class,
             BodegaSeeder::class,
-            PasilloSeeder::class,
-            AnaquelSeeder::class,
+            PasilloSeeder::class
         ]);
     }
 }

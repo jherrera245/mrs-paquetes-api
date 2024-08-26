@@ -34,14 +34,6 @@ class Pasillo extends Model
     }
 
     /**
-     * Relación con la tabla Anaquel
-     */
-    public function anaqueles()
-    {
-        return $this->hasMany(Anaquel::class, 'id_pasillo');
-    }
-
-    /**
      * Relacion con la tabla transacciones
     */
     public function transacciones()
