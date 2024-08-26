@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransaccionesTable extends Migration
+class CreateKardexTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateTransaccionesTable extends Migration
      */
     public function up()
     {
-        Schema::create('transacciones', function (Blueprint $table) {
+        Schema::create('kardex', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_paquete')->constrained('paquetes');
-            $table->foreignId('id_bodega')->nullable()->constrained('bodegas');
-            $table->foreignId('id_pasillo')->nullable()->constrained('pasillos');
-            $table->foreignId('id_anaquel')->nullable()->constrained('anaqueles');
+            $table->foreignId('id_orden')->nullable()->constrained('ordenes');
+            $table->integer('cantidad');
+            $table->string('numero_ingreso');
             $table->string('tipoMovimiento');
             $table->date('fecha');
             $table->timestamps();
