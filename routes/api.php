@@ -121,10 +121,9 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::put('ordenes/{ordenes}', [OrdenController::class, 'update'])->middleware('permission:orden-update');
     Route::delete('ordenes/{ordenes}', [OrdenController::class, 'destroy'])->middleware('permission:orden-destroy');
     Route::post('ordenes/{ordenes}/procesar-pago', [OrdenController::class, 'procesarPago'])->middleware('permission:orden-update');
-    Route::get('ordenes/{ordenes}/comprobante', [OrdenController::class, 'generarComprobante'])->middleware('permission:orden-view');
-    Route::get('ordenes/{ordenes}/visualizar-comprobante', [OrdenController::class, 'visualizarComprobante'])->middleware('permission:orden-view');
-    Route::get('ordenes/get_comprobante/{id}', [OrdenController::class, 'getComprobante']);
-    Route::get('/ordenes/{ordenes}/vineta', [VinetaController::class, 'generarVineta']);
+    Route::get('ordenes/get_comprobante/{id}', [OrdenController::class, 'getComprobante'])->middleware('permission:orden-view');
+    Route::get('ordenes/reenviar_comprobante/{id}', [OrdenController::class, 'reenviarComprobante']);
+    Route::get('ordenes/{ordenes}/vineta', [VinetaController::class, 'generarVineta']);
 
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');

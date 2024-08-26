@@ -8,6 +8,7 @@ use App\Models\Transaccion;
 use App\Models\DetalleOrden;
 use App\Models\Orden;
 use App\Models\Paquete;
+use App\Models\User;
 use App\Models\HistorialPaquete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,8 @@ use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Component\HttpFoundation\Response;
 use App\Libraries\FormatterNumberLetter;
+use App\Notifications\SendDocuments;
+use Illuminate\Support\Facades\Notification;
 
 class OrdenController extends Controller
 {
@@ -607,59 +610,56 @@ class OrdenController extends Controller
         // Generar comprobante
         $comprobante = $this->generarComprobante($orden->id);
 
+        if (array_key_exists('error', $comprobante)) {
+            return response()->json($comprobante['error'], $comprobante['status']);
+        }
+
+        $user = User::find($comprobante["id_user"]);
+        $user->notify(new SendDocuments($comprobante));
+
         return response()->json(
             [
                 'message' => 'Pago procesado con éxito',
                 'comprobante' => $comprobante
             ],
-            200
+            Response::HTTP_OK
         );
-    }
-
-    public function generarComprobante($id)
-    {
-        $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
-
-        if ($orden->estado_pago !== 'pagado') {
-            return response()->json(['error' => 'La orden aún no ha sido pagada'], 400);
-        }
-
-        $subtotal = $orden->total_pagar / 1.13; // Asumiendo que el total incluye IVA
-        $iva = $orden->total_pagar - $subtotal;
-
-        $data = [
-            'numeroFactura' => 'F-' . str_pad($orden->id, 6, '0', STR_PAD_LEFT),
-            'fecha' => date('d/m/Y'),
-            'cliente' => [
-                'nombre' => $orden->cliente->nombre . ' ' . $orden->cliente->apellido,
-                'nit' => $orden->cliente->nit,
-                'direccion' => $orden->cliente->direccion,
-            ],
-            'detalles' => $orden->detalles->map(function ($detalle) {
-                return [
-                    'descripcion' => $detalle->descripcion,
-                    'precio' => $detalle->precio,
-                ];
-            }),
-            'subtotal' => $subtotal,
-            'iva' => $iva,
-            'total' => $orden->total_pagar,
-            'metodoPago' => $orden->tipoPago->pago,
-        ];
-
-        $pdf = PDF::loadView('pdf.comprobante_pago', $data);
-
-        $output = $pdf->output();
-
-        return base64_encode($output);
     }
 
     public function getComprobante($id)
     {
+        $comprobante = $this->generarComprobante($id);
+
+        if (array_key_exists('error', $comprobante)) {
+            return response()->json($comprobante['error'], $comprobante['status']);
+        }
+
+        return response()->json(['comprobante' => $comprobante], Response::HTTP_OK);
+    }
+
+    public function reenviarComprobante(Request $request, $id)
+    {
+        $comprobante = $this->generarComprobante($id);
+
+        if (array_key_exists('error', $comprobante)) {
+            return response()->json($comprobante['error'], $comprobante['status']);
+        }
+
+        $user = User::find($comprobante["id_user"]);
+        $user->notify(new SendDocuments($comprobante));
+
+        return response()->json(['message' => "Documento enviado correctamente"], Response::HTTP_OK);
+    }
+
+    public function generarComprobante($id)
+    {
         $orden = DB::table('ordenes')->where('id', $id)->first();
 
         if (!$orden) {
-            return response()->json(["error" => "Order not found"], Response::HTTP_NOT_FOUND);
+            return [
+                'error' => ["error" => "Order not found"],
+                'status' =>  Response::HTTP_NOT_FOUND
+            ];
         }
 
         $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
@@ -697,9 +697,11 @@ class OrdenController extends Controller
             'cli.direccion',
             'cli.dui',
             'cli.nit',
+            'cli.id_tipo_persona',
             'cli.es_contribuyente',
             'u.email',
-            'cli.telefono'
+            'cli.telefono',
+            'cli.id_user',
         )->where('cli.id', $orden->id_cliente)->first();
 
         $detalles =  DB::table('detalle_orden as do')
@@ -729,43 +731,17 @@ class OrdenController extends Controller
             ]
         );
 
-        return $pdf->download('orden.pdf');
-    }
+        $output = $pdf->output();
 
-    public function visualizarComprobante($id)
-    {
-        $orden = Orden::with(['cliente', 'detalles', 'tipoPago'])->findOrFail($id);
-
-        if ($orden->estado_pago !== 'pagado') {
-            return response()->json(['error' => 'La orden aún no ha sido pagada'], 400);
-        }
-
-        $subtotal = $orden->total_pagar / 1.13; // Asumiendo que el total incluye IVA
-        $iva = $orden->total_pagar - $subtotal;
-
-        $data = [
-            'numeroFactura' => 'F-' . str_pad($orden->id, 6, '0', STR_PAD_LEFT),
-            'fecha' => date('d/m/Y'),
-            'cliente' => [
-                'nombre' => $orden->cliente->nombre . ' ' . $orden->cliente->apellido,
-                'nit' => $orden->cliente->nit,
-                'direccion' => $orden->cliente->direccion,
-            ],
-            'detalles' => $orden->detalles->map(function ($detalle) {
-                return [
-                    'descripcion' => $detalle->descripcion,
-                    'precio' => $detalle->precio,
-                ];
-            }),
-            'subtotal' => $subtotal,
-            'iva' => $iva,
-            'total' => $orden->total_pagar,
-            'metodoPago' => $orden->tipoPago->pago,
+        return [
+            'id_user' => $cliente->id_user,
+            'cliente' => $cliente->nombre.' '.$cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de '.$cliente->nombre_comercial),
+            'numero_control' => $numero_control,
+            'fecha' =>  $orden->created_at,
+            'tipo_documento' =>  $tipo_dte == '01' ? 'Factura Consumidor Final' : 'Credito Fiscal',
+            'total_pagar' => $orden->total_pagar,
+            'pdfBase64' => base64_encode($output),
         ];
-
-        $pdf = PDF::loadView('pdf.comprobante_pago', $data);
-
-        return $pdf->stream('comprobante.pdf');
     }
 
     public function generarHojaDeTrabajo($idRuta)
