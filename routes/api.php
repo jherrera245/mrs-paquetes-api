@@ -247,8 +247,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes']);
 
 
-    //Requerimiento #3
-    Route::get('/orden/hoja-de-trabajo/{idRuta}', [OrdenController::class, 'generarHojaDeTrabajo']);
+  
     // Requerimiento #7
-    Route::get('/ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
+    Route::get('ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
 });
