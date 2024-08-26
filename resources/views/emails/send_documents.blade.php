@@ -3,7 +3,7 @@
 
 **Estimado Cliente:** {{ $cliente }}
 
-Le saludamos de **Mrs. Paquetes** _{{ $cliente }}_, adjunto enviamos Documentos Tributarios Electrónicos.
+Le saludamos de **Mr. Paquetes** _{{ $cliente }}_, adjunto enviamos Documentos Tributarios Electrónicos.
 
 ## Detalle del documento:
 
@@ -17,5 +17,5 @@ Gracias por usar nuestros servicios!!!.
 _**Este es un correo generado automáticamente, por favor no responda a este mensaje.**_
 
 Saludos,  
-Mrs. Paquetes
+Mr. Paquetes
 @endcomponent

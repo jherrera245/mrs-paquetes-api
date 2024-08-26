@@ -146,7 +146,7 @@
             <tbody>
                 <tr>
                     <td style="width: 50%">
-                        <p><b>Nombre</b>: Mrs. Paquetes de S.A de S.V</p>
+                        <p><b>Nombre</b>: Mr. Paquetes de S.A de S.V</p>
                         <p><b>Correo electrónico</b>: soporte.ti@mrspaquetes.com.sv</p>
                         <p><b>Dirección</b>: San Miguel</p>
                         <p><b>Teléfono</b>:25673383 &nbsp;&nbsp;&nbsp;<b>NRC</b>: 1234567</p>
