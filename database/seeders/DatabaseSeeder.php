@@ -17,8 +17,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         DB::statement('ALTER TABLE pasillos AUTO_INCREMENT = 1;');
-        DB::statement('ALTER TABLE anaqueles AUTO_INCREMENT = 1;');
-        DB::statement('ALTER TABLE transacciones AUTO_INCREMENT = 1;');
         
         // Lista de seeders a ejecutar
         $this->call([
