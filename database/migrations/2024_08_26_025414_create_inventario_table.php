@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKardexTable extends Migration
+class CreateInventarioTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,17 @@ class CreateKardexTable extends Migration
      */
     public function up()
     {
-        Schema::create('kardex', function (Blueprint $table) {
+        Schema::create('inventario', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_paquete')->constrained('paquetes');
-            $table->foreignId('id_orden')->nullable()->constrained('ordenes');
-            $table->integer('cantidad');
             $table->string('numero_ingreso');
-            $table->string('tipo_movimiento');
-            $table->date('fecha');
+            $table->integer('cantidad');
+            $table->date('fecha_entrada');
+            $table->date('fecha_salida')->nullable();
+            $table->boolean('estado')->default(1);
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -33,6 +32,6 @@ class CreateKardexTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transacciones');
+        Schema::dropIfExists('inventario');
     }
 }
