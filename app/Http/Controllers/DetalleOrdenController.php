@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\DetalleOrden;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
 
@@ -211,4 +212,35 @@ class DetalleOrdenController extends Controller
         return response()->json($data, 200);
     }
 
+    public function validacionEntrega(Request $request)
+    {
+        //id de la orden e imagen a enviar
+    $request->validate([
+        'id' => 'required|exists:detalle_orden,id',
+        'validacion_entrega' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480' 
+    ]);
+
+        //datos de entrada para el endpoint
+    $id = $request->input('id');
+    $imageFile = $request->file('validacion_entrega');
+
+        try {
+            $filename = time() . '.' . $imageFile->getClientOriginalExtension();
+
+            // guardar la imagen en s3
+            $path = $imageFile->storeAs('validacion_entregas', $filename, 's3');
+            $bucketName = env('AWS_BUCKET');
+            $region = env('AWS_DEFAULT_REGION');
+            $imageUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
+
+            // actualiza el campo de la base de datos con el id de la orden para agregar el url a validacion_entrega
+            $detalleOrden = DetalleOrden::findOrFail($id);
+            $detalleOrden->validacion_entrega = $imageUrl;
+            $detalleOrden->save();
+            
+            return response()->json(['message' => 'Validación de entrega enviada con éxito', 'data' => $detalleOrden], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error uploading image: ' . $e->getMessage()], 500);
+        }
+    }
 }

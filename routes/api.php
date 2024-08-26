@@ -59,6 +59,7 @@ Route::get('seguimiento-orden', [OrdenController::class, 'buscarPorNumeroSeguimi
 Route::post('login-cliente',[AuthController::class, 'login_cliente']);
 //registro de cliente
 Route::post('register', [AuthController::class, 'register']);
+Route::post('validacion-entrega', [DetalleOrdenController::class, 'validacionEntrega']);
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
