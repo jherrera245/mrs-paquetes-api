@@ -26,6 +26,7 @@ use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\VinetaController;
+use App\Http\Controllers\TarifasDestinosController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -38,6 +39,7 @@ use Tymon\JWTAuth\Contracts\Providers\Auth;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('tarifa-destinos', [TarifasDestinosController::class,'index']);
 Route::post('login',  [AuthController::class, 'authenticate']);
 
   //verificar email

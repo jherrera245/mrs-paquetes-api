@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTarifasTable extends Migration
+class CreateTamanoPaqueteTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTarifasTable extends Migration
      */
     public function up()
     {
-        Schema::create('tarifas', function (Blueprint $table) {
+        Schema::create('tamano_paquete', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateTarifasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tarifas');
+        Schema::dropIfExists('tamano_paquete');
     }
 }

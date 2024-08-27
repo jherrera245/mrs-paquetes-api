@@ -49,6 +49,9 @@ class DatabaseSeeder extends Seeder
             RutasSeeder::class,
             DireccionesSeeder::class,
             AsignacionRutasSeeder::class,
+            TarifasSeeder::class,
+            TamanoPaqueteSeeder::class,
+            TarifaDestinoSeeder::class,
         ]);
     }
 }

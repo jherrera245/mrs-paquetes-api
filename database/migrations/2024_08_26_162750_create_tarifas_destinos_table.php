@@ -15,12 +15,11 @@ class CreateTarifasDestinosTable extends Migration
     {
         Schema::create('tarifas_destinos', function (Blueprint $table) {
             $table->id();
-            // relacion con tarifas.
             $table->foreignId('id_tarifa')->constrained('tarifas');
-            // relacion con departamentos.
+            $table->foreignId('id_tamano_paquete')->constrained('tamano_paquete');
             $table->foreignId('id_departamento')->constrained('departamento');
-            // relacion con municipios.
             $table->foreignId('id_municipio')->constrained('municipios');
+            $table->decimal('monto', 8,2);
             $table->timestamps();
         });
     }
