@@ -13,7 +13,7 @@ class CreateRecoleccionTable extends Migration
      */
     public function up()
     {
-        Schema::create('recoleccion', function (Blueprint $table) {
+        Schema::create('recolecciones', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_vehiculo');
             $table->string('codigo_barra');
