@@ -193,13 +193,12 @@
                     <td>${{ number_format($detalle->precio, 2) }}</td>
                     <td>$0.00</td>
                     <td>$0.00</td>
-                    <td>${{ number_format($detalle->precio + ($detalle->precio * 0.13), 2) }}</td>
+                    <td>${{ number_format($detalle->precio, 2) }}</td>
 
                     @php
                         $subtotal += $detalle->precio;
                         $iva += $detalle->precio * 0.13;
-                        $iva_retenido += 0; //$detalle->precio * 0.01;
-                        $sumatoria += $detalle->precio + ($detalle->precio * 0.13);
+                        $sumatoria += $detalle->precio;
                     @endphp
                 </tr>
                 @endforeach
@@ -213,8 +212,8 @@
                     <td style="width: 25.5%">${{ number_format($sumatoria, 2) }}</td>
                 </tr>
                 <tr>
-                    <td colspan=3>Sumatoria de ventas</td>
-                    <td>${{ number_format($sumatoria, 2) }}</td>
+                    <td colspan=3>Subtotal de ventas</td>
+                    <td>${{ number_format($sumatoria - $iva, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan=3>Impuesto al valor agregado</td>

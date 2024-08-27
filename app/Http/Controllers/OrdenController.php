@@ -93,8 +93,6 @@ class OrdenController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
-            'nombre_contacto' => 'required|string',
-            'telefono' => 'required|string',
             'id_direccion' => 'required|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'total_pagar' => 'required|numeric',
