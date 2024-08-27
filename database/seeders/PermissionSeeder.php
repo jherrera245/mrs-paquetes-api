@@ -124,7 +124,12 @@ class PermissionSeeder extends Seeder
                 'auth-actualizarClientePerfil',
                 'paquete-view',
                 'incidencias-create',
-                'incidencias-view', // Asumimos que se refiere a las incidencias que el cliente ha reportado
+                'incidencias-view',
+                'direcciones-view',
+                'direcciones-show',
+                'direcciones-create',
+                'direcciones-update',
+                'direcciones-destroy',
             ]);
         }
 

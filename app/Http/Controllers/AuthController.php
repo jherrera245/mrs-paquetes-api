@@ -296,7 +296,7 @@ class AuthController extends Controller
             'id_municipio' => 'required|exists:municipios,id',
             'nit' => 'nullable|regex:/^\d{4}-?\d{6}-?\d{3}-?\d{1}$/',
             'nrc' => 'nullable|regex:/^\d{6}-?\d{1}$/',
-            'giro' => 'required|string',
+            'giro' => 'nullable|string',
             'nombre_empresa' => 'nullable|string',
             'direccion' => 'required|string'
         ]);
