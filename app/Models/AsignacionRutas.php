@@ -33,7 +33,7 @@ class AsignacionRutas extends Model
 
 	public function ruta()
 	{
-		return $this->belongsTo(Ruta::class, 'id_ruta');
+		return $this->belongsTo(Rutas::class, 'id_ruta');
 	}
 
 	public function vehiculo()

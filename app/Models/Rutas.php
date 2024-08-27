@@ -32,12 +32,12 @@ class Rutas extends Model
 
 	public function destino()
 	{
-		return $this->belongsTo(Destino::class, 'id_destino');
+		return $this->belongsTo(Destinos::class, 'id_destino');
 	}
 
 	public function bodega()
 	{
-		return $this->belongsTo(Bodega::class, 'id_bodega');
+		return $this->belongsTo(Bodegas::class, 'id_bodega');
 	}
 
 	public function estado_ruta()
@@ -47,7 +47,7 @@ class Rutas extends Model
 
 	public function asignacion_rutas()
 	{
-		return $this->hasMany(AsignacionRuta::class, 'id_ruta');
+		return $this->hasMany(AsignacionRutas::class, 'id_ruta');
 	}
 
 	public static function search($filters)

@@ -33,7 +33,7 @@ class Bodegas extends Model
 
 	public function rutas()
 	{
-		return $this->hasMany(Ruta::class, 'id_bodega');
+		return $this->hasMany(Rutas::class, 'id_bodega');
 	}
 	/**
 	 * Relación con la tabla Pasillo
