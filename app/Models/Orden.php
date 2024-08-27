@@ -37,7 +37,12 @@ class Orden extends Model
             return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
         }
 
-
+    // relacion con kardex.
+    public function kardex()
+    {
+        return $this->hasMany(Kardex::class, 'id_orden');
+    }
+    
     public function direccion(): BelongsTo
     {
         return $this->belongsTo(Direcciones::class, 'id_direccion');

@@ -43,6 +43,18 @@ class Paquete extends Model
         return $this->belongsTo(TipoPaquete::class, 'id_tipo_paquete');
     }
 
+    // relacion con kardex.
+    public function kardex()
+    {
+        return $this->hasMany(Kardex::class, 'id_paquete');
+    }
+
+    // Relación con la tabla de inventario.
+    public function inventario()
+    {
+        return $this->hasMany(Inventario::class, 'id_paquete');
+    }
+
     // Relación con la tabla de transaccion.
     public function transacciones()
     {
