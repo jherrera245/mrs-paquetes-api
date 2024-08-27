@@ -35,10 +35,15 @@ class DatabaseSeeder extends Seeder
             TipoIncidenciaSeeder::class,
             TipoPaqueteSeeder::class,
             TipoPersonaSeeder::class,
+            EmpleadoSeeder::class,
             UsersSeeder::class,
+            ClienteSeeder::class,
+            DestinoSeeder::class,
+            PaqueteSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
             VehicleSeeder::class,
+            VehiculosSeeder::class,
             BodegaSeeder::class,
             PasilloSeeder::class
         ]);
