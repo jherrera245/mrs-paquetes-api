@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('historial_de_paquetes', function (Blueprint $table) {
+        Schema::create('historial_ordenes_tracking', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_paquete');
-            $table->string('estado');
+            $table->unsignedBigInteger('id_orden');
+            $table->string('numero_seguimiento');
+            $table->unsignedBigInteger('id_estado_paquete');
             $table->dateTime('fecha_hora');
-            $table->foreignId('id_usuario');
-            $table->string('accion');
+            $table->text('comentario')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('historial_de_paquetes');
+        Schema::dropIfExists('historial_ordenes_tracking');
     }
 };

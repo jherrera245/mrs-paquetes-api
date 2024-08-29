@@ -27,6 +27,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\VinetaController;
 use App\Http\Controllers\TarifasDestinosController;
+use App\Http\Controllers\HistorialOrdenTrackingController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -256,4 +257,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
     // Requerimiento #7: Implementacion de endpoint mis ordenes asignadas
     Route::get('ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
+
+    // Historial ordenes
+    Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
+    Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial']);
 });

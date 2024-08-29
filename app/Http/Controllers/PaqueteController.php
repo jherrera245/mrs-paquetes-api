@@ -256,50 +256,51 @@ class PaqueteController extends Controller
     }
 
     public function update(Request $request, $param)
-    {
-        try {
-            $paquete = is_numeric($param)
-                ? Paquete::whereNull('eliminado_at')->findOrFail($param)
-                : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
+{
+    try {
+        $paquete = is_numeric($param)
+            ? Paquete::whereNull('eliminado_at')->findOrFail($param)
+            : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
 
-            $validator = Validator::make($request->all(), [
-                'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
-                'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
-                'id_empaque' => 'sometimes|required|exists:empaquetado,id',
-                'peso' => 'sometimes|required|numeric|min:0',
-                'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
-                'fecha_envio' => 'sometimes|required|date',
-                'fecha_entrega_estimada' => 'sometimes|required|date|after_or_equal:fecha_envio',
-                'descripcion_contenido' => 'sometimes|required|string|max:1000',
-            ]);
+        $validator = Validator::make($request->all(), [
+            'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
+            'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
+            'id_empaque' => 'sometimes|required|exists:empaquetado,id',
+            'peso' => 'sometimes|required|numeric|min:0',
+            'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
+            'fecha_envio' => 'sometimes|required|date',
+            'fecha_entrega_estimada' => 'sometimes|required|date|after_or_equal:fecha_envio',
+            'descripcion_contenido' => 'sometimes|required|string|max:1000',
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()->all()], 400);
-            }
-
-            $originalData = $paquete->getOriginal();
-
-            $paquete->update($request->all());
-
-            $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
-
-            if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
-                HistorialPaquete::create([
-                    'id_paquete' => $paquete->id,
-                    'fecha_hora' => now(),
-                    'id_usuario' => auth()->id(),
-                    'accion' => 'Estado del paquete actualizado a ' . $estadoActual,
-                ]);
-            }
-
-            return response()->json([
-                'message' => 'Paquete actualizado correctamente',
-                'paquete' => $this->transformPaquete($paquete),
-            ]);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->all()], 400);
         }
+
+        $originalData = $paquete->getOriginal();
+
+        $paquete->update($request->all());
+
+        $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
+
+        if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
+            HistorialPaquete::create([
+                'id_paquete' => $paquete->id,
+                'fecha_hora' => now(),
+                'id_usuario' => auth()->id(),
+                'accion' => 'Estado del paquete actualizado a ' . $estadoActual,
+                'estado' => $estadoActual
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Paquete actualizado correctamente',
+            'paquete' => $this->transformPaquete($paquete),
+        ]);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
     }
+}
 
     public function destroy($id)
     {
@@ -361,6 +362,7 @@ class PaqueteController extends Controller
             'fecha_hora' => now(),
             'id_usuario' => auth()->id(),
             'accion' => $accion,
+            'estado' => $estadoActual
         ]);
     }
 }

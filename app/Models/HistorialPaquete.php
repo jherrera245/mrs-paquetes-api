@@ -15,7 +15,8 @@ class HistorialPaquete extends Model
         'id_paquete',
         'fecha_hora',
         'id_usuario',
-        'accion'
+        'accion', 
+        'estado' 
     ];
 
     public function paquete()

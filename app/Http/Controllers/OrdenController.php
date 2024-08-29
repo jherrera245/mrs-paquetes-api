@@ -10,6 +10,8 @@ use App\Models\Orden;
 use App\Models\Paquete;
 use App\Models\User;
 use App\Models\HistorialPaquete;
+use App\Models\HistorialOrdenTracking;
+use App\Models\EstadoPaquete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +122,8 @@ class OrdenController extends Controller
                 $this->createOrderDetail($orden, $detalle);
             }
 
+            $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
+
             DB::commit();
             return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
@@ -186,15 +190,6 @@ class OrdenController extends Controller
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
         $paquete->save();
 
-        $userId = auth()->id();
-
-        HistorialPaquete::create([
-            'id_paquete' => $paquete->id,
-            'fecha_hora' => now(),
-            'id_usuario' => $userId,
-            'accion' => 'Paquete creado',
-        ]);
-
         if ($paquete) {
             $detalleOrden = new DetalleOrden();
             $detalleOrden->id_orden = $orden->id;
@@ -219,15 +214,17 @@ class OrdenController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
-            'direccion_emisor' => 'required',
+            'id_direccion' => 'required|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'total_pagar' => 'required|numeric',
+            'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
             'costo_adicional' => 'nullable|numeric',
             'concepto' => 'required|string',
+            'tipo_documento' => 'required|string',
             'detalles' => 'required|array'
         ]);
 
@@ -237,38 +234,17 @@ class OrdenController extends Controller
 
         DB::beginTransaction();
         try {
-            $orden = Orden::find($id);
-            if (!$orden) {
-                return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+            $orden = Orden::findOrFail($id);
+            $estadoAnterior = $orden->id_estado_paquetes;
+            
+            $this->updateOrder($orden, $request);
+
+             if ($estadoAnterior != $orden->id_estado_paquetes) {
+                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
             }
 
-            $orden->id_cliente = $request->input('id_cliente');
-            $orden->id_tipo_pago = $request->input('id_tipo_pago');
-            $orden->total_pagar = $request->input('total_pagar');
-            $orden->costo_adicional = $request->input('costo_adicional');
-            $orden->concepto = $request->input('concepto');
-            $orden->save();
-
-
-
-            $direccion_emisior = Direcciones::find($orden->id_direccion);
-            if (!$direccion_emisior) {
-                return response()->json(['message' => 'Dirección no encontrada'], Response::HTTP_NOT_FOUND);
-            }
-
-            $direccion_emisior->id_cliente = $request->input('id_cliente');
-            $direccion_emisior->nombre_contacto = $request->input('nombre_contacto');
-            $direccion_emisior->telefono = $request->input('telefono');
-            $direccion_emisior->id_departamento = $request->input('id_departamento');
-            $direccion_emisior->id_municipio = $request->input('id_municipio');
-            $direccion_emisior->direccion = $request->input('direccion');
-            $direccion_emisior->referencia = $request->input('referencia');
-            $direccion_emisior->save();
-
-            // Eliminar los detalles existentes
             DetalleOrden::where('id_orden', $orden->id)->delete();
 
-            // Crear los nuevos detalles
             foreach ($request->input('detalles') as $detalle) {
                 $this->createOrderDetail($orden, $detalle);
             }
@@ -285,6 +261,21 @@ class OrdenController extends Controller
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
+    }
+
+    private function updateOrder($orden, $request)
+    {
+        $orden->id_cliente = $request->input('id_cliente');
+        $orden->id_tipo_pago = $request->input('id_tipo_pago');
+        $orden->id_direccion = $request->input('id_direccion');
+        $orden->total_pagar = $request->input('total_pagar');
+        $orden->id_estado_paquetes = $request->input('id_estado_paquetes');
+        $orden->costo_adicional = $request->input('costo_adicional');
+        $orden->concepto = $request->input('concepto');
+        $orden->tipo_documento = $request->input('tipo_documento');
+        $orden->save();
+
+        return $orden;
     }
 
     // funcion para actualizar estado de entrega.
@@ -325,6 +316,19 @@ class OrdenController extends Controller
             );
         }
     }
+
+    private function registrarCambioEstado(Orden $orden, $nuevoEstadoId)
+{
+    $nombreEstado = EstadoPaquete::find($nuevoEstadoId)->nombre;
+
+    HistorialOrdenTracking::create([
+        'id_orden' => $orden->id,
+        'numero_seguimiento' => $orden->numero_seguimiento,
+        'id_estado_paquete' => $nuevoEstadoId,
+        'fecha_hora' => now(), 
+        'comentario' => "Estado: {$nombreEstado}"
+    ]);
+}
 
     // funcion para listar los paquetes y sus estados de entrega segun la ruta a la que fueron asignados.
     public function listarPaquetesRuta($id)
