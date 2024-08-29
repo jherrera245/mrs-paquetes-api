@@ -736,6 +736,42 @@ class OrdenController extends Controller
             'pdfBase64' => base64_encode($output),
         ];
     }
+    public function generarHojaTrabajo(Request $request)
+    {
+        // Validar parámetros de la solicitud
+        $request->validate([
+            'id_ruta' => 'required|integer',
+            'id_vehiculo' => 'required|integer',
+            'id_conductor' => 'required|integer',
+        ]);
+
+        // Obtener los paquetes asignados
+        $asignaciones = AsignacionRutas::with(['paquete', 'paquete.cliente'])
+            ->where('id_ruta', $request->id_ruta)
+            ->where('id_vehiculo', $request->id_vehiculo)
+            ->whereHas('vehiculo.conductor', function ($query) use ($request) {
+                $query->where('id', $request->id_conductor);
+            })
+            ->get();
+
+            Pdf::setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'enable_php' => true,
+                'chroot' => public_path('img') 
+            ]);
+
+        // Genera el PDF
+    $pdf = PDF::loadView('pdf.hoja_trabajo', compact('asignaciones'));
+
+    // Convierte el PDF a Base64
+    $pdfBase64 = base64_encode($pdf->output());
+
+    // Retorna el PDF como JSON
+    return response()->json(['pdf' => $pdfBase64]);
+        
+    }
+
 
     
     public function misOrdenesAsignadas(Request $request)
