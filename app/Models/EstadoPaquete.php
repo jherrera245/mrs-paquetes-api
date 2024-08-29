@@ -20,5 +20,10 @@ class EstadoPaquete extends Model
     {
         return $this->hasMany(Paquete::class, 'id_estado_paquete');
     }
+    public function orden()
+    {
+        return $this->hasMany(Paquete::class, 'id');
+    }
+
 
 }

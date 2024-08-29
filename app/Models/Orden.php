@@ -18,6 +18,7 @@ class Orden extends Model
         'id_direccion',
         'id_tipo_pago',
         'total_pagar',
+        'id_estado_paquetes',
         'costo_adicional',
         'concepto',
         'finished',

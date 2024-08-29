@@ -96,6 +96,7 @@ class OrdenController extends Controller
             'id_direccion' => 'required|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'total_pagar' => 'required|numeric',
+            'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
             'costo_adicional' => 'nullable|numeric',
             'concepto' => 'required|string',
             'tipo_documento' => 'required|string',
@@ -141,6 +142,7 @@ class OrdenController extends Controller
         $orden->id_tipo_pago = $request->input('id_tipo_pago');
         $orden->id_direccion = $request->id_direccion;
         $orden->total_pagar = $request->input('total_pagar');
+        $orden->id_estado_paquetes = $request->input('id_estado_paquetes');
         $orden->costo_adicional = $request->input('costo_adicional');
         $orden->concepto = $request->input('concepto');
         $orden->tipo_documento = $request->input('tipo_documento');
@@ -832,6 +834,7 @@ class OrdenController extends Controller
                 'id_direccion' => $orden->id_direccion,
                 'id_tipo_pago' => $orden->id_tipo_pago,
                 'total_pagar' => $orden->total_pagar,
+                'id_estado_paquetes' => $orden->id_estado_paquetes,
                 'costo_adicional' => $orden->costo_adicional,
                 'concepto' => $orden->concepto,
                 'numero_seguimiento' => $orden->numero_seguimiento,
@@ -843,7 +846,7 @@ class OrdenController extends Controller
                     'id' => $detalleOrden->id,
                     'id_paquete' => $detalleOrden->id_paquete,
                     'id_tipo_entrega' => $detalleOrden->id_tipo_entrega,
-                    'id_estado_paquete' => $detalleOrden->id_estado_paquete,
+                    'id_estado_paquetes' => $detalleOrden->id_estado_paquetes,
                     'id_direccion_entrega' => $detalleOrden->id_direccion_entrega,
                     'validacion_entrega' => $detalleOrden->validacion_entrega,
                     'instrucciones_entrega' => $detalleOrden->instrucciones_entrega,
