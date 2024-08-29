@@ -175,6 +175,7 @@ class OrdenController extends Controller
 
         $paquete = new Paquete();
         $paquete->id_tipo_paquete = $detalle["id_tipo_paquete"];
+        $paquete->id_tamano_paquete = $detalle["id_tamano_paquete"];
         $paquete->id_empaque = $detalle["id_empaque"];
         $paquete->peso = $detalle["peso"];
         $paquete->uuid = $uuid;

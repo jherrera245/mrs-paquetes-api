@@ -12,6 +12,7 @@ class Paquete extends Model
 
     protected $fillable = [
         'id_tipo_paquete',
+        'id_tamano_paquete',
         'id_empaque',
         'peso',
         'uuid',
@@ -41,6 +42,11 @@ class Paquete extends Model
     public function tipoPaquete()
     {
         return $this->belongsTo(TipoPaquete::class, 'id_tipo_paquete');
+    }
+
+    public function tamanoPaquete()
+    {
+        return $this->belongsTo(TamanoPaquete::class, 'id');
     }
 
     // relacion con kardex.

@@ -13,6 +13,7 @@ class PaqueteSeeder extends Seeder
         DB::table('paquetes')->insert([
             [
                 'id_tipo_paquete' => 1,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 5.00,
                 'uuid' => '676d8e07-61f9-40b0-b3c0-a277afcb414c',
@@ -27,6 +28,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 15.00,
                 'uuid' => '3ecc6713-30ae-4880-9987-4186e7a429c4',
@@ -41,6 +43,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 3,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 45.00,
                 'uuid' => 'a066fea1-dfd5-4fb0-8811-6ace4234e31e',
@@ -55,6 +58,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 1,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 5.00,
                 'uuid' => '1249231c-3422-467c-9861-08a8e878dd09',
@@ -69,6 +73,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 85.00,
                 'uuid' => 'f53cd268-e654-48d5-bd10-3159cb065711',
@@ -83,6 +88,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 4,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 25.00,
                 'uuid' => '006adfc3-ba13-4849-b72f-dc80bed8ad74',
@@ -97,6 +103,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 2,
                 'peso' => 20.00,
                 'uuid' => '75f0c911-4d7a-4011-98ad-08d4aecad4c5',
@@ -111,6 +118,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 3,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 20.00,
                 'uuid' => 'cb24a177-3c04-4ed7-bb85-caa91977f347',
@@ -125,6 +133,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 1,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 5.00,
                 'uuid' => '676d8e07-61f9-40b0-b3c0-a277afcb414c',
@@ -139,6 +148,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 15.00,
                 'uuid' => '3ecc6713-30ae-4880-9987-4186e7a429c4',
@@ -153,6 +163,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 3,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 45.00,
                 'uuid' => 'a066fea1-dfd5-4fb0-8811-6ace4234e31e',
@@ -167,6 +178,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 1,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 5.00,
                 'uuid' => '1249231c-3422-467c-9861-08a8e878dd09',
@@ -181,6 +193,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 85.00,
                 'uuid' => 'f53cd268-e654-48d5-bd10-3159cb065711',
@@ -195,6 +208,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 4,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 25.00,
                 'uuid' => '006adfc3-ba13-4849-b72f-dc80bed8ad74',
@@ -209,6 +223,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 2,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 2,
                 'peso' => 20.00,
                 'uuid' => '75f0c911-4d7a-4011-98ad-08d4aecad4c5',
@@ -223,6 +238,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 3,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 20.00,
                 'uuid' => '49a46a53-faec-4bcb-bb38-33d1709fe598',
@@ -237,6 +253,7 @@ class PaqueteSeeder extends Seeder
             ],
             [
                 'id_tipo_paquete' => 3,
+                'id_tamano_paquete'=> 1,
                 'id_empaque' => 1,
                 'peso' => 20.00,
                 'uuid' => 'a29ca87d-cb9d-40fc-af44-18605b10f329',

@@ -168,7 +168,7 @@ class PaqueteController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'id_tipo_paquete', 'id_empaque', 'peso', 'id_estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido'
+            'id_tipo_paquete', 'id_tamano_paquete','id_empaque', 'peso', 'id_estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido'
         ]);
 
         $uuid = Str::uuid();
@@ -203,6 +203,7 @@ class PaqueteController extends Controller
         // Valida los datos del paquete
         $validator = Validator::make($data, [
             'id_tipo_paquete' => 'required|exists:tipo_paquete,id',
+            'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
             'id_empaque' => 'required|exists:empaquetado,id',
             'peso' => 'required|numeric|min:0',
             'uuid' => 'required|unique:paquetes',
@@ -263,6 +264,7 @@ class PaqueteController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
+                'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
                 'id_empaque' => 'sometimes|required|exists:empaquetado,id',
                 'peso' => 'sometimes|required|numeric|min:0',
                 'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
@@ -338,6 +340,7 @@ class PaqueteController extends Controller
         return [
             'id' => $paquete->id,
             'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
+            'estado_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
             'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
             'peso' => $paquete->peso,
             'uuid' => $paquete->uuid,

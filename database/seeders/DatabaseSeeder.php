@@ -19,7 +19,9 @@ class DatabaseSeeder extends Seeder
         DB::statement('ALTER TABLE pasillos AUTO_INCREMENT = 1;');
         
         // Lista de seeders a ejecutar
-        $this->call([
+        $this->call([ 
+            TarifasSeeder::class,
+            TamanoPaqueteSeeder::class,
             CargosTableSeeder::class,
             DepartamentoSeeder::class,
             EmpaquetadoSeeder::class,
@@ -49,8 +51,6 @@ class DatabaseSeeder extends Seeder
             RutasSeeder::class,
             DireccionesSeeder::class,
             AsignacionRutasSeeder::class,
-            TarifasSeeder::class,
-            TamanoPaqueteSeeder::class,
             TarifaDestinoSeeder::class,
         ]);
     }
