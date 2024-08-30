@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class bodegaSeeder extends Seeder
+class BodegaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
