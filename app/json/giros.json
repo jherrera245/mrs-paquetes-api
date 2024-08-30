@@ -1,0 +1,3859 @@
+{
+    "actividadEconomica":[
+     {
+      "sk_actividadeco": 1,
+      "st_codigo": 1111,
+      "st_descripcion": "Cultivo de cereales excepto arroz y para forrajes"
+     },
+     {
+      "sk_actividadeco": 2,
+      "st_codigo": 1112,
+      "st_descripcion": "Cultivo de legumbres"
+     },
+     {
+      "sk_actividadeco": 3,
+      "st_codigo": 1113,
+      "st_descripcion": "Cultivo de semillas oleaginosas"
+     },
+     {
+      "sk_actividadeco": 4,
+      "st_codigo": 1114,
+      "st_descripcion": "Cultivo de plantas para la preparación de semillas"
+     },
+     {
+      "sk_actividadeco": 5,
+      "st_codigo": 1119,
+      "st_descripcion": "Cultivo de otros cereales excepto arroz y forrajeros n.c.p."
+     },
+     {
+      "sk_actividadeco": 6,
+      "st_codigo": 1120,
+      "st_descripcion": "Cultivo de arroz"
+     },
+     {
+      "sk_actividadeco": 7,
+      "st_codigo": 1131,
+      "st_descripcion": "Cultivo de raíces y tubérculos"
+     },
+     {
+      "sk_actividadeco": 8,
+      "st_codigo": 1132,
+      "st_descripcion": "Cultivo de brotes, bulbos, vegetales tubérculos y cultivos similares"
+     },
+     {
+      "sk_actividadeco": 9,
+      "st_codigo": 1133,
+      "st_descripcion": "Cultivo hortícola de fruto"
+     },
+     {
+      "sk_actividadeco": 10,
+      "st_codigo": 1134,
+      "st_descripcion": "Cultivo de hortalizas de hoja y otras hortalizas ncp"
+     },
+     {
+      "sk_actividadeco": 11,
+      "st_codigo": 1140,
+      "st_descripcion": "Cultivo de caña de azúcar"
+     },
+     {
+      "sk_actividadeco": 12,
+      "st_codigo": 1150,
+      "st_descripcion": "Cultivo de tabaco"
+     },
+     {
+      "sk_actividadeco": 13,
+      "st_codigo": 1161,
+      "st_descripcion": "Cultivo de algodón"
+     },
+     {
+      "sk_actividadeco": 14,
+      "st_codigo": 1162,
+      "st_descripcion": "Cultivo de fibras vegetales excepto algodón"
+     },
+     {
+      "sk_actividadeco": 15,
+      "st_codigo": 1191,
+      "st_descripcion": "Cultivo de plantas no perennes para la producción de semillas y flores"
+     },
+     {
+      "sk_actividadeco": 16,
+      "st_codigo": 1192,
+      "st_descripcion": "Cultivo de cereales y pastos para la alimentación animal"
+     },
+     {
+      "sk_actividadeco": 17,
+      "st_codigo": 1199,
+      "st_descripcion": "Producción de cultivos no estacionales ncp"
+     },
+     {
+      "sk_actividadeco": 18,
+      "st_codigo": 1220,
+      "st_descripcion": "Cultivo de frutas tropicales"
+     },
+     {
+      "sk_actividadeco": 19,
+      "st_codigo": 1230,
+      "st_descripcion": "Cultivo de cítricos"
+     },
+     {
+      "sk_actividadeco": 20,
+      "st_codigo": 1240,
+      "st_descripcion": "Cultivo de frutas de pepita y hueso"
+     },
+     {
+      "sk_actividadeco": 21,
+      "st_codigo": 1251,
+      "st_descripcion": "Cultivo de frutas ncp"
+     },
+     {
+      "sk_actividadeco": 22,
+      "st_codigo": 1252,
+      "st_descripcion": "Cultivo de otros frutos y nueces de árboles y arbustos"
+     },
+     {
+      "sk_actividadeco": 23,
+      "st_codigo": 1260,
+      "st_descripcion": "Cultivo de frutos oleaginosos"
+     },
+     {
+      "sk_actividadeco": 24,
+      "st_codigo": 1271,
+      "st_descripcion": "Cultivo de café"
+     },
+     {
+      "sk_actividadeco": 25,
+      "st_codigo": 1272,
+      "st_descripcion": "Cultivo de plantas para la elaboración de bebidas excepto café"
+     },
+     {
+      "sk_actividadeco": 26,
+      "st_codigo": 1281,
+      "st_descripcion": "Cultivo de especias y aromáticas"
+     },
+     {
+      "sk_actividadeco": 27,
+      "st_codigo": 1282,
+      "st_descripcion": "Cultivo de plantas para la obtención de productos medicinales y farmacéuticos"
+     },
+     {
+      "sk_actividadeco": 28,
+      "st_codigo": 1291,
+      "st_descripcion": "Cultivo de árboles de hule (caucho) para la obtención de látex"
+     },
+     {
+      "sk_actividadeco": 29,
+      "st_codigo": 1292,
+      "st_descripcion": "Cultivo de plantas para la obtención de productos químicos y colorantes"
+     },
+     {
+      "sk_actividadeco": 30,
+      "st_codigo": 1299,
+      "st_descripcion": "Producción de cultivos perennes ncp"
+     },
+     {
+      "sk_actividadeco": 31,
+      "st_codigo": 1300,
+      "st_descripcion": "Propagación de plantas"
+     },
+     {
+      "sk_actividadeco": 32,
+      "st_codigo": 1301,
+      "st_descripcion": "Cultivo de plantas y flores ornamentales"
+     },
+     {
+      "sk_actividadeco": 33,
+      "st_codigo": 1410,
+      "st_descripcion": "Cría y engorde de ganado bovino"
+     },
+     {
+      "sk_actividadeco": 34,
+      "st_codigo": 1420,
+      "st_descripcion": "Cría de caballos y otros equinos"
+     },
+     {
+      "sk_actividadeco": 35,
+      "st_codigo": 1440,
+      "st_descripcion": "Cría de ovejas y cabras"
+     },
+     {
+      "sk_actividadeco": 36,
+      "st_codigo": 1450,
+      "st_descripcion": "Cría de cerdos"
+     },
+     {
+      "sk_actividadeco": 37,
+      "st_codigo": 1460,
+      "st_descripcion": "Cría de aves de corral y producción de huevos"
+     },
+     {
+      "sk_actividadeco": 38,
+      "st_codigo": 1491,
+      "st_descripcion": "Cría de abejas apicultura para la obtención de miel y otros productos apícolas"
+     },
+     {
+      "sk_actividadeco": 39,
+      "st_codigo": 1492,
+      "st_descripcion": "Cría de conejos"
+     },
+     {
+      "sk_actividadeco": 40,
+      "st_codigo": 1493,
+      "st_descripcion": "Cría de iguanas y garrobos"
+     },
+     {
+      "sk_actividadeco": 41,
+      "st_codigo": 1494,
+      "st_descripcion": "Cría de mariposas y otros insectos"
+     },
+     {
+      "sk_actividadeco": 42,
+      "st_codigo": 1499,
+      "st_descripcion": "Cría y obtención de productos animales n.c.p."
+     },
+     {
+      "sk_actividadeco": 43,
+      "st_codigo": 1500,
+      "st_descripcion": "Cultivo de productos agrícolas en combinación con la cría de animales"
+     },
+     {
+      "sk_actividadeco": 44,
+      "st_codigo": 1611,
+      "st_descripcion": "Servicios de maquinaria agrícola"
+     },
+     {
+      "sk_actividadeco": 45,
+      "st_codigo": 1612,
+      "st_descripcion": "Control de plagas"
+     },
+     {
+      "sk_actividadeco": 46,
+      "st_codigo": 1613,
+      "st_descripcion": "Servicios de riego"
+     },
+     {
+      "sk_actividadeco": 47,
+      "st_codigo": 1614,
+      "st_descripcion": "Servicios de contratación de mano de obra para la agricultura"
+     },
+     {
+      "sk_actividadeco": 48,
+      "st_codigo": 1619,
+      "st_descripcion": "Servicios agrícolas ncp"
+     },
+     {
+      "sk_actividadeco": 49,
+      "st_codigo": 1621,
+      "st_descripcion": "Actividades para mejorar la reproducción, el crecimiento y el rendimiento de los animales y sus productos"
+     },
+     {
+      "sk_actividadeco": 50,
+      "st_codigo": 1622,
+      "st_descripcion": "Servicios de mano de obra pecuaria"
+     },
+     {
+      "sk_actividadeco": 51,
+      "st_codigo": 1629,
+      "st_descripcion": "Servicios pecuarios ncp"
+     },
+     {
+      "sk_actividadeco": 52,
+      "st_codigo": 1631,
+      "st_descripcion": "Labores post cosecha de preparación de los productos agrícolas para su comercialización o para la industria"
+     },
+     {
+      "sk_actividadeco": 53,
+      "st_codigo": 1632,
+      "st_descripcion": "Servicio de beneficio de café"
+     },
+     {
+      "sk_actividadeco": 54,
+      "st_codigo": 1633,
+      "st_descripcion": "Servicio de beneficiado de plantas textiles (incluye el beneficiado cuando este es realizado en la misma explotación agropecuaria)"
+     },
+     {
+      "sk_actividadeco": 55,
+      "st_codigo": 1640,
+      "st_descripcion": "Tratamiento de semillas para la propagación"
+     },
+     {
+      "sk_actividadeco": 56,
+      "st_codigo": 1700,
+      "st_descripcion": "Caza ordinaria y mediante trampas, repoblación de animales de caza y servicios conexos"
+     },
+     {
+      "sk_actividadeco": 57,
+      "st_codigo": 2100,
+      "st_descripcion": "Silvicultura y otras actividades forestales"
+     },
+     {
+      "sk_actividadeco": 58,
+      "st_codigo": 2200,
+      "st_descripcion": "Extracción de madera"
+     },
+     {
+      "sk_actividadeco": 59,
+      "st_codigo": 2300,
+      "st_descripcion": "Recolección de productos diferentes a la madera"
+     },
+     {
+      "sk_actividadeco": 60,
+      "st_codigo": 2400,
+      "st_descripcion": "Servicios de apoyo a la silvicultura"
+     },
+     {
+      "sk_actividadeco": 61,
+      "st_codigo": 3110,
+      "st_descripcion": "Pesca marítima de altura y costera"
+     },
+     {
+      "sk_actividadeco": 62,
+      "st_codigo": 3120,
+      "st_descripcion": "Pesca de agua dulce"
+     },
+     {
+      "sk_actividadeco": 63,
+      "st_codigo": 3210,
+      "st_descripcion": "Acuicultura marítima"
+     },
+     {
+      "sk_actividadeco": 64,
+      "st_codigo": 3220,
+      "st_descripcion": "Acuicultura de agua dulce"
+     },
+     {
+      "sk_actividadeco": 65,
+      "st_codigo": 3300,
+      "st_descripcion": "Servicios de apoyo a la pesca y acuicultura"
+     },
+     {
+      "sk_actividadeco": 66,
+      "st_codigo": 5100,
+      "st_descripcion": "Extracción de hulla"
+     },
+     {
+      "sk_actividadeco": 67,
+      "st_codigo": 5200,
+      "st_descripcion": "Extracción y aglomeración de lignito"
+     },
+     {
+      "sk_actividadeco": 68,
+      "st_codigo": 6100,
+      "st_descripcion": "Extracción de petróleo crudo"
+     },
+     {
+      "sk_actividadeco": 69,
+      "st_codigo": 6200,
+      "st_descripcion": "Extracción de gas natural"
+     },
+     {
+      "sk_actividadeco": 70,
+      "st_codigo": 7100,
+      "st_descripcion": "Extracción de minerales de hierro"
+     },
+     {
+      "sk_actividadeco": 71,
+      "st_codigo": 7210,
+      "st_descripcion": "Extracción de minerales de uranio y torio"
+     },
+     {
+      "sk_actividadeco": 72,
+      "st_codigo": 7290,
+      "st_descripcion": "Extracción de minerales metalíferos no ferrosos"
+     },
+     {
+      "sk_actividadeco": 73,
+      "st_codigo": 8100,
+      "st_descripcion": "Extracción de piedra, arena y arcilla"
+     },
+     {
+      "sk_actividadeco": 74,
+      "st_codigo": 8910,
+      "st_descripcion": "Extracción de minerales para la fabricación de abonos y productos químicos"
+     },
+     {
+      "sk_actividadeco": 75,
+      "st_codigo": 8920,
+      "st_descripcion": "Extracción y aglomeración de turba"
+     },
+     {
+      "sk_actividadeco": 76,
+      "st_codigo": 8930,
+      "st_descripcion": "Extracción de sal"
+     },
+     {
+      "sk_actividadeco": 77,
+      "st_codigo": 8990,
+      "st_descripcion": "Explotación de otras minas y canteras ncp"
+     },
+     {
+      "sk_actividadeco": 78,
+      "st_codigo": 9100,
+      "st_descripcion": "Actividades de apoyo a la extracción de petróleo y gas natural"
+     },
+     {
+      "sk_actividadeco": 79,
+      "st_codigo": 9900,
+      "st_descripcion": "Actividades de apoyo a la explotación de minas y canteras"
+     },
+     {
+      "sk_actividadeco": 80,
+      "st_codigo": 10101,
+      "st_descripcion": "Servicio de rastros y mataderos de bovinos y porcinos"
+     },
+     {
+      "sk_actividadeco": 81,
+      "st_codigo": 10102,
+      "st_descripcion": "Matanza y procesamiento de bovinos y porcinos"
+     },
+     {
+      "sk_actividadeco": 82,
+      "st_codigo": 10103,
+      "st_descripcion": "Matanza y procesamientos de aves de corral"
+     },
+     {
+      "sk_actividadeco": 83,
+      "st_codigo": 10104,
+      "st_descripcion": "Elaboración y conservación de embutidos y tripas naturales"
+     },
+     {
+      "sk_actividadeco": 84,
+      "st_codigo": 10105,
+      "st_descripcion": "Servicios de conservación y empaque de carnes"
+     },
+     {
+      "sk_actividadeco": 85,
+      "st_codigo": 10106,
+      "st_descripcion": "Elaboración y conservación de grasas y aceites animales"
+     },
+     {
+      "sk_actividadeco": 86,
+      "st_codigo": 10107,
+      "st_descripcion": "Servicios de molienda de carne"
+     },
+     {
+      "sk_actividadeco": 87,
+      "st_codigo": 10108,
+      "st_descripcion": "Elaboración de productos de carne ncp"
+     },
+     {
+      "sk_actividadeco": 88,
+      "st_codigo": 10201,
+      "st_descripcion": "Procesamiento y conservación de pescado, crustáceos y moluscos"
+     },
+     {
+      "sk_actividadeco": 89,
+      "st_codigo": 10209,
+      "st_descripcion": "Fabricación de productos de pescado ncp"
+     },
+     {
+      "sk_actividadeco": 90,
+      "st_codigo": 10301,
+      "st_descripcion": "Elaboración de jugos de frutas y hortalizasv"
+     },
+     {
+      "sk_actividadeco": 91,
+      "st_codigo": 10302,
+      "st_descripcion": "Elaboración y envase de jaleas, mermeladas y frutas deshidratadas"
+     },
+     {
+      "sk_actividadeco": 92,
+      "st_codigo": 10309,
+      "st_descripcion": "Elaboración de productos de frutas y hortalizas n.c.p."
+     },
+     {
+      "sk_actividadeco": 93,
+      "st_codigo": 10401,
+      "st_descripcion": "Fabricación de aceites y grasas vegetales y animales comestibles"
+     },
+     {
+      "sk_actividadeco": 94,
+      "st_codigo": 10402,
+      "st_descripcion": "Fabricación de aceites y grasas vegetales y animales no comestibles"
+     },
+     {
+      "sk_actividadeco": 95,
+      "st_codigo": 10409,
+      "st_descripcion": "Servicio de maquilado de aceites"
+     },
+     {
+      "sk_actividadeco": 96,
+      "st_codigo": 10501,
+      "st_descripcion": "Fabricación de productos lácteos excepto sorbetes y quesos sustitutos"
+     },
+     {
+      "sk_actividadeco": 97,
+      "st_codigo": 10502,
+      "st_descripcion": "Fabricación de sorbetes y helados"
+     },
+     {
+      "sk_actividadeco": 98,
+      "st_codigo": 10503,
+      "st_descripcion": "Fabricación de quesos"
+     },
+     {
+      "sk_actividadeco": 99,
+      "st_codigo": 10611,
+      "st_descripcion": "Molienda de cereales"
+     },
+     {
+      "sk_actividadeco": 100,
+      "st_codigo": 10612,
+      "st_descripcion": "Elaboración de cereales para el desayuno y similares"
+     },
+     {
+      "sk_actividadeco": 101,
+      "st_codigo": 10613,
+      "st_descripcion": "Servicios de beneficiado de productos agrícolas ncp (excluye Beneficio de azúcar rama 1072 y beneficio de café rama 0163)"
+     },
+     {
+      "sk_actividadeco": 102,
+      "st_codigo": 10621,
+      "st_descripcion": "Fabricación de almidón"
+     },
+     {
+      "sk_actividadeco": 103,
+      "st_codigo": 10628,
+      "st_descripcion": "Servicio de molienda de maíz húmedo molino para nixtamal"
+     },
+     {
+      "sk_actividadeco": 104,
+      "st_codigo": 10711,
+      "st_descripcion": "Elaboración de tortillas"
+     },
+     {
+      "sk_actividadeco": 105,
+      "st_codigo": 10712,
+      "st_descripcion": "Fabricación de pan, galletas y barquillos"
+     },
+     {
+      "sk_actividadeco": 106,
+      "st_codigo": 10713,
+      "st_descripcion": "Fabricación de repostería"
+     },
+     {
+      "sk_actividadeco": 107,
+      "st_codigo": 10721,
+      "st_descripcion": "Ingenios azucareros"
+     },
+     {
+      "sk_actividadeco": 108,
+      "st_codigo": 10722,
+      "st_descripcion": "Molienda de caña de azúcar para la elaboración de dulces"
+     },
+     {
+      "sk_actividadeco": 109,
+      "st_codigo": 10723,
+      "st_descripcion": "Elaboración de jarabes de azúcar y otros similares"
+     },
+     {
+      "sk_actividadeco": 110,
+      "st_codigo": 10724,
+      "st_descripcion": "Maquilado de azúcar de caña"
+     },
+     {
+      "sk_actividadeco": 111,
+      "st_codigo": 10730,
+      "st_descripcion": "Fabricación de cacao, chocolates y productos de confitería"
+     },
+     {
+      "sk_actividadeco": 112,
+      "st_codigo": 10740,
+      "st_descripcion": "Elaboración de macarrones, fideos, y productos farináceos similares"
+     },
+     {
+      "sk_actividadeco": 113,
+      "st_codigo": 10750,
+      "st_descripcion": "Elaboración de comidas y platos preparados para la reventa en locales y\/o para exportación"
+     },
+     {
+      "sk_actividadeco": 114,
+      "st_codigo": 10791,
+      "st_descripcion": "Elaboración de productos de café"
+     },
+     {
+      "sk_actividadeco": 115,
+      "st_codigo": 10792,
+      "st_descripcion": "Elaboración de especies, sazonadores y condimentos"
+     },
+     {
+      "sk_actividadeco": 116,
+      "st_codigo": 10793,
+      "st_descripcion": "Elaboración de sopas, cremas y consomé"
+     },
+     {
+      "sk_actividadeco": 117,
+      "st_codigo": 10794,
+      "st_descripcion": "Fabricación de bocadillos tostados y\/o fritos"
+     },
+     {
+      "sk_actividadeco": 118,
+      "st_codigo": 10799,
+      "st_descripcion": "Elaboración de productos alimenticios ncp"
+     },
+     {
+      "sk_actividadeco": 119,
+      "st_codigo": 10800,
+      "st_descripcion": "Elaboración de alimentos preparados para animales"
+     },
+     {
+      "sk_actividadeco": 120,
+      "st_codigo": 11012,
+      "st_descripcion": "Fabricación de aguardiente y licores"
+     },
+     {
+      "sk_actividadeco": 121,
+      "st_codigo": 11020,
+      "st_descripcion": "Elaboración de vinos"
+     },
+     {
+      "sk_actividadeco": 122,
+      "st_codigo": 11030,
+      "st_descripcion": "Fabricación de cerveza"
+     },
+     {
+      "sk_actividadeco": 123,
+      "st_codigo": 11041,
+      "st_descripcion": "Fabricación de aguas gaseosas"
+     },
+     {
+      "sk_actividadeco": 124,
+      "st_codigo": 11042,
+      "st_descripcion": "Fabricación y envasado de agua"
+     },
+     {
+      "sk_actividadeco": 125,
+      "st_codigo": 11043,
+      "st_descripcion": "Elaboración de refrescos"
+     },
+     {
+      "sk_actividadeco": 126,
+      "st_codigo": 11048,
+      "st_descripcion": "Maquilado de aguas gaseosas"
+     },
+     {
+      "sk_actividadeco": 127,
+      "st_codigo": 11049,
+      "st_descripcion": "Elaboración de bebidas no alcohólicas"
+     },
+     {
+      "sk_actividadeco": 128,
+      "st_codigo": 12000,
+      "st_descripcion": "Elaboración de productos de tabaco"
+     },
+     {
+      "sk_actividadeco": 129,
+      "st_codigo": 13111,
+      "st_descripcion": "Preparación de fibras textiles"
+     },
+     {
+      "sk_actividadeco": 130,
+      "st_codigo": 13112,
+      "st_descripcion": "Fabricación de hilados"
+     },
+     {
+      "sk_actividadeco": 131,
+      "st_codigo": 13120,
+      "st_descripcion": "Fabricación de telas"
+     },
+     {
+      "sk_actividadeco": 132,
+      "st_codigo": 13130,
+      "st_descripcion": "Acabado de productos textiles"
+     },
+     {
+      "sk_actividadeco": 133,
+      "st_codigo": 13910,
+      "st_descripcion": "Fabricación de tejidos de punto y ganchillo"
+     },
+     {
+      "sk_actividadeco": 134,
+      "st_codigo": 13921,
+      "st_descripcion": "Fabricación de productos textiles para el hogar"
+     },
+     {
+      "sk_actividadeco": 135,
+      "st_codigo": 13922,
+      "st_descripcion": "Sacos, bolsas y otros artículos textiles"
+     },
+     {
+      "sk_actividadeco": 136,
+      "st_codigo": 13929,
+      "st_descripcion": "Fabricación de artículos confeccionados con materiales textiles, excepto prendas de vestir ncp"
+     },
+     {
+      "sk_actividadeco": 137,
+      "st_codigo": 13930,
+      "st_descripcion": "Fabricación de tapices y alfombras"
+     },
+     {
+      "sk_actividadeco": 138,
+      "st_codigo": 13941,
+      "st_descripcion": "Fabricación de cuerdas de henequén y otras fibras naturales (lazos, pitas)"
+     },
+     {
+      "sk_actividadeco": 139,
+      "st_codigo": 13942,
+      "st_descripcion": "Fabricación de redes de diversos materiales"
+     },
+     {
+      "sk_actividadeco": 140,
+      "st_codigo": 13948,
+      "st_descripcion": "Maquilado de productos trenzables de cualquier material (petates, sillas, etc.)"
+     },
+     {
+      "sk_actividadeco": 141,
+      "st_codigo": 13991,
+      "st_descripcion": "Fabricación de adornos, etiquetas y otros artículos para prendas de vestir"
+     },
+     {
+      "sk_actividadeco": 142,
+      "st_codigo": 13992,
+      "st_descripcion": "Servicio de bordados en artículos y prendas de tela"
+     },
+     {
+      "sk_actividadeco": 143,
+      "st_codigo": 13999,
+      "st_descripcion": "Fabricación de productos textiles ncp"
+     },
+     {
+      "sk_actividadeco": 144,
+      "st_codigo": 14101,
+      "st_descripcion": "Fabricación de ropa interior, para dormir y similares"
+     },
+     {
+      "sk_actividadeco": 145,
+      "st_codigo": 14102,
+      "st_descripcion": "Fabricación de ropa para niños"
+     },
+     {
+      "sk_actividadeco": 146,
+      "st_codigo": 14103,
+      "st_descripcion": "Fabricación de prendas de vestir para ambos sexos"
+     },
+     {
+      "sk_actividadeco": 147,
+      "st_codigo": 14104,
+      "st_descripcion": "Confección de prendas a medida"
+     },
+     {
+      "sk_actividadeco": 148,
+      "st_codigo": 14105,
+      "st_descripcion": "Fabricación de prendas de vestir para deportes"
+     },
+     {
+      "sk_actividadeco": 149,
+      "st_codigo": 14106,
+      "st_descripcion": "Elaboración de artesanías de uso personal confeccionadas especialmente de materiales textiles"
+     },
+     {
+      "sk_actividadeco": 150,
+      "st_codigo": 14108,
+      "st_descripcion": "Maquilado de prendas de vestir, accesorios y otros"
+     },
+     {
+      "sk_actividadeco": 151,
+      "st_codigo": 14109,
+      "st_descripcion": "Fabricación de prendas y accesorios de vestir n.c.p."
+     },
+     {
+      "sk_actividadeco": 152,
+      "st_codigo": 14200,
+      "st_descripcion": "Fabricación de artículos de piel"
+     },
+     {
+      "sk_actividadeco": 153,
+      "st_codigo": 14301,
+      "st_descripcion": "Fabricación de calcetines, calcetas, medias (panty house) y otros similares"
+     },
+     {
+      "sk_actividadeco": 154,
+      "st_codigo": 14302,
+      "st_descripcion": "Fabricación de ropa interior de tejido de punto"
+     },
+     {
+      "sk_actividadeco": 155,
+      "st_codigo": 14309,
+      "st_descripcion": "Fabricación de prendas de vestir de tejido de punto ncp"
+     },
+     {
+      "sk_actividadeco": 156,
+      "st_codigo": 15110,
+      "st_descripcion": "Curtido y adobo de cueros; adobo y teñido de pieles"
+     },
+     {
+      "sk_actividadeco": 157,
+      "st_codigo": 15121,
+      "st_descripcion": "Fabricación de maletas, bolsos de mano y otros artículos de marroquinería"
+     },
+     {
+      "sk_actividadeco": 158,
+      "st_codigo": 15122,
+      "st_descripcion": "Fabricación de monturas, accesorios y vainas talabartería"
+     },
+     {
+      "sk_actividadeco": 159,
+      "st_codigo": 15123,
+      "st_descripcion": "Fabricación de artesanías principalmente de cuero natural y sintético"
+     },
+     {
+      "sk_actividadeco": 160,
+      "st_codigo": 15128,
+      "st_descripcion": "Maquilado de artículos de cuero natural, sintético y de otros materiales"
+     },
+     {
+      "sk_actividadeco": 161,
+      "st_codigo": 15201,
+      "st_descripcion": "Fabricación de calzado"
+     },
+     {
+      "sk_actividadeco": 162,
+      "st_codigo": 15202,
+      "st_descripcion": "Fabricación de partes y accesorios de calzado"
+     },
+     {
+      "sk_actividadeco": 163,
+      "st_codigo": 15208,
+      "st_descripcion": "Maquilado de partes y accesorios de calzado"
+     },
+     {
+      "sk_actividadeco": 164,
+      "st_codigo": 16100,
+      "st_descripcion": "Aserradero y acepilladura de madera"
+     },
+     {
+      "sk_actividadeco": 165,
+      "st_codigo": 16210,
+      "st_descripcion": "Fabricación de madera laminada, terciada, enchapada y contrachapada, paneles para la construcción"
+     },
+     {
+      "sk_actividadeco": 166,
+      "st_codigo": 16220,
+      "st_descripcion": "Fabricación de partes y piezas de carpintería para edificios y construcciones"
+     },
+     {
+      "sk_actividadeco": 167,
+      "st_codigo": 16230,
+      "st_descripcion": "Fabricación de envases y recipientes de madera"
+     },
+     {
+      "sk_actividadeco": 168,
+      "st_codigo": 16292,
+      "st_descripcion": "Fabricación de artesanías de madera, semillas, materiales trenzables"
+     },
+     {
+      "sk_actividadeco": 169,
+      "st_codigo": 16299,
+      "st_descripcion": "Fabricación de productos de madera, corcho, paja y materiales trenzables ncp"
+     },
+     {
+      "sk_actividadeco": 170,
+      "st_codigo": 17010,
+      "st_descripcion": "Fabricación de pasta de madera, papel y cartón"
+     },
+     {
+      "sk_actividadeco": 171,
+      "st_codigo": 17020,
+      "st_descripcion": "Fabricación de papel y cartón ondulado y envases de papel y cartón"
+     },
+     {
+      "sk_actividadeco": 172,
+      "st_codigo": 17091,
+      "st_descripcion": "Fabricación de artículos de papel y cartón de uso personal y doméstico"
+     },
+     {
+      "sk_actividadeco": 173,
+      "st_codigo": 17092,
+      "st_descripcion": "Fabricación de productos de papel ncp"
+     },
+     {
+      "sk_actividadeco": 174,
+      "st_codigo": 18110,
+      "st_descripcion": "Impresión"
+     },
+     {
+      "sk_actividadeco": 175,
+      "st_codigo": 18120,
+      "st_descripcion": "Servicios relacionados con la impresión"
+     },
+     {
+      "sk_actividadeco": 176,
+      "st_codigo": 18200,
+      "st_descripcion": "Reproducción de grabaciones"
+     },
+     {
+      "sk_actividadeco": 177,
+      "st_codigo": 19100,
+      "st_descripcion": "Fabricación de productos de hornos de coque"
+     },
+     {
+      "sk_actividadeco": 178,
+      "st_codigo": 19201,
+      "st_descripcion": "Fabricación de combustible"
+     },
+     {
+      "sk_actividadeco": 179,
+      "st_codigo": 19202,
+      "st_descripcion": "Fabricación de aceites y lubricantes"
+     },
+     {
+      "sk_actividadeco": 180,
+      "st_codigo": 20111,
+      "st_descripcion": "Fabricación de materias primas para la fabricación de colorantes"
+     },
+     {
+      "sk_actividadeco": 181,
+      "st_codigo": 20112,
+      "st_descripcion": "Fabricación de materiales curtientes"
+     },
+     {
+      "sk_actividadeco": 182,
+      "st_codigo": 20113,
+      "st_descripcion": "Fabricación de gases industriales"
+     },
+     {
+      "sk_actividadeco": 183,
+      "st_codigo": 20114,
+      "st_descripcion": "Fabricación de alcohol etílico"
+     },
+     {
+      "sk_actividadeco": 184,
+      "st_codigo": 20119,
+      "st_descripcion": "Fabricación de sustancias químicas básicas"
+     },
+     {
+      "sk_actividadeco": 185,
+      "st_codigo": 20120,
+      "st_descripcion": "Fabricación de abonos y fertilizantes"
+     },
+     {
+      "sk_actividadeco": 186,
+      "st_codigo": 20130,
+      "st_descripcion": "Fabricación de plástico y caucho en formas primarias"
+     },
+     {
+      "sk_actividadeco": 187,
+      "st_codigo": 20210,
+      "st_descripcion": "Fabricación de plaguicidas y otros productos químicos de uso agropecuario"
+     },
+     {
+      "sk_actividadeco": 188,
+      "st_codigo": 20220,
+      "st_descripcion": "Fabricación de pinturas, barnices y productos de revestimiento similares; tintas de imprenta y masillas"
+     },
+     {
+      "sk_actividadeco": 189,
+      "st_codigo": 20231,
+      "st_descripcion": "Fabricación de jabones, detergentes y similares para limpieza"
+     },
+     {
+      "sk_actividadeco": 190,
+      "st_codigo": 20232,
+      "st_descripcion": "Fabricación de perfumes, cosméticos y productos de higiene y cuidado personal, incluyendo tintes, champú, etc."
+     },
+     {
+      "sk_actividadeco": 191,
+      "st_codigo": 20291,
+      "st_descripcion": "Fabricación de tintas y colores para escribir y pintar; fabricación de cintas para impresoras"
+     },
+     {
+      "sk_actividadeco": 192,
+      "st_codigo": 20292,
+      "st_descripcion": "Fabricación de productos pirotécnicos, explosivos y municiones"
+     },
+     {
+      "sk_actividadeco": 193,
+      "st_codigo": 20299,
+      "st_descripcion": "Fabricación de productos químicos n.c.p."
+     },
+     {
+      "sk_actividadeco": 194,
+      "st_codigo": 20300,
+      "st_descripcion": "Fabricación de fibras artificiales"
+     },
+     {
+      "sk_actividadeco": 195,
+      "st_codigo": 21001,
+      "st_descripcion": "Manufactura de productos farmacéuticos, sustancias químicas y productos botánicos"
+     },
+     {
+      "sk_actividadeco": 196,
+      "st_codigo": 21008,
+      "st_descripcion": "Maquilado de medicamentos"
+     },
+     {
+      "sk_actividadeco": 197,
+      "st_codigo": 22110,
+      "st_descripcion": "Fabricación de cubiertas y cámaras; renovación y recauchutado de cubiertas"
+     },
+     {
+      "sk_actividadeco": 198,
+      "st_codigo": 22190,
+      "st_descripcion": "Fabricación de otros productos de caucho"
+     },
+     {
+      "sk_actividadeco": 199,
+      "st_codigo": 22201,
+      "st_descripcion": "Fabricación de envases plásticos"
+     },
+     {
+      "sk_actividadeco": 200,
+      "st_codigo": 22202,
+      "st_descripcion": "Fabricación de productos plásticos para uso personal o doméstico"
+     },
+     {
+      "sk_actividadeco": 201,
+      "st_codigo": 22208,
+      "st_descripcion": "Maquila de plásticos"
+     },
+     {
+      "sk_actividadeco": 202,
+      "st_codigo": 22209,
+      "st_descripcion": "Fabricación de productos plásticos n.c.p."
+     },
+     {
+      "sk_actividadeco": 203,
+      "st_codigo": 23101,
+      "st_descripcion": "Fabricación de vidrio"
+     },
+     {
+      "sk_actividadeco": 204,
+      "st_codigo": 23102,
+      "st_descripcion": "Fabricación de recipientes y envases de vidrio"
+     },
+     {
+      "sk_actividadeco": 205,
+      "st_codigo": 23108,
+      "st_descripcion": "Servicio de maquilado"
+     },
+     {
+      "sk_actividadeco": 206,
+      "st_codigo": 23109,
+      "st_descripcion": "Fabricación de productos de vidrio ncp"
+     },
+     {
+      "sk_actividadeco": 207,
+      "st_codigo": 23910,
+      "st_descripcion": "Fabricación de productos refractarios"
+     },
+     {
+      "sk_actividadeco": 208,
+      "st_codigo": 23920,
+      "st_descripcion": "Fabricación de productos de arcilla para la construcción"
+     },
+     {
+      "sk_actividadeco": 209,
+      "st_codigo": 23931,
+      "st_descripcion": "Fabricación de productos de cerámica y porcelana no refractaria"
+     },
+     {
+      "sk_actividadeco": 210,
+      "st_codigo": 23932,
+      "st_descripcion": "Fabricación de productos de cerámica y porcelana ncp"
+     },
+     {
+      "sk_actividadeco": 211,
+      "st_codigo": 23940,
+      "st_descripcion": "Fabricación de cemento, cal y yeso"
+     },
+     {
+      "sk_actividadeco": 212,
+      "st_codigo": 23950,
+      "st_descripcion": "Fabricación de artículos de hormigón, cemento y yeso"
+     },
+     {
+      "sk_actividadeco": 213,
+      "st_codigo": 23960,
+      "st_descripcion": "Corte, tallado y acabado de la piedra"
+     },
+     {
+      "sk_actividadeco": 214,
+      "st_codigo": 23990,
+      "st_descripcion": "Fabricación de productos minerales no metálicos ncp"
+     },
+     {
+      "sk_actividadeco": 215,
+      "st_codigo": 24100,
+      "st_descripcion": "Industrias básicas de hierro y acero"
+     },
+     {
+      "sk_actividadeco": 216,
+      "st_codigo": 24200,
+      "st_descripcion": "Fabricación de productos primarios de metales preciosos y metales no ferrosos"
+     },
+     {
+      "sk_actividadeco": 217,
+      "st_codigo": 24310,
+      "st_descripcion": "Fundición de hierro y acero"
+     },
+     {
+      "sk_actividadeco": 218,
+      "st_codigo": 24320,
+      "st_descripcion": "Fundición de metales no ferrosos"
+     },
+     {
+      "sk_actividadeco": 219,
+      "st_codigo": 25111,
+      "st_descripcion": "Fabricación de productos metálicos para uso estructural"
+     },
+     {
+      "sk_actividadeco": 220,
+      "st_codigo": 25118,
+      "st_descripcion": "Servicio de maquila para la fabricación de estructuras metálicas"
+     },
+     {
+      "sk_actividadeco": 221,
+      "st_codigo": 25120,
+      "st_descripcion": "Fabricación de tanques, depósitos y recipientes de metal"
+     },
+     {
+      "sk_actividadeco": 222,
+      "st_codigo": 25130,
+      "st_descripcion": "Fabricación de generadores de vapor, excepto calderas de agua caliente para calefacción central"
+     },
+     {
+      "sk_actividadeco": 223,
+      "st_codigo": 25200,
+      "st_descripcion": "Fabricación de armas y municiones"
+     },
+     {
+      "sk_actividadeco": 224,
+      "st_codigo": 25910,
+      "st_descripcion": "Forjado, prensado, estampado y laminado de metales; pulvimetalurgia"
+     },
+     {
+      "sk_actividadeco": 225,
+      "st_codigo": 25920,
+      "st_descripcion": "Tratamiento y revestimiento de metales"
+     },
+     {
+      "sk_actividadeco": 226,
+      "st_codigo": 25930,
+      "st_descripcion": "Fabricación de artículos de cuchillería, herramientas de mano y artículos de ferretería"
+     },
+     {
+      "sk_actividadeco": 227,
+      "st_codigo": 25991,
+      "st_descripcion": "Fabricación de envases y artículos conexos de metal"
+     },
+     {
+      "sk_actividadeco": 228,
+      "st_codigo": 25992,
+      "st_descripcion": "Fabricación de artículos metálicos de uso personal y\/o doméstico"
+     },
+     {
+      "sk_actividadeco": 229,
+      "st_codigo": 25999,
+      "st_descripcion": "Fabricación de productos elaborados de metal ncp"
+     },
+     {
+      "sk_actividadeco": 230,
+      "st_codigo": 26100,
+      "st_descripcion": "Fabricación de componentes electrónicos"
+     },
+     {
+      "sk_actividadeco": 231,
+      "st_codigo": 26200,
+      "st_descripcion": "Fabricación de computadoras y equipo conexo"
+     },
+     {
+      "sk_actividadeco": 232,
+      "st_codigo": 26300,
+      "st_descripcion": "Fabricación de equipo de comunicaciones"
+     },
+     {
+      "sk_actividadeco": 233,
+      "st_codigo": 26400,
+      "st_descripcion": "Fabricación de aparatos electrónicos de consumo para audio, video radio y televisión"
+     },
+     {
+      "sk_actividadeco": 234,
+      "st_codigo": 26510,
+      "st_descripcion": "Fabricación de instrumentos y aparatos para medir, verificar, ensayar, navegar y de control de procesos industriales"
+     },
+     {
+      "sk_actividadeco": 235,
+      "st_codigo": 26520,
+      "st_descripcion": "Fabricación de relojes y piezas de relojes"
+     },
+     {
+      "sk_actividadeco": 236,
+      "st_codigo": 26600,
+      "st_descripcion": "Fabricación de equipo médico de irradiación y equipo electrónico de uso médico y terapéutico"
+     },
+     {
+      "sk_actividadeco": 237,
+      "st_codigo": 26700,
+      "st_descripcion": "Fabricación de instrumentos de óptica y equipo fotográfico"
+     },
+     {
+      "sk_actividadeco": 238,
+      "st_codigo": 26800,
+      "st_descripcion": "Fabricación de medios magnéticos y ópticos"
+     },
+     {
+      "sk_actividadeco": 239,
+      "st_codigo": 27100,
+      "st_descripcion": "Fabricación de motores, generadores, transformadores eléctricos, aparatos de distribución y control de electricidad"
+     },
+     {
+      "sk_actividadeco": 240,
+      "st_codigo": 27200,
+      "st_descripcion": "Fabricación de pilas, baterías y acumuladores"
+     },
+     {
+      "sk_actividadeco": 241,
+      "st_codigo": 27310,
+      "st_descripcion": "Fabricación de cables de fibra óptica"
+     },
+     {
+      "sk_actividadeco": 242,
+      "st_codigo": 27320,
+      "st_descripcion": "Fabricación de otros hilos y cables eléctricos"
+     },
+     {
+      "sk_actividadeco": 243,
+      "st_codigo": 27330,
+      "st_descripcion": "Fabricación de dispositivos de cableados"
+     },
+     {
+      "sk_actividadeco": 244,
+      "st_codigo": 27400,
+      "st_descripcion": "Fabricación de equipo eléctrico de iluminación"
+     },
+     {
+      "sk_actividadeco": 245,
+      "st_codigo": 27500,
+      "st_descripcion": "Fabricación de aparatos de uso doméstico"
+     },
+     {
+      "sk_actividadeco": 246,
+      "st_codigo": 27900,
+      "st_descripcion": "Fabricación de otros tipos de equipo eléctrico"
+     },
+     {
+      "sk_actividadeco": 247,
+      "st_codigo": 28110,
+      "st_descripcion": "Fabricación de motores y turbinas, excepto motores para aeronaves, vehículos automotores y motocicletas"
+     },
+     {
+      "sk_actividadeco": 248,
+      "st_codigo": 28120,
+      "st_descripcion": "Fabricación de equipo hidráulico"
+     },
+     {
+      "sk_actividadeco": 249,
+      "st_codigo": 28130,
+      "st_descripcion": "Fabricación de otras bombas, compresores, grifos y válvulas"
+     },
+     {
+      "sk_actividadeco": 250,
+      "st_codigo": 28140,
+      "st_descripcion": "Fabricación de cojinetes, engranajes, trenes de engranajes y piezas de transmisión"
+     },
+     {
+      "sk_actividadeco": 251,
+      "st_codigo": 28150,
+      "st_descripcion": "Fabricación de hornos y quemadores"
+     },
+     {
+      "sk_actividadeco": 252,
+      "st_codigo": 28160,
+      "st_descripcion": "Fabricación de equipo de elevación y manipulación"
+     },
+     {
+      "sk_actividadeco": 253,
+      "st_codigo": 28170,
+      "st_descripcion": "Fabricación de maquinaria y equipo de oficina"
+     },
+     {
+      "sk_actividadeco": 254,
+      "st_codigo": 28180,
+      "st_descripcion": "Fabricación de herramientas manuales"
+     },
+     {
+      "sk_actividadeco": 255,
+      "st_codigo": 28190,
+      "st_descripcion": "Fabricación de otros tipos de maquinaria de uso general"
+     },
+     {
+      "sk_actividadeco": 256,
+      "st_codigo": 28210,
+      "st_descripcion": "Fabricación de maquinaria agropecuaria y forestal"
+     },
+     {
+      "sk_actividadeco": 257,
+      "st_codigo": 28220,
+      "st_descripcion": "Fabricación de máquinas para conformar metales y maquinaria herramienta"
+     },
+     {
+      "sk_actividadeco": 258,
+      "st_codigo": 28230,
+      "st_descripcion": "Fabricación de maquinaria metalúrgica"
+     },
+     {
+      "sk_actividadeco": 259,
+      "st_codigo": 28240,
+      "st_descripcion": "Fabricación de maquinaria para la explotación de minas y canteras y para obras de construcción"
+     },
+     {
+      "sk_actividadeco": 260,
+      "st_codigo": 28250,
+      "st_descripcion": "Fabricación de maquinaria para la elaboración de alimentos, bebidas y tabaco"
+     },
+     {
+      "sk_actividadeco": 261,
+      "st_codigo": 28260,
+      "st_descripcion": "Fabricación de maquinaria para la elaboración de productos textiles, prendas de vestir y cueros"
+     },
+     {
+      "sk_actividadeco": 262,
+      "st_codigo": 28291,
+      "st_descripcion": "Fabricación de máquinas para imprenta"
+     },
+     {
+      "sk_actividadeco": 263,
+      "st_codigo": 28299,
+      "st_descripcion": "Fabricación de maquinaria de uso especial ncp"
+     },
+     {
+      "sk_actividadeco": 264,
+      "st_codigo": 29100,
+      "st_descripcion": "Fabricación vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 265,
+      "st_codigo": 29200,
+      "st_descripcion": "Fabricación de carrocerías para vehículos automotores; fabricación de remolques y semiremolques"
+     },
+     {
+      "sk_actividadeco": 266,
+      "st_codigo": 29300,
+      "st_descripcion": "Fabricación de partes, piezas y accesorios para vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 267,
+      "st_codigo": 30110,
+      "st_descripcion": "Fabricación de buques"
+     },
+     {
+      "sk_actividadeco": 268,
+      "st_codigo": 30120,
+      "st_descripcion": "Construcción y reparación de embarcaciones de recreo"
+     },
+     {
+      "sk_actividadeco": 269,
+      "st_codigo": 30200,
+      "st_descripcion": "Fabricación de locomotoras y de material rodante"
+     },
+     {
+      "sk_actividadeco": 270,
+      "st_codigo": 30300,
+      "st_descripcion": "Fabricación de aeronaves y naves espaciales"
+     },
+     {
+      "sk_actividadeco": 271,
+      "st_codigo": 30400,
+      "st_descripcion": "Fabricación de vehículos militares de combate"
+     },
+     {
+      "sk_actividadeco": 272,
+      "st_codigo": 30910,
+      "st_descripcion": "Fabricación de motocicletas"
+     },
+     {
+      "sk_actividadeco": 273,
+      "st_codigo": 30920,
+      "st_descripcion": "Fabricación de bicicletas y sillones de ruedas para inválidos"
+     },
+     {
+      "sk_actividadeco": 274,
+      "st_codigo": 30990,
+      "st_descripcion": "Fabricación de equipo de transporte ncp"
+     },
+     {
+      "sk_actividadeco": 275,
+      "st_codigo": 31001,
+      "st_descripcion": "Fabricación de colchones y somier"
+     },
+     {
+      "sk_actividadeco": 276,
+      "st_codigo": 31002,
+      "st_descripcion": "Fabricación de muebles y otros productos de madera a medida"
+     },
+     {
+      "sk_actividadeco": 277,
+      "st_codigo": 31008,
+      "st_descripcion": "Servicios de maquilado de muebles"
+     },
+     {
+      "sk_actividadeco": 278,
+      "st_codigo": 31009,
+      "st_descripcion": "Fabricación de muebles ncp"
+     },
+     {
+      "sk_actividadeco": 279,
+      "st_codigo": 32110,
+      "st_descripcion": "Fabricación de joyas platerías y joyerías"
+     },
+     {
+      "sk_actividadeco": 280,
+      "st_codigo": 32120,
+      "st_descripcion": "Fabricación de joyas de imitación (fantasía) y artículos conexos"
+     },
+     {
+      "sk_actividadeco": 281,
+      "st_codigo": 32200,
+      "st_descripcion": "Fabricación de instrumentos musicales"
+     },
+     {
+      "sk_actividadeco": 282,
+      "st_codigo": 32301,
+      "st_descripcion": "Fabricación de artículos de deporte"
+     },
+     {
+      "sk_actividadeco": 283,
+      "st_codigo": 32308,
+      "st_descripcion": "Servicio de maquila de productos deportivos"
+     },
+     {
+      "sk_actividadeco": 284,
+      "st_codigo": 32401,
+      "st_descripcion": "Fabricación de juegos de mesa y de salón"
+     },
+     {
+      "sk_actividadeco": 285,
+      "st_codigo": 32402,
+      "st_descripcion": "Servicio de maquilado de juguetes y juegos"
+     },
+     {
+      "sk_actividadeco": 286,
+      "st_codigo": 32409,
+      "st_descripcion": "Fabricación de juegos y juguetes n.c.p."
+     },
+     {
+      "sk_actividadeco": 287,
+      "st_codigo": 32500,
+      "st_descripcion": "Fabricación de instrumentos y materiales médicos y odontológicos"
+     },
+     {
+      "sk_actividadeco": 288,
+      "st_codigo": 32901,
+      "st_descripcion": "Fabricación de lápices, bolígrafos, sellos y artículos de librería en general"
+     },
+     {
+      "sk_actividadeco": 289,
+      "st_codigo": 32902,
+      "st_descripcion": "Fabricación de escobas, cepillos, pinceles y similares"
+     },
+     {
+      "sk_actividadeco": 290,
+      "st_codigo": 32903,
+      "st_descripcion": "Fabricación de artesanías de materiales diversos"
+     },
+     {
+      "sk_actividadeco": 291,
+      "st_codigo": 32904,
+      "st_descripcion": "Fabricación de artículos de uso personal y domésticos n.c.p."
+     },
+     {
+      "sk_actividadeco": 292,
+      "st_codigo": 32905,
+      "st_descripcion": "Fabricación de accesorios para las confecciones y la marroquinería n.c.p."
+     },
+     {
+      "sk_actividadeco": 293,
+      "st_codigo": 32908,
+      "st_descripcion": "Servicios de maquila ncp"
+     },
+     {
+      "sk_actividadeco": 294,
+      "st_codigo": 32909,
+      "st_descripcion": "Fabricación de productos manufacturados n.c.p."
+     },
+     {
+      "sk_actividadeco": 295,
+      "st_codigo": 33110,
+      "st_descripcion": "Reparación y mantenimiento de productos elaborados de metal"
+     },
+     {
+      "sk_actividadeco": 296,
+      "st_codigo": 33120,
+      "st_descripcion": "Reparación y mantenimiento de maquinaria"
+     },
+     {
+      "sk_actividadeco": 297,
+      "st_codigo": 33130,
+      "st_descripcion": "Reparación y mantenimiento de equipo electrónico y óptico"
+     },
+     {
+      "sk_actividadeco": 298,
+      "st_codigo": 33140,
+      "st_descripcion": "Reparación y mantenimiento de equipo eléctrico"
+     },
+     {
+      "sk_actividadeco": 299,
+      "st_codigo": 33150,
+      "st_descripcion": "Reparación y mantenimiento de equipo de transporte, excepto vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 300,
+      "st_codigo": 33190,
+      "st_descripcion": "Reparación y mantenimiento de equipos n.c.p."
+     },
+     {
+      "sk_actividadeco": 301,
+      "st_codigo": 33200,
+      "st_descripcion": "Instalación de maquinaria y equipo industrial"
+     },
+     {
+      "sk_actividadeco": 302,
+      "st_codigo": 35101,
+      "st_descripcion": "Generación de energía eléctrica"
+     },
+     {
+      "sk_actividadeco": 303,
+      "st_codigo": 35102,
+      "st_descripcion": "Transmisión de energía eléctrica"
+     },
+     {
+      "sk_actividadeco": 304,
+      "st_codigo": 35103,
+      "st_descripcion": "Distribución de energía eléctrica"
+     },
+     {
+      "sk_actividadeco": 305,
+      "st_codigo": 35200,
+      "st_descripcion": "Fabricación de gas, distribución de combustibles gaseosos por tuberías"
+     },
+     {
+      "sk_actividadeco": 306,
+      "st_codigo": 35300,
+      "st_descripcion": "Suministro de vapor y agua caliente"
+     },
+     {
+      "sk_actividadeco": 307,
+      "st_codigo": 36000,
+      "st_descripcion": "Captación, tratamiento y suministro de agua"
+     },
+     {
+      "sk_actividadeco": 308,
+      "st_codigo": 37000,
+      "st_descripcion": "Evacuación de aguas residuales (alcantarillado)"
+     },
+     {
+      "sk_actividadeco": 309,
+      "st_codigo": 38110,
+      "st_descripcion": "Recolección y transporte de desechos sólidos proveniente de hogares y sector urbano"
+     },
+     {
+      "sk_actividadeco": 310,
+      "st_codigo": 38120,
+      "st_descripcion": "Recolección de desechos peligrosos"
+     },
+     {
+      "sk_actividadeco": 311,
+      "st_codigo": 38210,
+      "st_descripcion": "Tratamiento y eliminación de desechos inicuos"
+     },
+     {
+      "sk_actividadeco": 312,
+      "st_codigo": 38220,
+      "st_descripcion": "Tratamiento y eliminación de desechos peligrosos"
+     },
+     {
+      "sk_actividadeco": 313,
+      "st_codigo": 38301,
+      "st_descripcion": "Reciclaje de desperdicios y desechos textiles"
+     },
+     {
+      "sk_actividadeco": 314,
+      "st_codigo": 38302,
+      "st_descripcion": "Reciclaje de desperdicios y desechos de plástico y caucho"
+     },
+     {
+      "sk_actividadeco": 315,
+      "st_codigo": 38303,
+      "st_descripcion": "Reciclaje de desperdicios y desechos de vidrio"
+     },
+     {
+      "sk_actividadeco": 316,
+      "st_codigo": 38304,
+      "st_descripcion": "Reciclaje de desperdicios y desechos de papel y cartón"
+     },
+     {
+      "sk_actividadeco": 317,
+      "st_codigo": 38305,
+      "st_descripcion": "Reciclaje de desperdicios y desechos metálicos"
+     },
+     {
+      "sk_actividadeco": 318,
+      "st_codigo": 38309,
+      "st_descripcion": "Reciclaje de desperdicios y desechos no metálicos n.c.p."
+     },
+     {
+      "sk_actividadeco": 319,
+      "st_codigo": 39000,
+      "st_descripcion": "Actividades de Saneamiento y otros Servicios de Gestión de Desechos"
+     },
+     {
+      "sk_actividadeco": 320,
+      "st_codigo": 41001,
+      "st_descripcion": "Construcción de edificios residenciales"
+     },
+     {
+      "sk_actividadeco": 321,
+      "st_codigo": 41002,
+      "st_descripcion": "Construcción de edificios no residenciales"
+     },
+     {
+      "sk_actividadeco": 322,
+      "st_codigo": 42100,
+      "st_descripcion": "Construcción de carreteras, calles y caminos"
+     },
+     {
+      "sk_actividadeco": 323,
+      "st_codigo": 42200,
+      "st_descripcion": "Construcción de proyectos de servicio público"
+     },
+     {
+      "sk_actividadeco": 324,
+      "st_codigo": 42900,
+      "st_descripcion": "Construcción de obras de ingeniería civil n.c.p."
+     },
+     {
+      "sk_actividadeco": 325,
+      "st_codigo": 43110,
+      "st_descripcion": "Demolición"
+     },
+     {
+      "sk_actividadeco": 326,
+      "st_codigo": 43120,
+      "st_descripcion": "Preparación de terreno"
+     },
+     {
+      "sk_actividadeco": 327,
+      "st_codigo": 43210,
+      "st_descripcion": "Instalaciones eléctricas"
+     },
+     {
+      "sk_actividadeco": 328,
+      "st_codigo": 43220,
+      "st_descripcion": "Instalación de fontanería, calefacción y aire acondicionado"
+     },
+     {
+      "sk_actividadeco": 329,
+      "st_codigo": 43290,
+      "st_descripcion": "Otras instalaciones para obras de construcción"
+     },
+     {
+      "sk_actividadeco": 330,
+      "st_codigo": 43300,
+      "st_descripcion": "Terminación y acabado de edificios"
+     },
+     {
+      "sk_actividadeco": 331,
+      "st_codigo": 43900,
+      "st_descripcion": "Otras actividades especializadas de construcción"
+     },
+     {
+      "sk_actividadeco": 332,
+      "st_codigo": 43901,
+      "st_descripcion": "Fabricación de techos y materiales diversos"
+     },
+     {
+      "sk_actividadeco": 333,
+      "st_codigo": 45100,
+      "st_descripcion": "Venta de vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 334,
+      "st_codigo": 45201,
+      "st_descripcion": "Reparación mecánica de vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 335,
+      "st_codigo": 45202,
+      "st_descripcion": "Reparaciones eléctricas del automotor y recarga de baterías"
+     },
+     {
+      "sk_actividadeco": 336,
+      "st_codigo": 45203,
+      "st_descripcion": "Enderezado y pintura de vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 337,
+      "st_codigo": 45204,
+      "st_descripcion": "Reparaciones de radiadores, escapes y silenciadores"
+     },
+     {
+      "sk_actividadeco": 338,
+      "st_codigo": 45205,
+      "st_descripcion": "Reparación y reconstrucción de vías, stop y otros artículos de fibra de vidrio"
+     },
+     {
+      "sk_actividadeco": 339,
+      "st_codigo": 45206,
+      "st_descripcion": "Reparación de llantas de vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 340,
+      "st_codigo": 45207,
+      "st_descripcion": "Polarizado de vehículos (mediante la adhesión de papel especial a los vidrios)"
+     },
+     {
+      "sk_actividadeco": 341,
+      "st_codigo": 45208,
+      "st_descripcion": "Lavado y pasteado de vehículos (carwash)"
+     },
+     {
+      "sk_actividadeco": 342,
+      "st_codigo": 45209,
+      "st_descripcion": "Reparaciones de vehículos n.c.p."
+     },
+     {
+      "sk_actividadeco": 343,
+      "st_codigo": 45211,
+      "st_descripcion": "Remolque de vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 344,
+      "st_codigo": 45301,
+      "st_descripcion": "Venta de partes, piezas y accesorios nuevos para vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 345,
+      "st_codigo": 45302,
+      "st_descripcion": "Venta de partes, piezas y accesorios usados para vehículos automotores"
+     },
+     {
+      "sk_actividadeco": 346,
+      "st_codigo": 45401,
+      "st_descripcion": "Venta de motocicletas"
+     },
+     {
+      "sk_actividadeco": 347,
+      "st_codigo": 45402,
+      "st_descripcion": "Venta de repuestos, piezas y accesorios de motocicletas"
+     },
+     {
+      "sk_actividadeco": 348,
+      "st_codigo": 45403,
+      "st_descripcion": "Mantenimiento y reparación de motocicletas"
+     },
+     {
+      "sk_actividadeco": 349,
+      "st_codigo": 46100,
+      "st_descripcion": "Venta al por mayor a cambio de retribución o por contrata"
+     },
+     {
+      "sk_actividadeco": 350,
+      "st_codigo": 46201,
+      "st_descripcion": "Venta al por mayor de materias primas agrícolas"
+     },
+     {
+      "sk_actividadeco": 351,
+      "st_codigo": 46202,
+      "st_descripcion": "Venta al por mayor de productos de la silvicultura"
+     },
+     {
+      "sk_actividadeco": 352,
+      "st_codigo": 46203,
+      "st_descripcion": "Venta al por mayor de productos pecuarios y de granja"
+     },
+     {
+      "sk_actividadeco": 353,
+      "st_codigo": 46211,
+      "st_descripcion": "Venta de productos para uso agropecuario"
+     },
+     {
+      "sk_actividadeco": 354,
+      "st_codigo": 46291,
+      "st_descripcion": "Venta al por mayor de granos básicos (cereales, leguminosas)"
+     },
+     {
+      "sk_actividadeco": 355,
+      "st_codigo": 46292,
+      "st_descripcion": "Venta al por mayor de semillas mejoradas para cultivo"
+     },
+     {
+      "sk_actividadeco": 356,
+      "st_codigo": 46293,
+      "st_descripcion": "Venta al por mayor de café oro y uva"
+     },
+     {
+      "sk_actividadeco": 357,
+      "st_codigo": 46294,
+      "st_descripcion": "Venta al por mayor de caña de azúcar"
+     },
+     {
+      "sk_actividadeco": 358,
+      "st_codigo": 46295,
+      "st_descripcion": "Venta al por mayor de flores, plantas y otros productos naturales"
+     },
+     {
+      "sk_actividadeco": 359,
+      "st_codigo": 46296,
+      "st_descripcion": "Venta al por mayor de productos agrícolas"
+     },
+     {
+      "sk_actividadeco": 360,
+      "st_codigo": 46297,
+      "st_descripcion": "Venta al por mayor de ganado bovino (vivo)"
+     },
+     {
+      "sk_actividadeco": 361,
+      "st_codigo": 46298,
+      "st_descripcion": "Venta al por mayor de animales porcinos, ovinos, caprino, canículas, apícolas, avícolas vivos"
+     },
+     {
+      "sk_actividadeco": 362,
+      "st_codigo": 46299,
+      "st_descripcion": "Venta de otras especies vivas del reino animal"
+     },
+     {
+      "sk_actividadeco": 363,
+      "st_codigo": 46301,
+      "st_descripcion": "Venta al por mayor de alimentos"
+     },
+     {
+      "sk_actividadeco": 364,
+      "st_codigo": 46302,
+      "st_descripcion": "Venta al por mayor de bebidas"
+     },
+     {
+      "sk_actividadeco": 365,
+      "st_codigo": 46303,
+      "st_descripcion": "Venta al por mayor de tabaco"
+     },
+     {
+      "sk_actividadeco": 366,
+      "st_codigo": 46371,
+      "st_descripcion": "Venta al por mayor de frutas, hortalizas (verduras), legumbres y tubérculos"
+     },
+     {
+      "sk_actividadeco": 367,
+      "st_codigo": 46372,
+      "st_descripcion": "Venta al por mayor de pollos, gallinas destazadas, pavos y otras aves"
+     },
+     {
+      "sk_actividadeco": 368,
+      "st_codigo": 46373,
+      "st_descripcion": "Venta al por mayor de carne bovina y porcina, productos de carne y embutidos"
+     },
+     {
+      "sk_actividadeco": 369,
+      "st_codigo": 46374,
+      "st_descripcion": "Venta al por mayor de huevos"
+     },
+     {
+      "sk_actividadeco": 370,
+      "st_codigo": 46375,
+      "st_descripcion": "Venta al por mayor de productos lácteos"
+     },
+     {
+      "sk_actividadeco": 371,
+      "st_codigo": 46376,
+      "st_descripcion": "Venta al por mayor de productos farináceos de panadería (pan dulce, cakes, repostería, etc.)"
+     },
+     {
+      "sk_actividadeco": 372,
+      "st_codigo": 46377,
+      "st_descripcion": "Venta al por mayor de pastas alimenticias, aceites y grasas comestibles vegetal y animal"
+     },
+     {
+      "sk_actividadeco": 373,
+      "st_codigo": 46378,
+      "st_descripcion": "Venta al por mayor de sal comestible"
+     },
+     {
+      "sk_actividadeco": 374,
+      "st_codigo": 46379,
+      "st_descripcion": "Venta al por mayor de azúcar"
+     },
+     {
+      "sk_actividadeco": 375,
+      "st_codigo": 46391,
+      "st_descripcion": "Venta al por mayor de abarrotes (vinos, licores, productos alimenticios envasados, etc.)"
+     },
+     {
+      "sk_actividadeco": 376,
+      "st_codigo": 46392,
+      "st_descripcion": "Venta al por mayor de aguas gaseosas"
+     },
+     {
+      "sk_actividadeco": 377,
+      "st_codigo": 46393,
+      "st_descripcion": "Venta al por mayor de agua purificada"
+     },
+     {
+      "sk_actividadeco": 378,
+      "st_codigo": 46394,
+      "st_descripcion": "Venta al por mayor de refrescos y otras bebidas, líquidas o en polvo"
+     },
+     {
+      "sk_actividadeco": 379,
+      "st_codigo": 46395,
+      "st_descripcion": "Venta al por mayor de cerveza y licores"
+     },
+     {
+      "sk_actividadeco": 380,
+      "st_codigo": 46396,
+      "st_descripcion": "Venta al por mayor de hielo"
+     },
+     {
+      "sk_actividadeco": 381,
+      "st_codigo": 46411,
+      "st_descripcion": "Venta al por mayor de hilados, tejidos y productos textiles de mercería"
+     },
+     {
+      "sk_actividadeco": 382,
+      "st_codigo": 46412,
+      "st_descripcion": "Venta al por mayor de artículos textiles excepto confecciones para el hogar"
+     },
+     {
+      "sk_actividadeco": 383,
+      "st_codigo": 46413,
+      "st_descripcion": "Venta al por mayor de confecciones textiles para el hogar"
+     },
+     {
+      "sk_actividadeco": 384,
+      "st_codigo": 46414,
+      "st_descripcion": "Venta al por mayor de prendas de vestir y accesorios de vestir"
+     },
+     {
+      "sk_actividadeco": 385,
+      "st_codigo": 46415,
+      "st_descripcion": "Venta al por mayor de ropa usada"
+     },
+     {
+      "sk_actividadeco": 386,
+      "st_codigo": 46416,
+      "st_descripcion": "Venta al por mayor de calzado"
+     },
+     {
+      "sk_actividadeco": 387,
+      "st_codigo": 46417,
+      "st_descripcion": "Venta al por mayor de artículos de marroquinería y talabartería"
+     },
+     {
+      "sk_actividadeco": 388,
+      "st_codigo": 46418,
+      "st_descripcion": "Venta al por mayor de artículos de peletería"
+     },
+     {
+      "sk_actividadeco": 389,
+      "st_codigo": 46419,
+      "st_descripcion": "Venta al por mayor de otros artículos textiles n.c.p."
+     },
+     {
+      "sk_actividadeco": 390,
+      "st_codigo": 46471,
+      "st_descripcion": "Venta al por mayor de instrumentos musicales"
+     },
+     {
+      "sk_actividadeco": 391,
+      "st_codigo": 46472,
+      "st_descripcion": "Venta al por mayor de colchones, almohadas, cojines, etc."
+     },
+     {
+      "sk_actividadeco": 392,
+      "st_codigo": 46473,
+      "st_descripcion": "Venta al por mayor de artículos de aluminio para el hogar y para otros usos"
+     },
+     {
+      "sk_actividadeco": 393,
+      "st_codigo": 46474,
+      "st_descripcion": "Venta al por mayor de depósitos y otros artículos plásticos para el hogar y otros usos, incluyendo los desechables de durapax y no desechables"
+     },
+     {
+      "sk_actividadeco": 394,
+      "st_codigo": 46475,
+      "st_descripcion": "Venta al por mayor de cámaras fotográficas, accesorios y materiales"
+     },
+     {
+      "sk_actividadeco": 395,
+      "st_codigo": 46482,
+      "st_descripcion": "Venta al por mayor de medicamentos, artículos y otros productos de uso veterinario"
+     },
+     {
+      "sk_actividadeco": 396,
+      "st_codigo": 46483,
+      "st_descripcion": "Venta al por mayor de productos y artículos de belleza y de uso personal"
+     },
+     {
+      "sk_actividadeco": 397,
+      "st_codigo": 46484,
+      "st_descripcion": "Venta de productos farmacéuticos y medicinales"
+     },
+     {
+      "sk_actividadeco": 398,
+      "st_codigo": 46491,
+      "st_descripcion": "Venta al por mayor de productos medicinales, cosméticos, perfumería y productos de limpieza"
+     },
+     {
+      "sk_actividadeco": 399,
+      "st_codigo": 46492,
+      "st_descripcion": "Venta al por mayor de relojes y artículos de joyería"
+     },
+     {
+      "sk_actividadeco": 400,
+      "st_codigo": 46493,
+      "st_descripcion": "Venta al por mayor de electrodomésticos y artículos del hogar excepto bazar; artículos de iluminación"
+     },
+     {
+      "sk_actividadeco": 401,
+      "st_codigo": 46494,
+      "st_descripcion": "Venta al por mayor de artículos de bazar y similares"
+     },
+     {
+      "sk_actividadeco": 402,
+      "st_codigo": 46495,
+      "st_descripcion": "Venta al por mayor de artículos de óptica"
+     },
+     {
+      "sk_actividadeco": 403,
+      "st_codigo": 46496,
+      "st_descripcion": "Venta al por mayor de revistas, periódicos, libros, artículos de librería y artículos de papel y cartón en general"
+     },
+     {
+      "sk_actividadeco": 404,
+      "st_codigo": 46497,
+      "st_descripcion": "Venta de artículos deportivos, juguetes y rodados"
+     },
+     {
+      "sk_actividadeco": 405,
+      "st_codigo": 46498,
+      "st_descripcion": "Venta al por mayor de productos usados para el hogar o el uso personal"
+     },
+     {
+      "sk_actividadeco": 406,
+      "st_codigo": 46499,
+      "st_descripcion": "Venta al por mayor de enseres domésticos y de uso personal n.c.p."
+     },
+     {
+      "sk_actividadeco": 407,
+      "st_codigo": 46500,
+      "st_descripcion": "Venta al por mayor de bicicletas, partes, accesorios y otros"
+     },
+     {
+      "sk_actividadeco": 408,
+      "st_codigo": 46510,
+      "st_descripcion": "Venta al por mayor de computadoras, equipo periférico y programas informáticos"
+     },
+     {
+      "sk_actividadeco": 409,
+      "st_codigo": 46520,
+      "st_descripcion": "Venta al por mayor de equipos de comunicación"
+     },
+     {
+      "sk_actividadeco": 410,
+      "st_codigo": 46530,
+      "st_descripcion": "Venta al por mayor de maquinaria y equipo agropecuario, accesorios, partes y suministros"
+     },
+     {
+      "sk_actividadeco": 411,
+      "st_codigo": 46590,
+      "st_descripcion": "Venta de equipos e instrumentos de uso profesional y científico y aparatos de medida y control"
+     },
+     {
+      "sk_actividadeco": 412,
+      "st_codigo": 46591,
+      "st_descripcion": "Venta al por mayor de maquinaria equipo, accesorios y materiales para la industria de la madera y sus productos"
+     },
+     {
+      "sk_actividadeco": 413,
+      "st_codigo": 46592,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo, accesorios y materiales para la industria gráfica y del papel, cartón y productos de papel y cartón"
+     },
+     {
+      "sk_actividadeco": 414,
+      "st_codigo": 46593,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo, accesorios y materiales para la industria de productos químicos, plástico y caucho"
+     },
+     {
+      "sk_actividadeco": 415,
+      "st_codigo": 46594,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo, accesorios y materiales para la industria metálica y de sus productos"
+     },
+     {
+      "sk_actividadeco": 416,
+      "st_codigo": 46595,
+      "st_descripcion": "Venta al por mayor de equipamiento para uso médico, odontológico, veterinario y servicios conexos"
+     },
+     {
+      "sk_actividadeco": 417,
+      "st_codigo": 46596,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo, accesorios y partes para la industria de la alimentación"
+     },
+     {
+      "sk_actividadeco": 418,
+      "st_codigo": 46597,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo, accesorios y partes para la industria textil, confecciones y cuero"
+     },
+     {
+      "sk_actividadeco": 419,
+      "st_codigo": 46598,
+      "st_descripcion": "Venta al por mayor de maquinaria, equipo y accesorios para la construcción y explotación de minas y canteras"
+     },
+     {
+      "sk_actividadeco": 420,
+      "st_codigo": 46599,
+      "st_descripcion": "Venta al por mayor de otro tipo de maquinaria y equipo con sus accesorios y partes"
+     },
+     {
+      "sk_actividadeco": 421,
+      "st_codigo": 46610,
+      "st_descripcion": "Venta al por mayor de otros combustibles sólidos, líquidos, gaseosos y de productos conexos"
+     },
+     {
+      "sk_actividadeco": 422,
+      "st_codigo": 46612,
+      "st_descripcion": "Venta al por mayor de combustibles para automotores, aviones, barcos, maquinaria y otros"
+     },
+     {
+      "sk_actividadeco": 423,
+      "st_codigo": 46613,
+      "st_descripcion": "Venta al por mayor de lubricantes, grasas y otros aceites para automotores, maquinaria industrial, etc."
+     },
+     {
+      "sk_actividadeco": 424,
+      "st_codigo": 46614,
+      "st_descripcion": "Venta al por mayor de gas propano"
+     },
+     {
+      "sk_actividadeco": 425,
+      "st_codigo": 46615,
+      "st_descripcion": "Venta al por mayor de leña y carbón"
+     },
+     {
+      "sk_actividadeco": 426,
+      "st_codigo": 46620,
+      "st_descripcion": "Venta al por mayor de metales y minerales metalíferos"
+     },
+     {
+      "sk_actividadeco": 427,
+      "st_codigo": 46631,
+      "st_descripcion": "Venta al por mayor de puertas, ventanas, vitrinas y similares"
+     },
+     {
+      "sk_actividadeco": 428,
+      "st_codigo": 46632,
+      "st_descripcion": "Venta al por mayor de artículos de ferretería y pinturerías"
+     },
+     {
+      "sk_actividadeco": 429,
+      "st_codigo": 46633,
+      "st_descripcion": "Vidrierías"
+     },
+     {
+      "sk_actividadeco": 430,
+      "st_codigo": 46634,
+      "st_descripcion": "Venta al por mayor de maderas"
+     },
+     {
+      "sk_actividadeco": 431,
+      "st_codigo": 46639,
+      "st_descripcion": "Venta al por mayor de materiales para la construcción n.c.p."
+     },
+     {
+      "sk_actividadeco": 432,
+      "st_codigo": 46691,
+      "st_descripcion": "Venta al por mayor de sal industrial sin yodar"
+     },
+     {
+      "sk_actividadeco": 433,
+      "st_codigo": 46692,
+      "st_descripcion": "Venta al por mayor de productos intermedios y desechos de origen textil"
+     },
+     {
+      "sk_actividadeco": 434,
+      "st_codigo": 46693,
+      "st_descripcion": "Venta al por mayor de productos intermedios y desechos de origen metálico"
+     },
+     {
+      "sk_actividadeco": 435,
+      "st_codigo": 46694,
+      "st_descripcion": "Venta al por mayor de productos intermedios y desechos de papel y cartón"
+     },
+     {
+      "sk_actividadeco": 436,
+      "st_codigo": 46695,
+      "st_descripcion": "Venta al por mayor fertilizantes, abonos, agroquímicos y productos similares"
+     },
+     {
+      "sk_actividadeco": 437,
+      "st_codigo": 46696,
+      "st_descripcion": "Venta al por mayor de productos intermedios y desechos de origen plástico"
+     },
+     {
+      "sk_actividadeco": 438,
+      "st_codigo": 46697,
+      "st_descripcion": "Venta al por mayor de tintas para imprenta, productos curtientes y materias y productos colorantes"
+     },
+     {
+      "sk_actividadeco": 439,
+      "st_codigo": 46698,
+      "st_descripcion": "Venta de productos intermedios y desechos de origen químico y de caucho"
+     },
+     {
+      "sk_actividadeco": 440,
+      "st_codigo": 46699,
+      "st_descripcion": "Venta al por mayor de productos intermedios y desechos ncp"
+     },
+     {
+      "sk_actividadeco": 441,
+      "st_codigo": 46701,
+      "st_descripcion": "Venta de algodón en oro"
+     },
+     {
+      "sk_actividadeco": 442,
+      "st_codigo": 46900,
+      "st_descripcion": "Venta al por mayor de otros productos"
+     },
+     {
+      "sk_actividadeco": 443,
+      "st_codigo": 46901,
+      "st_descripcion": "Venta al por mayor de cohetes y otros productos pirotécnicos"
+     },
+     {
+      "sk_actividadeco": 444,
+      "st_codigo": 46902,
+      "st_descripcion": "Venta al por mayor de artículos diversos para consumo humano"
+     },
+     {
+      "sk_actividadeco": 445,
+      "st_codigo": 46903,
+      "st_descripcion": "Venta al por mayor de armas de fuego, municiones y accesorios"
+     },
+     {
+      "sk_actividadeco": 446,
+      "st_codigo": 46904,
+      "st_descripcion": "Venta al por mayor de toldos y tiendas de campaña de cualquier material"
+     },
+     {
+      "sk_actividadeco": 447,
+      "st_codigo": 46905,
+      "st_descripcion": "Venta al por mayor de exhibidores publicitarios y rótulos"
+     },
+     {
+      "sk_actividadeco": 448,
+      "st_codigo": 46906,
+      "st_descripcion": "Venta al por mayor de artículos promocionales diversos"
+     },
+     {
+      "sk_actividadeco": 449,
+      "st_codigo": 47111,
+      "st_descripcion": "Venta en supermercados"
+     },
+     {
+      "sk_actividadeco": 450,
+      "st_codigo": 47112,
+      "st_descripcion": "Venta en tiendas de artículos de primera necesidad"
+     },
+     {
+      "sk_actividadeco": 451,
+      "st_codigo": 47119,
+      "st_descripcion": "Almacenes (venta de diversos artículos)"
+     },
+     {
+      "sk_actividadeco": 452,
+      "st_codigo": 47190,
+      "st_descripcion": "Venta al por menor de otros productos en comercios no especializados"
+     },
+     {
+      "sk_actividadeco": 453,
+      "st_codigo": 47199,
+      "st_descripcion": "Venta de establecimientos no especializados con surtido compuesto principalmente de alimentos, bebidas y tabaco"
+     },
+     {
+      "sk_actividadeco": 454,
+      "st_codigo": 47211,
+      "st_descripcion": "Venta al por menor de frutas y hortalizas"
+     },
+     {
+      "sk_actividadeco": 455,
+      "st_codigo": 47212,
+      "st_descripcion": "Venta al por menor de carnes, embutidos y productos de granja"
+     },
+     {
+      "sk_actividadeco": 456,
+      "st_codigo": 47213,
+      "st_descripcion": "Venta al por menor de pescado y mariscos"
+     },
+     {
+      "sk_actividadeco": 457,
+      "st_codigo": 47214,
+      "st_descripcion": "Venta al por menor de productos lácteos"
+     },
+     {
+      "sk_actividadeco": 458,
+      "st_codigo": 47215,
+      "st_descripcion": "Venta al por menor de productos de panadería, repostería y galletas"
+     },
+     {
+      "sk_actividadeco": 459,
+      "st_codigo": 47216,
+      "st_descripcion": "Venta al por menor de huevos"
+     },
+     {
+      "sk_actividadeco": 460,
+      "st_codigo": 47217,
+      "st_descripcion": "Venta al por menor de carnes y productos cárnicos"
+     },
+     {
+      "sk_actividadeco": 461,
+      "st_codigo": 47218,
+      "st_descripcion": "Venta al por menor de granos básicos y otros"
+     },
+     {
+      "sk_actividadeco": 462,
+      "st_codigo": 47219,
+      "st_descripcion": "Venta al por menor de alimentos n.c.p."
+     },
+     {
+      "sk_actividadeco": 463,
+      "st_codigo": 47221,
+      "st_descripcion": "Venta al por menor de hielo"
+     },
+     {
+      "sk_actividadeco": 464,
+      "st_codigo": 47223,
+      "st_descripcion": "Venta de bebidas no alcohólicas, para su consumo fuera del establecimiento"
+     },
+     {
+      "sk_actividadeco": 465,
+      "st_codigo": 47224,
+      "st_descripcion": "Venta de bebidas alcohólicas, para su consumo fuera del establecimiento"
+     },
+     {
+      "sk_actividadeco": 466,
+      "st_codigo": 47225,
+      "st_descripcion": "Venta de bebidas alcohólicas para su consumo dentro del establecimiento"
+     },
+     {
+      "sk_actividadeco": 467,
+      "st_codigo": 47230,
+      "st_descripcion": "Venta al por menor de tabaco"
+     },
+     {
+      "sk_actividadeco": 468,
+      "st_codigo": 47300,
+      "st_descripcion": "Venta de combustibles, lubricantes y otros (gasolineras)"
+     },
+     {
+      "sk_actividadeco": 469,
+      "st_codigo": 47411,
+      "st_descripcion": "Venta al por menor de computadoras y equipo periférico"
+     },
+     {
+      "sk_actividadeco": 470,
+      "st_codigo": 47412,
+      "st_descripcion": "Venta de equipo y accesorios de telecomunicación"
+     },
+     {
+      "sk_actividadeco": 471,
+      "st_codigo": 47420,
+      "st_descripcion": "Venta al por menor de equipo de audio y video"
+     },
+     {
+      "sk_actividadeco": 472,
+      "st_codigo": 47510,
+      "st_descripcion": "Venta al por menor de hilados, tejidos y productos textiles de mercería; confecciones para el hogar y textiles n.c.p."
+     },
+     {
+      "sk_actividadeco": 473,
+      "st_codigo": 47521,
+      "st_descripcion": "Venta al por menor de productos de madera"
+     },
+     {
+      "sk_actividadeco": 474,
+      "st_codigo": 47522,
+      "st_descripcion": "Venta al por menor de artículos de ferretería"
+     },
+     {
+      "sk_actividadeco": 475,
+      "st_codigo": 47523,
+      "st_descripcion": "Venta al por menor de productos de pinturerías"
+     },
+     {
+      "sk_actividadeco": 476,
+      "st_codigo": 47524,
+      "st_descripcion": "Venta al por menor en vidrierías"
+     },
+     {
+      "sk_actividadeco": 477,
+      "st_codigo": 47529,
+      "st_descripcion": "Venta al por menor de materiales de construcción y artículos conexos"
+     },
+     {
+      "sk_actividadeco": 478,
+      "st_codigo": 47530,
+      "st_descripcion": "Venta al por menor de tapices, alfombras y revestimientos de paredes y pisos en comercios especializados"
+     },
+     {
+      "sk_actividadeco": 479,
+      "st_codigo": 47591,
+      "st_descripcion": "Venta al por menor de muebles"
+     },
+     {
+      "sk_actividadeco": 480,
+      "st_codigo": 47592,
+      "st_descripcion": "Venta al por menor de artículos de bazar"
+     },
+     {
+      "sk_actividadeco": 481,
+      "st_codigo": 47593,
+      "st_descripcion": "Venta al por menor de aparatos electrodomésticos, repuestos y accesorios"
+     },
+     {
+      "sk_actividadeco": 482,
+      "st_codigo": 47594,
+      "st_descripcion": "Venta al por menor de artículos eléctricos y de iluminación"
+     },
+     {
+      "sk_actividadeco": 483,
+      "st_codigo": 47598,
+      "st_descripcion": "Venta al por menor de instrumentos musicales"
+     },
+     {
+      "sk_actividadeco": 484,
+      "st_codigo": 47610,
+      "st_descripcion": "Venta al por menor de libros, periódicos y artículos de papelería en comercios especializados"
+     },
+     {
+      "sk_actividadeco": 485,
+      "st_codigo": 47620,
+      "st_descripcion": "Venta al por menor de discos láser, cassettes, cintas de video y otros"
+     },
+     {
+      "sk_actividadeco": 486,
+      "st_codigo": 47630,
+      "st_descripcion": "Venta al por menor de productos y equipos de deporte"
+     },
+     {
+      "sk_actividadeco": 487,
+      "st_codigo": 47631,
+      "st_descripcion": "Venta al por menor de bicicletas, accesorios y repuestos"
+     },
+     {
+      "sk_actividadeco": 488,
+      "st_codigo": 47640,
+      "st_descripcion": "Venta al por menor de juegos y juguetes en comercios especializados"
+     },
+     {
+      "sk_actividadeco": 489,
+      "st_codigo": 47711,
+      "st_descripcion": "Venta al por menor de prendas de vestir y accesorios de vestir"
+     },
+     {
+      "sk_actividadeco": 490,
+      "st_codigo": 47712,
+      "st_descripcion": "Venta al por menor de calzado"
+     },
+     {
+      "sk_actividadeco": 491,
+      "st_codigo": 47713,
+      "st_descripcion": "Venta al por menor de artículos de peletería, marroquinería y talabartería"
+     },
+     {
+      "sk_actividadeco": 492,
+      "st_codigo": 47721,
+      "st_descripcion": "Venta al por menor de medicamentos farmacéuticos y otros materiales y artículos de uso médico, odontológico y veterinario"
+     },
+     {
+      "sk_actividadeco": 493,
+      "st_codigo": 47722,
+      "st_descripcion": "Venta al por menor de productos cosméticos y de tocador"
+     },
+     {
+      "sk_actividadeco": 494,
+      "st_codigo": 47731,
+      "st_descripcion": "Venta al por menor de productos de joyería, bisutería, óptica, relojería"
+     },
+     {
+      "sk_actividadeco": 495,
+      "st_codigo": 47732,
+      "st_descripcion": "Venta al por menor de plantas, semillas, animales y artículos conexos"
+     },
+     {
+      "sk_actividadeco": 496,
+      "st_codigo": 47733,
+      "st_descripcion": "Venta al por menor de combustibles de uso doméstico (gas propano y gas licuado)"
+     },
+     {
+      "sk_actividadeco": 497,
+      "st_codigo": 47734,
+      "st_descripcion": "Venta al por menor de artesanías, artículos cerámicos y recuerdos en general"
+     },
+     {
+      "sk_actividadeco": 498,
+      "st_codigo": 47735,
+      "st_descripcion": "Venta al por menor de ataúdes, lápidas y cruces, trofeos, artículos religiosos en general"
+     },
+     {
+      "sk_actividadeco": 499,
+      "st_codigo": 47736,
+      "st_descripcion": "Venta al por menor de armas de fuego, municiones y accesorios"
+     },
+     {
+      "sk_actividadeco": 500,
+      "st_codigo": 47737,
+      "st_descripcion": "Venta al por menor de artículos de cohetería y pirotécnicos"
+     },
+     {
+      "sk_actividadeco": 501,
+      "st_codigo": 47738,
+      "st_descripcion": "Venta al por menor de artículos desechables de uso personal y doméstico (servilletas, papel higiénico, pañales, toallas sanitarias, etc.)"
+     },
+     {
+      "sk_actividadeco": 502,
+      "st_codigo": 47739,
+      "st_descripcion": "Venta al por menor de otros productos n.c.p."
+     },
+     {
+      "sk_actividadeco": 503,
+      "st_codigo": 47741,
+      "st_descripcion": "Venta al por menor de artículos usados"
+     },
+     {
+      "sk_actividadeco": 504,
+      "st_codigo": 47742,
+      "st_descripcion": "Venta al por menor de textiles y confecciones usados"
+     },
+     {
+      "sk_actividadeco": 505,
+      "st_codigo": 47743,
+      "st_descripcion": "Venta al por menor de libros, revistas, papel y cartón usados"
+     },
+     {
+      "sk_actividadeco": 506,
+      "st_codigo": 47749,
+      "st_descripcion": "Venta al por menor de productos usados n.c.p."
+     },
+     {
+      "sk_actividadeco": 507,
+      "st_codigo": 47811,
+      "st_descripcion": "Venta al por menor de frutas, verduras y hortalizas"
+     },
+     {
+      "sk_actividadeco": 508,
+      "st_codigo": 47814,
+      "st_descripcion": "Venta al por menor de productos lácteos"
+     },
+     {
+      "sk_actividadeco": 509,
+      "st_codigo": 47815,
+      "st_descripcion": "Venta al por menor de productos de panadería, galletas y similares"
+     },
+     {
+      "sk_actividadeco": 510,
+      "st_codigo": 47816,
+      "st_descripcion": "Venta al por menor de bebidas"
+     },
+     {
+      "sk_actividadeco": 511,
+      "st_codigo": 47818,
+      "st_descripcion": "Venta al por menor en tiendas de mercado y puestos"
+     },
+     {
+      "sk_actividadeco": 512,
+      "st_codigo": 47821,
+      "st_descripcion": "Venta al por menor de hilados, tejidos y productos textiles de mercería en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 513,
+      "st_codigo": 47822,
+      "st_descripcion": "Venta al por menor de artículos textiles excepto confecciones para el hogar en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 514,
+      "st_codigo": 47823,
+      "st_descripcion": "Venta al por menor de confecciones textiles para el hogar en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 515,
+      "st_codigo": 47824,
+      "st_descripcion": "Venta al por menor de prendas de vestir, accesorios de vestir y similares en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 516,
+      "st_codigo": 47825,
+      "st_descripcion": "Venta al por menor de ropa usada"
+     },
+     {
+      "sk_actividadeco": 517,
+      "st_codigo": 47826,
+      "st_descripcion": "Venta al por menor de calzado, artículos de marroquinería y talabartería en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 518,
+      "st_codigo": 47827,
+      "st_descripcion": "Venta al por menor de artículos de marroquinería y talabartería en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 519,
+      "st_codigo": 47829,
+      "st_descripcion": "Venta al por menor de artículos textiles ncp en puestos de mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 520,
+      "st_codigo": 47891,
+      "st_descripcion": "Venta al por menor de animales, flores y productos conexos en puestos de feria y mercados"
+     },
+     {
+      "sk_actividadeco": 521,
+      "st_codigo": 47892,
+      "st_descripcion": "Venta al por menor de productos medicinales, cosméticos, de tocador y de limpieza en puestos de ferias y mercados"
+     },
+     {
+      "sk_actividadeco": 522,
+      "st_codigo": 47893,
+      "st_descripcion": "Venta al por menor de artículos de bazar en puestos de ferias y mercados"
+     },
+     {
+      "sk_actividadeco": 523,
+      "st_codigo": 47894,
+      "st_descripcion": "Venta al por menor de artículos de papel, envases, libros, revistas y conexos en puestos de feria y mercados"
+     },
+     {
+      "sk_actividadeco": 524,
+      "st_codigo": 47895,
+      "st_descripcion": "Venta al por menor de materiales de construcción, electrodomésticos, accesorios para autos y similares en puestos de feria y mercados"
+     },
+     {
+      "sk_actividadeco": 525,
+      "st_codigo": 47896,
+      "st_descripcion": "Venta al por menor de equipos accesorios para las comunicaciones en puestos de feria y mercados"
+     },
+     {
+      "sk_actividadeco": 526,
+      "st_codigo": 47899,
+      "st_descripcion": "Venta al por menor en puestos de ferias y mercados n.c.p."
+     },
+     {
+      "sk_actividadeco": 527,
+      "st_codigo": 47910,
+      "st_descripcion": "Venta al por menor por correo o Internet"
+     },
+     {
+      "sk_actividadeco": 528,
+      "st_codigo": 47990,
+      "st_descripcion": "Otros tipos de venta al por menor no realizada, en almacenes, puestos de venta o mercado"
+     },
+     {
+      "sk_actividadeco": 529,
+      "st_codigo": 49110,
+      "st_descripcion": "Transporte interurbano de pasajeros por ferrocarril"
+     },
+     {
+      "sk_actividadeco": 530,
+      "st_codigo": 49120,
+      "st_descripcion": "Transporte de carga por ferrocarril"
+     },
+     {
+      "sk_actividadeco": 531,
+      "st_codigo": 49211,
+      "st_descripcion": "Transporte de pasajeros urbanos e interurbano mediante buses"
+     },
+     {
+      "sk_actividadeco": 532,
+      "st_codigo": 49212,
+      "st_descripcion": "Transporte de pasajeros interdepartamental mediante microbuses"
+     },
+     {
+      "sk_actividadeco": 533,
+      "st_codigo": 49213,
+      "st_descripcion": "Transporte de pasajeros urbanos e interurbano mediante microbuses"
+     },
+     {
+      "sk_actividadeco": 534,
+      "st_codigo": 49214,
+      "st_descripcion": "Transporte de pasajeros interdepartamental mediante buses"
+     },
+     {
+      "sk_actividadeco": 535,
+      "st_codigo": 49221,
+      "st_descripcion": "Transporte internacional de pasajeros"
+     },
+     {
+      "sk_actividadeco": 536,
+      "st_codigo": 49222,
+      "st_descripcion": "Transporte de pasajeros mediante taxis y autos con chofer"
+     },
+     {
+      "sk_actividadeco": 537,
+      "st_codigo": 49223,
+      "st_descripcion": "Transporte escolar"
+     },
+     {
+      "sk_actividadeco": 538,
+      "st_codigo": 49225,
+      "st_descripcion": "Transporte de pasajeros para excursiones"
+     },
+     {
+      "sk_actividadeco": 539,
+      "st_codigo": 49226,
+      "st_descripcion": "Servicios de transporte de personal"
+     },
+     {
+      "sk_actividadeco": 540,
+      "st_codigo": 49229,
+      "st_descripcion": "Transporte de pasajeros por vía terrestre ncp"
+     },
+     {
+      "sk_actividadeco": 541,
+      "st_codigo": 49231,
+      "st_descripcion": "Transporte de carga urbano"
+     },
+     {
+      "sk_actividadeco": 542,
+      "st_codigo": 49232,
+      "st_descripcion": "Transporte nacional de carga"
+     },
+     {
+      "sk_actividadeco": 543,
+      "st_codigo": 49233,
+      "st_descripcion": "Transporte de carga internacional"
+     },
+     {
+      "sk_actividadeco": 544,
+      "st_codigo": 49234,
+      "st_descripcion": "Servicios de mudanza"
+     },
+     {
+      "sk_actividadeco": 545,
+      "st_codigo": 49235,
+      "st_descripcion": "Alquiler de vehículos de carga con conductor"
+     },
+     {
+      "sk_actividadeco": 546,
+      "st_codigo": 49300,
+      "st_descripcion": "Transporte por oleoducto o gasoducto"
+     },
+     {
+      "sk_actividadeco": 547,
+      "st_codigo": 50110,
+      "st_descripcion": "Transporte de pasajeros marítimo y de cabotaje"
+     },
+     {
+      "sk_actividadeco": 548,
+      "st_codigo": 50120,
+      "st_descripcion": "Transporte de carga marítimo y de cabotaje"
+     },
+     {
+      "sk_actividadeco": 549,
+      "st_codigo": 50211,
+      "st_descripcion": "Transporte de pasajeros por vías de navegación interiores"
+     },
+     {
+      "sk_actividadeco": 550,
+      "st_codigo": 50212,
+      "st_descripcion": "Alquiler de equipo de transporte de pasajeros por vías de navegación interior con conductor"
+     },
+     {
+      "sk_actividadeco": 551,
+      "st_codigo": 50220,
+      "st_descripcion": "Transporte de carga por vías de navegación interiores"
+     },
+     {
+      "sk_actividadeco": 552,
+      "st_codigo": 51100,
+      "st_descripcion": "Transporte aéreo de pasajeros"
+     },
+     {
+      "sk_actividadeco": 553,
+      "st_codigo": 51201,
+      "st_descripcion": "Transporte de carga por vía aérea"
+     },
+     {
+      "sk_actividadeco": 554,
+      "st_codigo": 51202,
+      "st_descripcion": "Alquiler de equipo de aerotransporte con operadores para el propósito de transportar carga"
+     },
+     {
+      "sk_actividadeco": 555,
+      "st_codigo": 52101,
+      "st_descripcion": "Alquiler de instalaciones de almacenamiento en zonas francas"
+     },
+     {
+      "sk_actividadeco": 556,
+      "st_codigo": 52102,
+      "st_descripcion": "Alquiler de silos para conservación y almacenamiento de granos"
+     },
+     {
+      "sk_actividadeco": 557,
+      "st_codigo": 52103,
+      "st_descripcion": "Alquiler de instalaciones con refrigeración para almacenamiento y conservación de alimentos y otros productos"
+     },
+     {
+      "sk_actividadeco": 558,
+      "st_codigo": 52109,
+      "st_descripcion": "Alquiler de bodegas para almacenamiento y depósito n.c.p."
+     },
+     {
+      "sk_actividadeco": 559,
+      "st_codigo": 52211,
+      "st_descripcion": "Servicio de garaje y estacionamiento"
+     },
+     {
+      "sk_actividadeco": 560,
+      "st_codigo": 52212,
+      "st_descripcion": "Servicios de terminales para el transporte por vía terrestre"
+     },
+     {
+      "sk_actividadeco": 561,
+      "st_codigo": 52219,
+      "st_descripcion": "Servicios para el transporte por vía terrestre n.c.p."
+     },
+     {
+      "sk_actividadeco": 562,
+      "st_codigo": 52220,
+      "st_descripcion": "Servicios para el transporte acuático"
+     },
+     {
+      "sk_actividadeco": 563,
+      "st_codigo": 52230,
+      "st_descripcion": "Servicios para el transporte aéreo"
+     },
+     {
+      "sk_actividadeco": 564,
+      "st_codigo": 52240,
+      "st_descripcion": "Manipulación de carga"
+     },
+     {
+      "sk_actividadeco": 565,
+      "st_codigo": 52290,
+      "st_descripcion": "Servicios para el transporte ncp"
+     },
+     {
+      "sk_actividadeco": 566,
+      "st_codigo": 52291,
+      "st_descripcion": "Agencias de tramitaciones aduanales"
+     },
+     {
+      "sk_actividadeco": 567,
+      "st_codigo": 53100,
+      "st_descripcion": "Servicios de correo nacional"
+     },
+     {
+      "sk_actividadeco": 568,
+      "st_codigo": 53200,
+      "st_descripcion": "Actividades de correo distintas a las actividades postales nacionales"
+     },
+     {
+      "sk_actividadeco": 569,
+      "st_codigo": 55101,
+      "st_descripcion": "Actividades de alojamiento para estancias cortas"
+     },
+     {
+      "sk_actividadeco": 570,
+      "st_codigo": 55102,
+      "st_descripcion": "Hoteles"
+     },
+     {
+      "sk_actividadeco": 571,
+      "st_codigo": 55200,
+      "st_descripcion": "Actividades de campamentos, parques de vehículos de recreo y parques de caravanas"
+     },
+     {
+      "sk_actividadeco": 572,
+      "st_codigo": 55900,
+      "st_descripcion": "Alojamiento n.c.p."
+     },
+     {
+      "sk_actividadeco": 573,
+      "st_codigo": 56101,
+      "st_descripcion": "Restaurantes"
+     },
+     {
+      "sk_actividadeco": 574,
+      "st_codigo": 56106,
+      "st_descripcion": "Pupusería"
+     },
+     {
+      "sk_actividadeco": 575,
+      "st_codigo": 56107,
+      "st_descripcion": "Actividades varias de restaurantes"
+     },
+     {
+      "sk_actividadeco": 576,
+      "st_codigo": 56108,
+      "st_descripcion": "Comedores"
+     },
+     {
+      "sk_actividadeco": 577,
+      "st_codigo": 56109,
+      "st_descripcion": "Merenderos ambulantes"
+     },
+     {
+      "sk_actividadeco": 578,
+      "st_codigo": 56210,
+      "st_descripcion": "Preparación de comida para eventos especiales"
+     },
+     {
+      "sk_actividadeco": 579,
+      "st_codigo": 56291,
+      "st_descripcion": "Servicios de provisión de comidas por contrato"
+     },
+     {
+      "sk_actividadeco": 580,
+      "st_codigo": 56292,
+      "st_descripcion": "Servicios de concesión de cafetines y chalet en empresas e instituciones"
+     },
+     {
+      "sk_actividadeco": 581,
+      "st_codigo": 56299,
+      "st_descripcion": "Servicios de preparación de comidas ncp"
+     },
+     {
+      "sk_actividadeco": 582,
+      "st_codigo": 56301,
+      "st_descripcion": "Servicio de expendio de bebidas en salones y bares"
+     },
+     {
+      "sk_actividadeco": 583,
+      "st_codigo": 56302,
+      "st_descripcion": "Servicio de expendio de bebidas en puestos callejeros, mercados y ferias"
+     },
+     {
+      "sk_actividadeco": 584,
+      "st_codigo": 59110,
+      "st_descripcion": "Actividades de producción cinematográfica"
+     },
+     {
+      "sk_actividadeco": 585,
+      "st_codigo": 59120,
+      "st_descripcion": "Actividades de post producción de películas, videos y programas de televisión"
+     },
+     {
+      "sk_actividadeco": 586,
+      "st_codigo": 59130,
+      "st_descripcion": "Actividades de distribución de películas cinematográficas, videos y programas de televisión"
+     },
+     {
+      "sk_actividadeco": 587,
+      "st_codigo": 59140,
+      "st_descripcion": "Actividades de exhibición de películas cinematográficas y cintas de vídeo"
+     },
+     {
+      "sk_actividadeco": 588,
+      "st_codigo": 59200,
+      "st_descripcion": "Actividades de edición y grabación de música"
+     },
+     {
+      "sk_actividadeco": 589,
+      "st_codigo": 58110,
+      "st_descripcion": "Edición de libros, folletos, partituras y otras ediciones distintas a estas"
+     },
+     {
+      "sk_actividadeco": 590,
+      "st_codigo": 58120,
+      "st_descripcion": "Edición de directorios y listas de correos"
+     },
+     {
+      "sk_actividadeco": 591,
+      "st_codigo": 58130,
+      "st_descripcion": "Edición de periódicos, revistas y otras publicaciones periódicas"
+     },
+     {
+      "sk_actividadeco": 592,
+      "st_codigo": 58190,
+      "st_descripcion": "Otras actividades de edición"
+     },
+     {
+      "sk_actividadeco": 593,
+      "st_codigo": 58200,
+      "st_descripcion": "Edición de programas informáticos (software)"
+     },
+     {
+      "sk_actividadeco": 594,
+      "st_codigo": 60100,
+      "st_descripcion": "Servicios de difusiones de radio"
+     },
+     {
+      "sk_actividadeco": 595,
+      "st_codigo": 60201,
+      "st_descripcion": "Actividades de programación y difusión de televisión abierta"
+     },
+     {
+      "sk_actividadeco": 596,
+      "st_codigo": 60202,
+      "st_descripcion": "Actividades de suscripción y difusión de televisión por cable y\/o suscripción"
+     },
+     {
+      "sk_actividadeco": 597,
+      "st_codigo": 60299,
+      "st_descripcion": "Servicios de televisión, incluye televisión por cable"
+     },
+     {
+      "sk_actividadeco": 598,
+      "st_codigo": 60900,
+      "st_descripcion": "Programación y transmisión de radio y televisión"
+     },
+     {
+      "sk_actividadeco": 599,
+      "st_codigo": 61101,
+      "st_descripcion": "Servicio de telefonía"
+     },
+     {
+      "sk_actividadeco": 600,
+      "st_codigo": 61102,
+      "st_descripcion": "Servicio de Internet"
+     },
+     {
+      "sk_actividadeco": 601,
+      "st_codigo": 61103,
+      "st_descripcion": "Servicio de telefonía fija"
+     },
+     {
+      "sk_actividadeco": 602,
+      "st_codigo": 61109,
+      "st_descripcion": "Servicio de Internet n.c.p."
+     },
+     {
+      "sk_actividadeco": 603,
+      "st_codigo": 61201,
+      "st_descripcion": "Servicios de telefonía celular"
+     },
+     {
+      "sk_actividadeco": 604,
+      "st_codigo": 61202,
+      "st_descripcion": "Servicios de Internet inalámbrico"
+     },
+     {
+      "sk_actividadeco": 605,
+      "st_codigo": 61209,
+      "st_descripcion": "Servicios de telecomunicaciones inalámbrico n.c.p."
+     },
+     {
+      "sk_actividadeco": 606,
+      "st_codigo": 61301,
+      "st_descripcion": "Telecomunicaciones satelitales"
+     },
+     {
+      "sk_actividadeco": 607,
+      "st_codigo": 61309,
+      "st_descripcion": "Comunicación vía satélite n.c.p."
+     },
+     {
+      "sk_actividadeco": 608,
+      "st_codigo": 61900,
+      "st_descripcion": "Actividades de telecomunicación n.c.p."
+     },
+     {
+      "sk_actividadeco": 609,
+      "st_codigo": 62010,
+      "st_descripcion": "Programación informática"
+     },
+     {
+      "sk_actividadeco": 610,
+      "st_codigo": 62020,
+      "st_descripcion": "Consultorías y gestión de servicios informáticos"
+     },
+     {
+      "sk_actividadeco": 611,
+      "st_codigo": 62090,
+      "st_descripcion": "Otras actividades de tecnología de información y servicios de computadora"
+     },
+     {
+      "sk_actividadeco": 612,
+      "st_codigo": 63110,
+      "st_descripcion": "Procesamiento de datos y actividades relacionadas"
+     },
+     {
+      "sk_actividadeco": 613,
+      "st_codigo": 63120,
+      "st_descripcion": "Portales WEB"
+     },
+     {
+      "sk_actividadeco": 614,
+      "st_codigo": 63910,
+      "st_descripcion": "Servicios de Agencias de Noticias"
+     },
+     {
+      "sk_actividadeco": 615,
+      "st_codigo": 63990,
+      "st_descripcion": "Otros servicios de información n.c.p."
+     },
+     {
+      "sk_actividadeco": 616,
+      "st_codigo": 64110,
+      "st_descripcion": "Servicios provistos por el Banco Central de El salvador"
+     },
+     {
+      "sk_actividadeco": 617,
+      "st_codigo": 64190,
+      "st_descripcion": "Bancos"
+     },
+     {
+      "sk_actividadeco": 618,
+      "st_codigo": 64192,
+      "st_descripcion": "Entidades dedicadas al envío de remesas"
+     },
+     {
+      "sk_actividadeco": 619,
+      "st_codigo": 64199,
+      "st_descripcion": "Otras entidades financieras"
+     },
+     {
+      "sk_actividadeco": 620,
+      "st_codigo": 64200,
+      "st_descripcion": "Actividades de sociedades de cartera"
+     },
+     {
+      "sk_actividadeco": 621,
+      "st_codigo": 64300,
+      "st_descripcion": "Fideicomisos, fondos y otras fuentes de financiamiento"
+     },
+     {
+      "sk_actividadeco": 622,
+      "st_codigo": 64910,
+      "st_descripcion": "Arrendamientos financieros"
+     },
+     {
+      "sk_actividadeco": 623,
+      "st_codigo": 64920,
+      "st_descripcion": "Asociaciones cooperativas de ahorro y crédito dedicadas a la intermediación financiera"
+     },
+     {
+      "sk_actividadeco": 624,
+      "st_codigo": 64921,
+      "st_descripcion": "Instituciones emisoras de tarjetas de crédito y otros"
+     },
+     {
+      "sk_actividadeco": 625,
+      "st_codigo": 64922,
+      "st_descripcion": "Tipos de crédito ncp"
+     },
+     {
+      "sk_actividadeco": 626,
+      "st_codigo": 64928,
+      "st_descripcion": "Prestamistas y casas de empeño"
+     },
+     {
+      "sk_actividadeco": 627,
+      "st_codigo": 64990,
+      "st_descripcion": "Actividades de servicios financieros, excepto la financiación de planes de seguros y de pensiones n.c.p."
+     },
+     {
+      "sk_actividadeco": 628,
+      "st_codigo": 65110,
+      "st_descripcion": "Planes de seguros de vida"
+     },
+     {
+      "sk_actividadeco": 629,
+      "st_codigo": 65120,
+      "st_descripcion": "Planes de seguro excepto de vida"
+     },
+     {
+      "sk_actividadeco": 630,
+      "st_codigo": 65199,
+      "st_descripcion": "Seguros generales de todo tipo"
+     },
+     {
+      "sk_actividadeco": 631,
+      "st_codigo": 65200,
+      "st_descripcion": "Planes se seguro"
+     },
+     {
+      "sk_actividadeco": 632,
+      "st_codigo": 65300,
+      "st_descripcion": "Planes de pensiones"
+     },
+     {
+      "sk_actividadeco": 633,
+      "st_codigo": 66110,
+      "st_descripcion": "Administración de mercados financieros (Bolsa de Valores)"
+     },
+     {
+      "sk_actividadeco": 634,
+      "st_codigo": 66120,
+      "st_descripcion": "Actividades bursátiles (Corredores de Bolsa)"
+     },
+     {
+      "sk_actividadeco": 635,
+      "st_codigo": 66190,
+      "st_descripcion": "Actividades auxiliares de la intermediación financiera ncp"
+     },
+     {
+      "sk_actividadeco": 636,
+      "st_codigo": 66210,
+      "st_descripcion": "Evaluación de riesgos y daños"
+     },
+     {
+      "sk_actividadeco": 637,
+      "st_codigo": 66220,
+      "st_descripcion": "Actividades de agentes y corredores de seguros"
+     },
+     {
+      "sk_actividadeco": 638,
+      "st_codigo": 66290,
+      "st_descripcion": "Otras actividades auxiliares de seguros y fondos de pensiones"
+     },
+     {
+      "sk_actividadeco": 639,
+      "st_codigo": 66300,
+      "st_descripcion": "Actividades de administración de fondos"
+     },
+     {
+      "sk_actividadeco": 640,
+      "st_codigo": 68101,
+      "st_descripcion": "Servicio de alquiler y venta de lotes en cementerios"
+     },
+     {
+      "sk_actividadeco": 641,
+      "st_codigo": 68109,
+      "st_descripcion": "Actividades inmobiliarias realizadas con bienes propios o arrendados n.c.p."
+     },
+     {
+      "sk_actividadeco": 642,
+      "st_codigo": 68200,
+      "st_descripcion": "Actividades Inmobiliarias Realizadas a Cambio de una Retribución o por Contrata"
+     },
+     {
+      "sk_actividadeco": 643,
+      "st_codigo": 69100,
+      "st_descripcion": "Actividades jurídicas"
+     },
+     {
+      "sk_actividadeco": 644,
+      "st_codigo": 69200,
+      "st_descripcion": "Actividades de contabilidad, teneduría de libros y auditoría; asesoramiento en materia de impuestos"
+     },
+     {
+      "sk_actividadeco": 645,
+      "st_codigo": 70100,
+      "st_descripcion": "Actividades de oficinas centrales de sociedades de cartera"
+     },
+     {
+      "sk_actividadeco": 646,
+      "st_codigo": 70200,
+      "st_descripcion": "Actividades de consultoría en gestión empresarial"
+     },
+     {
+      "sk_actividadeco": 647,
+      "st_codigo": 71101,
+      "st_descripcion": "Servicios de arquitectura y planificación urbana y servicios conexos"
+     },
+     {
+      "sk_actividadeco": 648,
+      "st_codigo": 71102,
+      "st_descripcion": "Servicios de ingeniería"
+     },
+     {
+      "sk_actividadeco": 649,
+      "st_codigo": 71103,
+      "st_descripcion": "Servicios de agrimensura, topografía, cartografía, prospección y geofísica y servicios conexos"
+     },
+     {
+      "sk_actividadeco": 650,
+      "st_codigo": 71200,
+      "st_descripcion": "Ensayos y análisis técnicos"
+     },
+     {
+      "sk_actividadeco": 651,
+      "st_codigo": 72100,
+      "st_descripcion": "Investigaciones y desarrollo experimental en el campo de las ciencias naturales y la ingeniería"
+     },
+     {
+      "sk_actividadeco": 652,
+      "st_codigo": 72199,
+      "st_descripcion": "Investigaciones científicas"
+     },
+     {
+      "sk_actividadeco": 653,
+      "st_codigo": 72200,
+      "st_descripcion": "Investigaciones y desarrollo experimental en el campo de las ciencias sociales y las humanidades científica y desarrollo"
+     },
+     {
+      "sk_actividadeco": 654,
+      "st_codigo": 73100,
+      "st_descripcion": "Publicidad"
+     },
+     {
+      "sk_actividadeco": 655,
+      "st_codigo": 73200,
+      "st_descripcion": "Investigación de mercados y realización de encuestas de opinión pública"
+     },
+     {
+      "sk_actividadeco": 656,
+      "st_codigo": 74100,
+      "st_descripcion": "Actividades de diseño especializado"
+     },
+     {
+      "sk_actividadeco": 657,
+      "st_codigo": 74200,
+      "st_descripcion": "Actividades de fotografía"
+     },
+     {
+      "sk_actividadeco": 658,
+      "st_codigo": 74900,
+      "st_descripcion": "Servicios profesionales y científicos ncp"
+     },
+     {
+      "sk_actividadeco": 659,
+      "st_codigo": 75000,
+      "st_descripcion": "Actividades veterinarias"
+     },
+     {
+      "sk_actividadeco": 660,
+      "st_codigo": 77101,
+      "st_descripcion": "Alquiler de equipo de transporte terrestre"
+     },
+     {
+      "sk_actividadeco": 661,
+      "st_codigo": 77102,
+      "st_descripcion": "Alquiler de equipo de transporte acuático"
+     },
+     {
+      "sk_actividadeco": 662,
+      "st_codigo": 77103,
+      "st_descripcion": "Alquiler de equipo de transporte por vía aérea"
+     },
+     {
+      "sk_actividadeco": 663,
+      "st_codigo": 77210,
+      "st_descripcion": "Alquiler y arrendamiento de equipo de recreo y deportivo"
+     },
+     {
+      "sk_actividadeco": 664,
+      "st_codigo": 77220,
+      "st_descripcion": "Alquiler de cintas de video y discos"
+     },
+     {
+      "sk_actividadeco": 665,
+      "st_codigo": 77290,
+      "st_descripcion": "Alquiler de otros efectos personales y enseres domésticos"
+     },
+     {
+      "sk_actividadeco": 666,
+      "st_codigo": 77300,
+      "st_descripcion": "Alquiler de maquinaria y equipo"
+     },
+     {
+      "sk_actividadeco": 667,
+      "st_codigo": 77400,
+      "st_descripcion": "Arrendamiento de productos de propiedad intelectual"
+     },
+     {
+      "sk_actividadeco": 668,
+      "st_codigo": 78100,
+      "st_descripcion": "Obtención y dotación de personal"
+     },
+     {
+      "sk_actividadeco": 669,
+      "st_codigo": 78200,
+      "st_descripcion": "Actividades de las agencias de trabajo temporal"
+     },
+     {
+      "sk_actividadeco": 670,
+      "st_codigo": 78300,
+      "st_descripcion": "Dotación de recursos humanos y gestión; gestión de las funciones de recursos humanos"
+     },
+     {
+      "sk_actividadeco": 671,
+      "st_codigo": 79110,
+      "st_descripcion": "Actividades de agencias de viajes y organizadores de viajes; actividades de asistencia a turistas"
+     },
+     {
+      "sk_actividadeco": 672,
+      "st_codigo": 79120,
+      "st_descripcion": "Actividades de los operadores turísticos"
+     },
+     {
+      "sk_actividadeco": 673,
+      "st_codigo": 79900,
+      "st_descripcion": "Otros servicios de reservas y actividades relacionadas"
+     },
+     {
+      "sk_actividadeco": 674,
+      "st_codigo": 80100,
+      "st_descripcion": "Servicios de seguridad privados"
+     },
+     {
+      "sk_actividadeco": 675,
+      "st_codigo": 80201,
+      "st_descripcion": "Actividades de servicios de sistemas de seguridad"
+     },
+     {
+      "sk_actividadeco": 676,
+      "st_codigo": 80202,
+      "st_descripcion": "Actividades para la prestación de sistemas de seguridad"
+     },
+     {
+      "sk_actividadeco": 677,
+      "st_codigo": 80300,
+      "st_descripcion": "Actividades de investigación"
+     },
+     {
+      "sk_actividadeco": 678,
+      "st_codigo": 81100,
+      "st_descripcion": "Actividades combinadas de mantenimiento de edificios e instalaciones"
+     },
+     {
+      "sk_actividadeco": 679,
+      "st_codigo": 81210,
+      "st_descripcion": "Limpieza general de edificios"
+     },
+     {
+      "sk_actividadeco": 680,
+      "st_codigo": 81290,
+      "st_descripcion": "Otras actividades combinadas de mantenimiento de edificios e instalaciones ncp"
+     },
+     {
+      "sk_actividadeco": 681,
+      "st_codigo": 81300,
+      "st_descripcion": "Servicio de jardinería"
+     },
+     {
+      "sk_actividadeco": 682,
+      "st_codigo": 82110,
+      "st_descripcion": "Servicios administrativos de oficinas"
+     },
+     {
+      "sk_actividadeco": 683,
+      "st_codigo": 82190,
+      "st_descripcion": "Servicio de fotocopiado y similares, excepto en imprentas"
+     },
+     {
+      "sk_actividadeco": 684,
+      "st_codigo": 82200,
+      "st_descripcion": "Actividades de las centrales de llamadas (call center)"
+     },
+     {
+      "sk_actividadeco": 685,
+      "st_codigo": 82300,
+      "st_descripcion": "Organización de convenciones y ferias de negocios"
+     },
+     {
+      "sk_actividadeco": 686,
+      "st_codigo": 82910,
+      "st_descripcion": "Actividades de agencias de cobro y oficinas de crédito"
+     },
+     {
+      "sk_actividadeco": 687,
+      "st_codigo": 82921,
+      "st_descripcion": "Servicios de envase y empaque de productos alimenticios"
+     },
+     {
+      "sk_actividadeco": 688,
+      "st_codigo": 82922,
+      "st_descripcion": "Servicios de envase y empaque de productos medicinales"
+     },
+     {
+      "sk_actividadeco": 689,
+      "st_codigo": 82929,
+      "st_descripcion": "Servicio de envase y empaque ncp"
+     },
+     {
+      "sk_actividadeco": 690,
+      "st_codigo": 82990,
+      "st_descripcion": "Actividades de apoyo empresariales ncp"
+     },
+     {
+      "sk_actividadeco": 691,
+      "st_codigo": 84110,
+      "st_descripcion": "Actividades de la Administración Pública en general"
+     },
+     {
+      "sk_actividadeco": 692,
+      "st_codigo": 84111,
+      "st_descripcion": "Alcaldías municipales"
+     },
+     {
+      "sk_actividadeco": 693,
+      "st_codigo": 84120,
+      "st_descripcion": "Regulación de las actividades de prestación de servicios sanitarios, educativos, culturales y otros servicios sociales, excepto seguridad social"
+     },
+     {
+      "sk_actividadeco": 694,
+      "st_codigo": 84130,
+      "st_descripcion": "Regulación y facilitación de la actividad económica"
+     },
+     {
+      "sk_actividadeco": 695,
+      "st_codigo": 84210,
+      "st_descripcion": "Actividades de administración y funcionamiento del Ministerio de Relaciones Exteriores"
+     },
+     {
+      "sk_actividadeco": 696,
+      "st_codigo": 84220,
+      "st_descripcion": "Actividades de defensa"
+     },
+     {
+      "sk_actividadeco": 697,
+      "st_codigo": 84230,
+      "st_descripcion": "Actividades de mantenimiento del orden público y de seguridad"
+     },
+     {
+      "sk_actividadeco": 698,
+      "st_codigo": 84300,
+      "st_descripcion": "Actividades de planes de seguridad social de afiliación obligatoria"
+     },
+     {
+      "sk_actividadeco": 699,
+      "st_codigo": 85101,
+      "st_descripcion": "Guardería educativa"
+     },
+     {
+      "sk_actividadeco": 700,
+      "st_codigo": 85102,
+      "st_descripcion": "Enseñanza preescolar o parvularia"
+     },
+     {
+      "sk_actividadeco": 701,
+      "st_codigo": 85103,
+      "st_descripcion": "Enseñanza primaria"
+     },
+     {
+      "sk_actividadeco": 702,
+      "st_codigo": 85104,
+      "st_descripcion": "Servicio de educación preescolar y primaria integrada"
+     },
+     {
+      "sk_actividadeco": 703,
+      "st_codigo": 85211,
+      "st_descripcion": "Enseñanza secundaria tercer ciclo (7°, 8° y 9°)"
+     },
+     {
+      "sk_actividadeco": 704,
+      "st_codigo": 85212,
+      "st_descripcion": "Enseñanza secundaria de formación general bachillerato"
+     },
+     {
+      "sk_actividadeco": 705,
+      "st_codigo": 85221,
+      "st_descripcion": "Enseñanza secundaria de formación técnica y profesional"
+     },
+     {
+      "sk_actividadeco": 706,
+      "st_codigo": 85222,
+      "st_descripcion": "Enseñanza secundaria de formación técnica y profesional integrada con enseñanza primaria"
+     },
+     {
+      "sk_actividadeco": 707,
+      "st_codigo": 85301,
+      "st_descripcion": "Enseñanza superior universitaria"
+     },
+     {
+      "sk_actividadeco": 708,
+      "st_codigo": 85302,
+      "st_descripcion": "Enseñanza superior no universitaria"
+     },
+     {
+      "sk_actividadeco": 709,
+      "st_codigo": 85303,
+      "st_descripcion": "Enseñanza superior integrada a educación secundaria y\/o primaria"
+     },
+     {
+      "sk_actividadeco": 710,
+      "st_codigo": 85410,
+      "st_descripcion": "Educación deportiva y recreativa"
+     },
+     {
+      "sk_actividadeco": 711,
+      "st_codigo": 85420,
+      "st_descripcion": "Educación cultural"
+     },
+     {
+      "sk_actividadeco": 712,
+      "st_codigo": 85490,
+      "st_descripcion": "Otros tipos de enseñanza n.c.p."
+     },
+     {
+      "sk_actividadeco": 713,
+      "st_codigo": 85499,
+      "st_descripcion": "Enseñanza formal"
+     },
+     {
+      "sk_actividadeco": 714,
+      "st_codigo": 85500,
+      "st_descripcion": "Servicios de apoyo a la enseñanza"
+     },
+     {
+      "sk_actividadeco": 715,
+      "st_codigo": 86100,
+      "st_descripcion": "Actividades de hospitales"
+     },
+     {
+      "sk_actividadeco": 716,
+      "st_codigo": 86201,
+      "st_descripcion": "Clínicas médicas"
+     },
+     {
+      "sk_actividadeco": 717,
+      "st_codigo": 86202,
+      "st_descripcion": "Servicios de Odontología"
+     },
+     {
+      "sk_actividadeco": 718,
+      "st_codigo": 86203,
+      "st_descripcion": "Servicios médicos"
+     },
+     {
+      "sk_actividadeco": 719,
+      "st_codigo": 86901,
+      "st_descripcion": "Servicios de análisis y estudios de diagnóstico"
+     },
+     {
+      "sk_actividadeco": 720,
+      "st_codigo": 86902,
+      "st_descripcion": "Actividades de atención de la salud humana"
+     },
+     {
+      "sk_actividadeco": 721,
+      "st_codigo": 86909,
+      "st_descripcion": "Otros Servicio relacionados con la salud ncp"
+     },
+     {
+      "sk_actividadeco": 722,
+      "st_codigo": 87100,
+      "st_descripcion": "Residencias de ancianos con atención de enfermería"
+     },
+     {
+      "sk_actividadeco": 723,
+      "st_codigo": 87200,
+      "st_descripcion": "Instituciones dedicadas al tratamiento del retraso mental, problemas de salud mental y el uso indebido de sustancias nocivas"
+     },
+     {
+      "sk_actividadeco": 724,
+      "st_codigo": 87300,
+      "st_descripcion": "Instituciones dedicadas al cuidado de ancianos y discapacitados"
+     },
+     {
+      "sk_actividadeco": 725,
+      "st_codigo": 87900,
+      "st_descripcion": "Actividades de asistencia a niños y jóvenes"
+     },
+     {
+      "sk_actividadeco": 726,
+      "st_codigo": 87901,
+      "st_descripcion": "Otras actividades de atención en instituciones"
+     },
+     {
+      "sk_actividadeco": 727,
+      "st_codigo": 88100,
+      "st_descripcion": "Actividades de asistencia sociales sin alojamiento para ancianos y discapacitados"
+     },
+     {
+      "sk_actividadeco": 728,
+      "st_codigo": 88900,
+      "st_descripcion": "Servicios sociales sin alojamiento ncp"
+     },
+     {
+      "sk_actividadeco": 729,
+      "st_codigo": 90000,
+      "st_descripcion": "Actividades creativas artísticas y de esparcimiento"
+     },
+     {
+      "sk_actividadeco": 730,
+      "st_codigo": 91010,
+      "st_descripcion": "Actividades de bibliotecas y archivos"
+     },
+     {
+      "sk_actividadeco": 731,
+      "st_codigo": 91020,
+      "st_descripcion": "Actividades de museos y preservación de lugares y edificios históricos"
+     },
+     {
+      "sk_actividadeco": 732,
+      "st_codigo": 91030,
+      "st_descripcion": "Actividades de jardines botánicos, zoológicos y de reservas naturales"
+     },
+     {
+      "sk_actividadeco": 733,
+      "st_codigo": 92000,
+      "st_descripcion": "Actividades de juegos y apuestas"
+     },
+     {
+      "sk_actividadeco": 734,
+      "st_codigo": 93110,
+      "st_descripcion": "Gestión de instalaciones deportivas"
+     },
+     {
+      "sk_actividadeco": 735,
+      "st_codigo": 93120,
+      "st_descripcion": "Actividades de clubes deportivos"
+     },
+     {
+      "sk_actividadeco": 736,
+      "st_codigo": 93190,
+      "st_descripcion": "Otras actividades deportivas"
+     },
+     {
+      "sk_actividadeco": 737,
+      "st_codigo": 93210,
+      "st_descripcion": "Actividades de parques de atracciones y parques temáticos"
+     },
+     {
+      "sk_actividadeco": 738,
+      "st_codigo": 93291,
+      "st_descripcion": "Discotecas y salas de baile"
+     },
+     {
+      "sk_actividadeco": 739,
+      "st_codigo": 93298,
+      "st_descripcion": "Centros vacacionales"
+     },
+     {
+      "sk_actividadeco": 740,
+      "st_codigo": 93299,
+      "st_descripcion": "Actividades de esparcimiento ncp"
+     },
+     {
+      "sk_actividadeco": 741,
+      "st_codigo": 94110,
+      "st_descripcion": "Actividades de organizaciones empresariales y de empleadores"
+     },
+     {
+      "sk_actividadeco": 742,
+      "st_codigo": 94120,
+      "st_descripcion": "Actividades de organizaciones profesionales"
+     },
+     {
+      "sk_actividadeco": 743,
+      "st_codigo": 94200,
+      "st_descripcion": "Actividades de sindicatos"
+     },
+     {
+      "sk_actividadeco": 744,
+      "st_codigo": 94910,
+      "st_descripcion": "Actividades de organizaciones religiosas"
+     },
+     {
+      "sk_actividadeco": 745,
+      "st_codigo": 94920,
+      "st_descripcion": "Actividades de organizaciones políticas"
+     },
+     {
+      "sk_actividadeco": 746,
+      "st_codigo": 94990,
+      "st_descripcion": "Actividades de asociaciones n.c.p."
+     },
+     {
+      "sk_actividadeco": 747,
+      "st_codigo": 95110,
+      "st_descripcion": "Reparación de computadoras y equipo periférico"
+     },
+     {
+      "sk_actividadeco": 748,
+      "st_codigo": 95120,
+      "st_descripcion": "Reparación de equipo de comunicación"
+     },
+     {
+      "sk_actividadeco": 749,
+      "st_codigo": 95210,
+      "st_descripcion": "Reparación de aparatos electrónicos de consumo"
+     },
+     {
+      "sk_actividadeco": 750,
+      "st_codigo": 95220,
+      "st_descripcion": "Reparación de aparatos doméstico y equipo de hogar y jardín"
+     },
+     {
+      "sk_actividadeco": 751,
+      "st_codigo": 95230,
+      "st_descripcion": "Reparación de calzado y artículos de cuero"
+     },
+     {
+      "sk_actividadeco": 752,
+      "st_codigo": 95240,
+      "st_descripcion": "Reparación de muebles y accesorios para el hogar"
+     },
+     {
+      "sk_actividadeco": 753,
+      "st_codigo": 95291,
+      "st_descripcion": "Reparación de Instrumentos musicales"
+     },
+     {
+      "sk_actividadeco": 754,
+      "st_codigo": 95292,
+      "st_descripcion": "Servicios de cerrajería y copiado de llaves"
+     },
+     {
+      "sk_actividadeco": 755,
+      "st_codigo": 95293,
+      "st_descripcion": "Reparación de joyas y relojes"
+     },
+     {
+      "sk_actividadeco": 756,
+      "st_codigo": 95294,
+      "st_descripcion": "Reparación de bicicletas, sillas de ruedas y rodados n.c.p."
+     },
+     {
+      "sk_actividadeco": 757,
+      "st_codigo": 95299,
+      "st_descripcion": "Reparaciones de enseres personales n.c.p"
+     },
+     {
+      "sk_actividadeco": 758,
+      "st_codigo": 96010,
+      "st_descripcion": "Lavado y limpieza de prendas de tela y de piel, incluso la limpieza en seco"
+     },
+     {
+      "sk_actividadeco": 759,
+      "st_codigo": 96020,
+      "st_descripcion": "Peluquería y otros tratamientos de belleza"
+     },
+     {
+      "sk_actividadeco": 760,
+      "st_codigo": 96030,
+      "st_descripcion": "Pompas fúnebres y actividades conexas"
+     },
+     {
+      "sk_actividadeco": 761,
+      "st_codigo": 96091,
+      "st_descripcion": "Servicios de sauna y otros servicios para la estética corporal n.c.p."
+     },
+     {
+      "sk_actividadeco": 762,
+      "st_codigo": 96092,
+      "st_descripcion": "Servicios n.c.p."
+     },
+     {
+      "sk_actividadeco": 763,
+      "st_codigo": 97000,
+      "st_descripcion": "Actividad de los hogares en calidad de empleadores de personal doméstico"
+     },
+     {
+      "sk_actividadeco": 764,
+      "st_codigo": 98100,
+      "st_descripcion": "Actividades indiferenciadas de producción de bienes de los hogares privados para uso propio"
+     },
+     {
+      "sk_actividadeco": 765,
+      "st_codigo": 98200,
+      "st_descripcion": "Actividades indiferenciadas de producción de servicios de los hogares privados para uso propio"
+     },
+     {
+      "sk_actividadeco": 766,
+      "st_codigo": 99000,
+      "st_descripcion": "Actividades de organizaciones y órganos extraterritoriales"
+     },
+     {
+      "sk_actividadeco": 767,
+      "st_codigo": 10001,
+      "st_descripcion": "Empleados"
+     },
+     {
+      "sk_actividadeco": 768,
+      "st_codigo": 10002,
+      "st_descripcion": "Jubilado"
+     },
+     {
+      "sk_actividadeco": 769,
+      "st_codigo": 10003,
+      "st_descripcion": "Estudiante"
+     },
+     {
+      "sk_actividadeco": 770,
+      "st_codigo": 10004,
+      "st_descripcion": "Desempleado"
+     },
+     {
+      "sk_actividadeco": 771,
+      "st_codigo": 10005,
+      "st_descripcion": "Otros"
+     }
+    ]
+    }

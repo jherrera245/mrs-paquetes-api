@@ -18,6 +18,7 @@ use App\Models\TipoPersona;
 use App\Models\TipoIncidencia;
 use App\Models\TipoPaquete;
 use App\Models\Empaque;
+use Illuminate\Support\Facades\Storage;
 use DB;
 
 class DropdownController extends Controller
@@ -225,6 +226,25 @@ class DropdownController extends Controller
 
         // Devolver solamente las direcciones en un formato adecuado para su uso en un dropdown
         return response()->json($direcciones);
+}
+
+public function getGiros()
+{
+    // Leer el archivo JSON desde el almacenamiento
+    $json = file_get_contents(base_path('app/json/giros.json'));
+
+    // Decodificar el JSON a un array PHP
+    $giros = json_decode($json, true);
+
+    // Verificar si la decodificación fue exitosa
+   if (json_last_error() === JSON_ERROR_NONE) {
+        // Devolver los datos en formato JSON
+      return response()->json($giros);
+    } else {
+        // Manejar errores de decodificación
+       return response()->json(['error' => 'Error al procesar el archivo JSON'], 500);
+    }
+    
 }
 
 }

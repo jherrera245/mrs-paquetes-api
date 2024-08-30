@@ -27,7 +27,6 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\VinetaController;
 use App\Http\Controllers\TarifasDestinosController;
-use App\Http\Controllers\HistorialOrdenTrackingController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -239,6 +238,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('dropdown/get_estado_incidencias', [DropdownController::class, 'getEstadoIncidencias']);
     Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
     Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
+    Route::get('dropdown/giros', [DropdownController::class, 'getGiros']);
 
     Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);
     Route::get('detalle-orden/{id}', [DetalleOrdenController::class,'detalles_orden_id']);
@@ -257,8 +257,4 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
     // Requerimiento #7: Implementacion de endpoint mis ordenes asignadas
     Route::get('ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
-
-    // Historial ordenes
-    Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
-    Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial']);
 });
