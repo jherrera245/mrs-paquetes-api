@@ -20,6 +20,7 @@ use App\Http\Controllers\AsignacionRutasController;
 use App\Http\Controllers\PaqueteController;
 use App\Http\Controllers\IncidenciaController;
 use App\Http\Controllers\HistorialPaqueteController;
+use App\Http\Controllers\HistorialOrdenTrackingController;
 use App\Http\Controllers\DetalleOrdenController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -254,7 +255,10 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Requerimiento #3: Endpoint para de entregas
     Route::post('/ordenes/hoja-trabajo', [OrdenController::class, 'generarHojaTrabajo']);
 
-
     // Requerimiento #7: Implementacion de endpoint mis ordenes asignadas
     Route::get('ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
+
+    // Historial ordenes
+    Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
+    Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial']);
 });
