@@ -6,12 +6,14 @@ use App\Models\Rutas;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class RutasController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de todas las rutas con filtros y paginación.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -33,19 +35,17 @@ class RutasController extends Controller
         // Aplicar el método de búsqueda del modelo
         $query = Rutas::search($filters);
 
-        // Obtener los resultados paginados
-        $rutas = $query->paginate($per_page);
-
-        // Transformar los resultados según sea necesario
-        $rutas->getCollection()->transform(function ($ruta) {
+        // Obtener los resultados paginados y transformarlos
+        $rutas = $query->paginate($per_page)->through(function ($ruta) {
             return $this->transformRuta($ruta);
         });
 
         // Devolver una respuesta JSON
         return response()->json($rutas, 200);
     }
+
     /**
-     * Store a newly created resource in storage.
+     * Guarda una nueva ruta en la base de datos.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -53,88 +53,56 @@ class RutasController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_destino' => 'required',
+            'id_destino' => 'required|exists:destinos,id',
             'nombre' => 'required|max:255',
-            'id_bodega' => 'required',
-            'estado' => 'required',
+            'id_bodega' => 'required|exists:bodegas,id',
+            'estado' => 'required|boolean',
             'distancia_km' => 'required|numeric',
             'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
         ]);
 
         if ($validator->fails()) {
-            $data = [
+            Log::error('Error en la validación de la ruta:', $validator->errors()->toArray());
+            return response()->json([
                 'message' => 'Error en la validación de los datos',
                 'errors' => $validator->errors(),
                 'status' => 400
-            ];
-            return response()->json($data, 400);
+            ], 400);
         }
 
-        $ruta = Rutas::create([
-            'id_destino' => $request->id_destino,
-            'nombre'=> $request->nombre,
-            'id_bodega' => $request->id_bodega,
-            'estado' => $request->estado,
-            'distancia_km' => $request->distancia_km,
-            'duracion_aproximada' => $request->duracion_aproximada,
-            'fecha_programada' => $request->fecha_programada
-        ]);
-
-        if (!$ruta) {
-            $data = [
-                'message' => 'Error al crear la ruta',
-                'status' => 500
-            ];
-            return response()->json($data, 500);
+        try {
+            $ruta = Rutas::create($request->all());
+        } catch (\Exception $e) {
+            Log::error('Error al crear la ruta:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al crear la ruta', 'status' => 500], 500);
         }
 
-        $data = [
-            'ruta' => $ruta,
-            'status' => 201
-        ];
-
-        return response()->json($data, 201);
-
-        $validator = Rutas::validate($request->all());
-
-        if ($validator->fails()) {
-            $errors = implode('<br>', $validator->errors()->all());
-            return response()->json(['error' => $errors], 400);
-        }
+        return response()->json(['ruta' => $this->transformRuta($ruta), 'status' => 201], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Muestra una ruta específica por su ID.
      *
-     * @param  \App\Models\Rutas  $rutas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($ruta)
+    public function show($id)
     {
-        $ruta = Rutas::find($ruta);
+        $ruta = Rutas::find($id);
 
         if (!$ruta) {
-            $data = [
-                'message' => 'ruta no encontrada',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
+            return response()->json(['message' => 'Ruta no encontrada', 'status' => 404], 404);
         }
 
-        $data = [
-            'ruta' => $ruta,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return response()->json(['ruta' => $this->transformRuta($ruta), 'status' => 200], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una ruta existente en la base de datos.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Rutas  $rutas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -142,54 +110,42 @@ class RutasController extends Controller
         $ruta = Rutas::find($id);
 
         if (!$ruta) {
-            $data = [
-                'message' => 'ruta no encontrada',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
+            return response()->json(['message' => 'Ruta no encontrada', 'status' => 404], 404);
         }
 
         $validator = Validator::make($request->all(), [
-            'id_destino' => 'required',
+            'id_destino' => 'required|exists:destinos,id',
             'nombre' => 'required|max:255',
-            'id_bodega' => 'required',
-            'estado' => 'required',
+            'id_bodega' => 'required|exists:bodegas,id',
+            'estado' => 'required|boolean',
             'distancia_km' => 'required|numeric',
             'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
         ]);
 
         if ($validator->fails()) {
-            $data = [
+            Log::error('Error en la validación de la ruta:', $validator->errors()->toArray());
+            return response()->json([
                 'message' => 'Error en la validación de los datos',
                 'errors' => $validator->errors(),
                 'status' => 400
-            ];
-            return response()->json($data, 400);
+            ], 400);
         }
 
-        $ruta->id_destino = $request->id_destino;
-        $ruta->nombre = $request->nombre;
-        $ruta->id_bodega = $request->id_bodega;
-        $ruta->estado = $request->estado;
-        $ruta->distancia_km = $request->distancia_km;
-        $ruta->duracion_aproximada = $request->duracion_aproximada;
-        $ruta->fecha_programada = $request->fecha_programada;
-        $ruta->save();
+        try {
+            $ruta->update($request->all());
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar la ruta:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al actualizar la ruta', 'status' => 500], 500);
+        }
 
-        $data = [
-            'message' => 'ruta actualizada',
-            'ruta' => $ruta,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return response()->json(['message' => 'Ruta actualizada', 'ruta' => $this->transformRuta($ruta), 'status' => 200], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una ruta específica de la base de datos.
      *
-     * @param  \App\Models\Rutas  $rutas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -197,41 +153,38 @@ class RutasController extends Controller
         $ruta = Rutas::find($id);
 
         if (!$ruta) {
-            $data = [
-                'message' => 'ruta no encontrada',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
+            return response()->json(['message' => 'Ruta no encontrada', 'status' => 404], 404);
         }
 
-        $ruta->delete();
+        try {
+            $ruta->delete();
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar la ruta:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al eliminar la ruta', 'status' => 500], 500);
+        }
 
-        $data = [
-            'message' => 'ruta eliminada',
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return response()->json(['message' => 'Ruta eliminada', 'status' => 200], 200);
     }
 
+    /**
+     * Transforma una ruta para mostrar nombres en lugar de IDs.
+     *
+     * @param  \App\Models\Rutas  $ruta
+     * @return array
+     */
     private function transformRuta(Rutas $ruta)
     {
         return [
             'id' => $ruta->id,
-            'id_destino' => $ruta->id_destino,
+            'destino' => $ruta->destino->nombre, // Obtener el nombre del destino
             'nombre' => $ruta->nombre,
-            'id_bodega' => $ruta->id_bodega,
-            'estado' => $ruta->estado,
+            'bodega' => $ruta->bodega->nombre, // Obtener el nombre de la bodega
+            'estado' => $ruta->estado ? 'Activo' : 'Inactivo', // Mostrar estado como texto
             'distancia_km' => $ruta->distancia_km,
             'duracion_aproximada' => $ruta->duracion_aproximada,
             'fecha_programada' => $ruta->fecha_programada,
             'created_at' => $ruta->created_at,
             'updated_at' => $ruta->updated_at,
-            'destino' => $ruta->destino,
-            'bodega' => $ruta->bodega,
-            'estado_ruta' => $ruta->estado_ruta,
         ];
     }
-
-    
 }
