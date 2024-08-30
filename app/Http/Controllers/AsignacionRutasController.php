@@ -119,48 +119,47 @@ class AsignacionRutasController extends Controller
     {
         $asignacionRuta = AsignacionRutas::find($id);
 
-    if (!$asignacionRuta) {
+        if (!$asignacionRuta) {
+            $data = [
+                'message' => 'asignacion de Ruta no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'codigo_unico_asignacion' => 'required|unique:asignacion_rutas,codigo_unico_asignacion,'.$id,
+            'id_ruta' => 'required',
+            'id_vehiculo' => 'required',
+            'id_paquete' => 'required',
+            'fecha' => 'required|date',
+            'id_estado' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+
+        $asignacionRuta->codigo_unico_asignacion = $request->codigo_unico_asignacion;
+        $asignacionRuta->id_ruta = $request->id_ruta;
+        $asignacionRuta->id_vehiculo = $request->id_vehiculo;
+        $asignacionRuta->id_paquete = $request->id_paquete;
+        $asignacionRuta->fecha = $request->fecha;
+        $asignacionRuta->id_estado = $request->id_estado;
+
+        $asignacionRuta->save();
+
         $data = [
-            'message' => 'asignacion de Ruta no encontrada',
-            'status' => 404
+            'message' => 'asignacion de Ruta actualizada',
+            'status' => 200
         ];
-        return response()->json($data, 404);
-    }
 
-    $validator = Validator::make($request->all(), [
-        'codigo_unico_asignacion' => 'required|unique:asignacion_rutas,codigo_unico_asignacion,'.$id,
-        'id_ruta' => 'required',
-        'id_vehiculo' => 'required',
-        'id_paquete' => 'required',
-        'fecha' => 'required|date',
-        'id_estado' => 'required'
-    ]);
-
-    if ($validator->fails()) {
-        $data = [
-            'message' => 'Error en la validación de los datos',
-            'errors' => $validator->errors(),
-            'status' => 400
-        ];
-        return response()->json($data, 400);
-    }
-
-    $asignacionRuta->codigo_unico_asignacion = $request->codigo_unico_asignacion;
-    $asignacionRuta->id_ruta = $request->id_ruta;
-    $asignacionRuta->id_vehiculo = $request->id_vehiculo;
-    $asignacionRuta->id_paquete = $request->id_paquete;
-    $asignacionRuta->fecha = $request->fecha;
-    $asignacionRuta->id_estado = $request->id_estado;
-
-    $asignacionRuta->save();
-
-    $data = [
-        'message' => 'asignacion de Ruta actualizada',
-        'empleado' => $empleado,
-        'status' => 200
-    ];
-
-    return response()->json($data, 200);
+        return response()->json($data, 200);
     }
 
     /**
