@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
             TipoEntregaSeeder::class,
             VehicleSeeder::class,
             VehiculosSeeder::class,
+            BodegaSeeder::class,
+            PasilloSeeder::class,
             RutasSeeder::class,
             DireccionesSeeder::class,
             AsignacionRutasSeeder::class,
