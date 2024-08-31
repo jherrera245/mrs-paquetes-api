@@ -16,6 +16,7 @@ class Vehiculo extends Model
         'id_empleado_apoyo',
         'placa',
         'capacidad_carga',
+        'id_bodega',
         'id_estado',
         'id_marca',
         'id_modelo',
@@ -42,7 +43,12 @@ class Vehiculo extends Model
     {
         return $this->belongsTo(EstadoVehiculo::class, 'id_estado');
     }
-
+    
+    public function bodega()
+    {
+        return $this->belongsTo(Bodegas::class, 'id_bodega');
+    }
+    
     public function marca()
     {
         return $this->belongsTo(MarcaVehiculo::class, 'id_marca');

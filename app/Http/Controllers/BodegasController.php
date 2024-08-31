@@ -18,6 +18,7 @@ class BodegasController extends Controller
     {
         
         $nombre = $request->query('nombre');
+        $tipo_bodega = $request->query('tipo_bodega');
         $id_departamento = $request->query('id_departamento');
         $id_municipio = $request->query('id_municipio');
 
@@ -45,6 +46,7 @@ class BodegasController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:255',
+            'tipo_bodega' => 'required',
             'id_departamento' => 'required',
             'id_municipio' => 'required',
             'direccion' => 'required|max:255',
@@ -61,6 +63,7 @@ class BodegasController extends Controller
 
         $bodegas = Bodegas::create([
             'nombre' => $request->nombre,
+            'tipo_bodega' => $request->tipo_bodega,
             'id_departamento' => $request->id_departamento,
             'id_municipio' => $request->id_municipio,
             'direccion' => $request->direccion
@@ -137,6 +140,7 @@ class BodegasController extends Controller
 
     $validator = Validator::make($request->all(), [
         'nombre' => 'required|max:255',
+        'tipo_bodega' => 'required',
         'id_departamento' => 'required',
         'id_municipio' => 'required',
         'direccion' => 'required|max:255'
@@ -152,6 +156,7 @@ class BodegasController extends Controller
     }
 
     $bodega->nombre = $request->nombre;
+    $bodega->tipo_bodega = $request->tipo_bodega;
     $bodega->id_departamento = $request->id_departamento;
     $bodega->id_municipio = $request->id_municipio;
     $bodega->direccion = $request->direccion;

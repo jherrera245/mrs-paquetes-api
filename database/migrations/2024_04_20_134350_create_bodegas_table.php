@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('bodegas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->enum('tipo_bodega',["fisica","movil"]);
             $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
             $table->string('direccion');

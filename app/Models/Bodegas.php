@@ -16,6 +16,7 @@ class Bodegas extends Model
 
 	protected $fillable = [
 		'nombre',
+		'tipo_bodega',
 		'id_departamento',
 		'id_municipio',
 		'direccion'
