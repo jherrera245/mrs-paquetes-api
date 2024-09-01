@@ -12,7 +12,7 @@ class EmailVerificationNotification extends Notification
 {
     use Queueable;
     public $message;
-    public $subjet;
+    public $subject;
     public $fromEmail;
     public $mailer;
     private $otp;
@@ -50,12 +50,16 @@ class EmailVerificationNotification extends Notification
     public function toMail($notifiable)
     {
         $otp = $this->otp->generate($notifiable->email,6,10);
-        return (new MailMessage)
-                ->mailer('smtp')
-                ->subject($this->subject)
-                ->greeting('Hola querido usuario')
-                ->line($this->message)
-                ->line('codigo: '. $otp->token);
+
+        $mailMessage = (new MailMessage)
+            ->mailer($this->mailer)
+            ->subject($this->subject)
+            ->markdown('emails.email_verification', [
+                'otp' => $otp->token,
+                'subject' => $this->subject,
+            ]);
+
+        return $mailMessage;
     }
 
     /**
