@@ -16,12 +16,12 @@
             <p>Le saludamos de <strong>Mr. Paquetes</strong> _{{ $cliente }}_, adjunto enviamos Documentos Tributarios Electrónicos.</p>
             <h2 style="color: #5a3f2a; font-size: 22px; border-bottom: 2px solid #5a3f2a; padding-bottom: 10px; margin-top: 20px;">Detalle del documento:</h2>
             <ul style="list-style: none; padding: 0; text-align: left; display: inline-block;">
-                <li style="padding: 5px 0;"><strong>Número de Factura Electrónica:</strong> {{ $numero_control }}</li>
-                <li style="padding: 5px 0;"><strong>Fecha:</strong> {{ $fecha }}</li>
-                <li style="padding: 5px 0;"><strong>Tipo de documento tributario:</strong> {{ $tipo_documento }}</li>
-                <li style="padding: 5px 0;"><strong>Monto:</strong> {{ $total_pagar }}</li>
+                <li style="padding: 5px 0; color: #5a3f2a;"><strong>Número de Factura Electrónica:</strong> {{ $numero_control }}</li>
+                <li style="padding: 5px 0; color: #5a3f2a;"><strong>Fecha:</strong> {{ $fecha }}</li>
+                <li style="padding: 5px 0; color: #5a3f2a;"><strong>Tipo de documento tributario:</strong> {{ $tipo_documento }}</li>
+                <li style="padding: 5px 0; color: #5a3f2a;"><strong>Monto:</strong> {{ $total_pagar }}</li>
             </ul>
-            <p>Gracias por usar nuestros servicios.</p>
+            <p style="font-size: 16px; line-height: 1.5; margin: 10px 0; color: #5a3f2a;">Gracias por usar nuestros servicios.</p>
         </div>
         <div style="background: #f4e9e2; padding: 20px; text-align: center; color: #8c5e3c; font-size: 14px; border-top: 2px solid #8c5e3c;">
             <p style="margin: 0;">Correo generado automáticamente, por favor no responda a este mensaje.</p>
