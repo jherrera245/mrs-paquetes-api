@@ -58,6 +58,11 @@ class Orden extends Model
         return $this->hasMany(DetalleOrden::class, 'id_orden');
     }
 
+    public function estadoPaquete()
+    {
+        return $this->hasMany(EstadoPaquete::class, 'id');
+    }
+
     public function scopeSearch($query, $filters)
     {
         if (isset($filters['id_cliente'])) {

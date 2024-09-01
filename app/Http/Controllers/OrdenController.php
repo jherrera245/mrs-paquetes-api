@@ -389,63 +389,80 @@ class OrdenController extends Controller
     }
 
     public function show($id)
-    {
-        $orden = Orden::with('detalles')->find($id);
+{
+    $orden = Orden::with([
+        'tipoPago',
+        'detalles.tipoEntrega',
+        'detalles.direccionEntrega.departamento',
+        'detalles.direccionEntrega.municipio',
+        'detalles.paquete.tipoPaquete',
+        'detalles.paquete.empaquetado',
+        'detalles.paquete.estado'
+    ])->find($id);
 
-        if (!$orden) {
-            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-
-        $direccion = Direcciones::find($orden->id_direccion);
-
-        // Estructurar la respuesta
-        $response = [
-            'id' => $orden->id,
-            'id_cliente' => $orden->id_cliente,
-            'tipo_pago' => $orden->tipo_pago->pago ?? 'NA',
-            'total_pagar' => $orden->total_pagar,
-            'costo_adicional' => $orden->costo_adicional,
-            'id_direccion' => $orden->id_direccion,
-            'concepto' => $orden->concepto,
-            'numero_seguimiento' => $orden->numero_seguimiento,
-            'direccion_emisor' => [
-                'id_direccion' => $direccion->id,
-                'direccion' => $direccion->direccion,
-                'nombre_cliente' => $direccion->cliente->nombre,
-                'apellido_cliente' => $direccion->cliente->apellido,
-                'nombre_contacto' => $direccion->nombre_contacto,
-                'telefono' => $direccion->telefono,
-                'id_departamento' => $direccion->departamento->nombre,
-                'id_municipio' => $direccion->municipio->nombre,
-                'referencia' => $direccion->referencia,
-            ],
-            'detalles' => $orden->detalles->map(function ($detalle) {
-                return [
-                    'id' => $detalle->id,
-                    'id_orden' => $detalle->id_orden,
-                    'id_paquete' => $detalle->id_paquete,
-                    'id_tipo_entrega' => $detalle->id_tipo_entrega,
-                    'id_estado_paquetes' => $detalle->id_estado_paquetes,
-                    'id_direccion_entrega' => $detalle->id_direccion_entrega,
-                    "validacion_entrega" => $detalle->validacion_entrega,
-                    'descripcion' => $detalle->descripcion,
-                    'precio' => $detalle->precio,
-                    'tipo_entrega' => $detalle->tipoEntrega->entrega,
-                    'recibe' => $detalle->direccionEntrega->nombre_contacto,
-                    'telefono' => $detalle->direccionEntrega->telefono,
-                    'departamento' => $detalle->direccionEntrega->departamento->nombre,
-                    'municipio' => $detalle->direccionEntrega->municipio->nombre,
-                    'direccion' => $detalle->direccionEntrega->direccion,
-                    'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
-                    'tipo_caja' => $detalle->paquete->empaquetado->empaquetado,
-                    'peso' => $detalle->paquete->peso,
-                    'estado_paquete' => $detalle->paquete->estado->nombre,
-                ];
-            }),
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+    if (!$orden) {
+        return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
     }
+
+    $direccion = Direcciones::with(['cliente', 'departamento', 'municipio'])->find($orden->id_direccion);
+
+    $response = [
+        'id' => $orden->id,
+        'id_cliente' => $orden->id_cliente,
+        'id_tipo_pago' => $orden->id_tipo_pago,
+        'total_pagar' => $orden->total_pagar,
+        'costo_adicional' => $orden->costo_adicional,
+        'estado_pago' => $orden->estado_pago,
+        'tipo_documento' => $orden->tipo_documento,
+        'id_direccion' => $orden->id_direccion,
+        'concepto' => $orden->concepto,
+        'id_estado_paquetes' => $orden->id_estado_paquetes,
+        'numero_seguimiento' => $orden->numero_seguimiento,
+        'direccion_emisor' => $direccion ? [
+            'id_direccion' => $direccion->id,
+            'direccion' => $direccion->direccion,
+            'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
+            'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
+            'nombre_contacto' => $direccion->nombre_contacto,
+            'telefono' => $direccion->telefono,
+            'id_departamento' => $direccion->departamento->nombre ?? 'NA',
+            'id_municipio' => $direccion->municipio->nombre ?? 'NA',
+            'referencia' => $direccion->referencia,
+        ] : null,
+        'detalles' => $orden->detalles->map(function ($detalle) {
+            return [
+                'id' => $detalle->id,
+                'id_orden' => $detalle->id_orden,
+                'id_paquete' => $detalle->id_paquete,
+                'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                'validacion_entrega' => $detalle->validacion_entrega,
+                'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                'descripcion' => $detalle->descripcion,
+                'precio' => $detalle->precio,
+                'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
+                'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
+                'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
+                'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
+                'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
+                'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
+                'fecha_ingreso' =>$detalle->fecha_ingreso,
+                'fecha_entrega' =>$detalle->fecha_entrega,
+                'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
+                'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
+                'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
+                'peso' => $detalle->paquete->peso ?? 'NA',
+                'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
+                'fecha_envio' => $detalle->paquete->fecha_envio,
+                'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
+                'descripcion_contenido' => $detalle->paquete->descripcion_contenido
+            ];
+        }),
+    ];
+
+    return response()->json($response, Response::HTTP_OK);
+}
     /**
      * Requerimiento 2: Genera un PDF con los detalles de la orden especificada.
      *
