@@ -55,17 +55,17 @@ class EmpleadoController extends Controller
     {
         // Valida los datos de entrada, incluyendo la unicidad del teléfono
         $validator = Validator::make($request->all(), [
-            'nombres' => 'required|max:255',
-            'apellidos' => 'required|max:255',
-            'dui' => 'required|digits:9|unique:empleados',
-            'telefono' => 'required|digits:8|unique:empleados', // Asegura que el teléfono sea único
-            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la persona tenga al menos 18 años
-            'fecha_contratacion' => 'required|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
-            'id_estado' => 'required|exists:estado_empleados,id',
-            'id_cargo' => 'required|exists:cargos,id',
-            'id_departamento' => 'required|exists:departamento,id',
-            'id_municipio' => 'required|exists:municipios,id',
-            'direccion' => 'required|max:255',
+            'nombres' => 'nullable|max:255',
+            'apellidos' => 'nullable|max:255',
+            'dui' => 'nullable|digits:9|unique:empleados',
+            'telefono' => 'nullable|digits:8|unique:empleados', // Asegura que el teléfono sea único
+            'fecha_nacimiento' => 'nullable|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la persona tenga al menos 18 años
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
+            'id_estado' => 'nullable|exists:estado_empleados,id',
+            'id_cargo' => 'nullable|exists:cargos,id',
+            'id_departamento' => 'nullable|exists:departamento,id',
+            'id_municipio' => 'nullable|exists:municipios,id',
+            'direccion' => 'nullable|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -206,17 +206,17 @@ class EmpleadoController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'nombres' => 'required|max:255',
-            'apellidos' => 'required|max:255',
-            'dui' => 'required|digits:9|unique:empleados,dui,' . $id,
-            'telefono' => 'required|digits:8|unique:empleados,telefono,' . $id, // Asegura que el teléfono sea único durante la actualización
-            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'),
-            'fecha_contratacion' => 'required|date|before_or_equal:today',
-            'id_estado' => 'required|exists:estado_empleados,id',
-            'id_cargo' => 'required|exists:cargos,id',
-            'id_departamento' => 'required|exists:departamento,id',
-            'id_municipio' => 'required|exists:municipios,id',
-            'direccion' => 'required|max:255'
+            'nombres' => 'nullable|max:255',
+            'apellidos' => 'nullable|max:255',
+            'dui' => 'nullable|digits:9|unique:empleados,dui,' . $id,
+            'telefono' => 'nullable|digits:8|unique:empleados,telefono,' . $id, // Asegura que el teléfono sea único durante la actualización
+            'fecha_nacimiento' => 'nullable|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'),
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today',
+            'id_estado' => 'nullable|exists:estado_empleados,id',
+            'id_cargo' => 'nullable|exists:cargos,id',
+            'id_departamento' => 'nullable|exists:departamento,id',
+            'id_municipio' => 'nullable|exists:municipios,id',
+            'direccion' => 'nullable|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -242,17 +242,17 @@ class EmpleadoController extends Controller
     {
         // Reglas de validación para los datos del empleado
         $rules = [
-            'nombres' => 'required|max:255',
-            'apellidos' => 'required|max:255',
-            'dui' => 'required|regex:/^\d{8}-?\d{1}$/|unique:empleados,dui,' . $id, // Valida que el DUI sea único, excepto para el empleado que se está actualizando
-            'telefono' => 'required|regex:/^\d{4}-?\d{4}$/|unique:empleados,telefono,' . $id, // Valida que el teléfono sea único, excepto para el empleado que se está actualizando
-            'fecha_nacimiento' => 'required|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la fecha de nacimiento sea de una persona mayor de 18 años
-            'fecha_contratacion' => 'required|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
-            'id_estado' => 'required|exists:estado,id',
-            'id_cargo' => 'required|exists:cargo,id',
-            'id_departamento' => 'required|exists:departamento,id',
-            'id_municipio' => 'required|exists:municipio,id',
-            'direccion' => 'required|max:255',
+            'nombres' => 'nullable|max:255',
+            'apellidos' => 'nullable|max:255',
+            'dui' => 'nullable|regex:/^\d{8}-?\d{1}$/|unique:empleados,dui,' . $id, // Valida que el DUI sea único, excepto para el empleado que se está actualizando
+            'telefono' => 'nullable|regex:/^\d{4}-?\d{4}$/|unique:empleados,telefono,' . $id, // Valida que el teléfono sea único, excepto para el empleado que se está actualizando
+            'fecha_nacimiento' => 'nullable|date|before_or_equal:' . Carbon::now()->subYears(18)->format('Y-m-d'), // Valida que la fecha de nacimiento sea de una persona mayor de 18 años
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today', // Valida que la fecha de contratación no sea en el futuro
+            'id_estado' => 'nullable|exists:estado,id',
+            'id_cargo' => 'nullable|exists:cargo,id',
+            'id_departamento' => 'nullable|exists:departamento,id',
+            'id_municipio' => 'nullable|exists:municipio,id',
+            'direccion' => 'nullable|max:255',
         ];
 
         // Mensajes personalizados para las reglas de validación
