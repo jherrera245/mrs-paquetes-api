@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('paquetes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_ubicacion');
+            // relacion con ubicaciones que pueden ir nulos al crear un paquete.
+            $table->foreignId('id_ubicacion')->nullable();
             $table->foreignId('id_tipo_paquete');
             $table->foreignId('id_tamano_paquete');
             $table->foreignId('id_empaque');

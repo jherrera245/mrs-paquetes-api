@@ -29,6 +29,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\VinetaController;
 use App\Http\Controllers\TarifasDestinosController;
 use App\Http\Controllers\RutaRecoleccionController;
+use App\Http\Controllers\OrdenRecoleccionController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*

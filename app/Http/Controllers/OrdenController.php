@@ -97,6 +97,8 @@ class OrdenController extends Controller
             'id_cliente' => 'required|integer|exists:clientes,id',
             'id_direccion' => 'required|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
+            // relacion con ubicacion paquete, puede ser nulo.
+            'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
             'total_pagar' => 'required|numeric',
             'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
             'costo_adicional' => 'nullable|numeric',
@@ -180,6 +182,8 @@ class OrdenController extends Controller
         $paquete = new Paquete();
         $paquete->id_tipo_paquete = $detalle["id_tipo_paquete"];
         $paquete->id_tamano_paquete = $detalle["id_tamano_paquete"];
+        // enviamos la ubicacion del paquete como nulo.
+        $paquete->id_ubicacion = null;
         $paquete->id_empaque = $detalle["id_empaque"];
         $paquete->peso = $detalle["peso"];
         $paquete->uuid = $uuid;
