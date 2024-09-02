@@ -116,6 +116,7 @@ class OrdenRecoleccionController extends Controller
 
         $ordenRecoleccion->delete();
 
-        return response()->json(null, 204);
+        // enviar mensaje personalizado.
+        return response()->json(['message' => 'Orden de recolección eliminada correctamente']);
     }
 }
