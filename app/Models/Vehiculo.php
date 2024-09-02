@@ -33,12 +33,6 @@ class Vehiculo extends Model
         return $this->belongsTo(Empleado::class, 'id_empleado_apoyo');
     }
 
-    // relacion con recoleccion.
-    public function recolecciones()
-    {
-        return $this->hasMany(Recoleccion::class, 'id_vehiculo');
-    }
-
     public function estado()
     {
         return $this->belongsTo(EstadoVehiculo::class, 'id_estado');
