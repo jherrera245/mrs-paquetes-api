@@ -33,10 +33,10 @@ class Orden extends Model
         return $this->belongsTo(Paquete::class, 'id_paquete');
     }  
     // Relación con el modelo TipoPago
-        public function tipoPago()
-        {
-            return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
-        }
+    public function tipoPago()
+    {
+        return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
+    }
 
     // relacion con kardex.
     public function kardex()
@@ -61,6 +61,12 @@ class Orden extends Model
     public function estadoPaquete()
     {
         return $this->hasMany(EstadoPaquete::class, 'id');
+    }
+
+    // relacion con orden recoleccion.
+    public function ordenesRecolecciones()
+    {
+        return $this->hasMany(OrdenRecoleccion::class, 'id_orden');
     }
 
     public function scopeSearch($query, $filters)

@@ -50,6 +50,12 @@ class Rutas extends Model
 		return $this->hasMany(AsignacionRutas::class, 'id_ruta');
 	}
 
+	// relacion con ruta recoleccion.
+	public function rutasRecolecciones()
+	{
+		return $this->hasMany(RutaRecoleccion::class, 'id_ruta');
+	}
+
 	public static function search($filters)
 	{
 		$query = self::query();

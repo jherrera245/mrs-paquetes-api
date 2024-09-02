@@ -36,10 +36,10 @@ class Pasillo extends Model
     /**
      * Relacion con la tabla transacciones
     */
-    public function transacciones()
-    {
-        return $this->hasMany(Transaccion::class, 'id_pasillo');
-    }
+    // public function transacciones()
+    // {
+    //     return $this->hasMany(Transaccion::class, 'id_pasillo');
+    // }
 
     /**
      * Scope para búsquedas generales con múltiples filtros

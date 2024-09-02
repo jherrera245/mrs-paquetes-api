@@ -59,6 +59,12 @@ class Vehiculo extends Model
         return $this->belongsTo(ModeloVehiculo::class, 'id_modelo');
     }
 
+    // relacion con rutas recolecciones.
+    public function rutasRecolecciones()
+    {
+        return $this->hasMany(RutaRecoleccion::class, 'id_vehiculo');
+    }
+
     public static function search($filters)
     {
         $query = self::query();
