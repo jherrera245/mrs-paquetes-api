@@ -8,7 +8,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ubicaciones', function (Blueprint $table) {
-            $table->id(); // Asegúrate de usar $table->id() o $table->bigIncrements('id')
+            $table->id(); 
             $table->string('nomenclatura')->unique();
             $table->foreignId('id_bodega')->constrained('bodegas');
             $table->timestamps();
