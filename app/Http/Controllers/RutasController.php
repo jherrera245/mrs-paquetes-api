@@ -24,8 +24,6 @@ class RutasController extends Controller
             'nombre',
             'id_bodega',
             'estado',
-            'distancia_km',
-            'duracion_aproximada',
             'fecha_programada',
         ]);
 
@@ -57,8 +55,6 @@ class RutasController extends Controller
             'nombre' => 'required|max:255',
             'id_bodega' => 'required|exists:bodegas,id',
             'estado' => 'required|boolean',
-            'distancia_km' => 'required|numeric',
-            'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
         ]);
 
@@ -118,8 +114,6 @@ class RutasController extends Controller
             'nombre' => 'required|max:255',
             'id_bodega' => 'required|exists:bodegas,id',
             'estado' => 'required|boolean',
-            'distancia_km' => 'required|numeric',
-            'duracion_aproximada' => 'required|numeric',
             'fecha_programada' => 'required|date'
         ]);
 
@@ -180,8 +174,6 @@ class RutasController extends Controller
             'nombre' => $ruta->nombre,
             'bodega' => $ruta->bodega->nombre, // Obtener el nombre de la bodega
             'estado' => $ruta->estado ? 'Activo' : 'Inactivo', // Mostrar estado como texto
-            'distancia_km' => $ruta->distancia_km,
-            'duracion_aproximada' => $ruta->duracion_aproximada,
             'fecha_programada' => $ruta->fecha_programada,
             'created_at' => $ruta->created_at,
             'updated_at' => $ruta->updated_at,
