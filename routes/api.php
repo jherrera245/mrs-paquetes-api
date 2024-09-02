@@ -28,6 +28,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\VinetaController;
 use App\Http\Controllers\TarifasDestinosController;
+use App\Http\Controllers\RutaRecoleccionController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -261,4 +262,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     // Historial ordenes
     Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
     Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial']);
+
+    // rutas recolecciones.
+    Route::get('rutas-recolecciones', [RutaRecoleccionController::class, 'index'])->middleware('permission:rutarecoleccion-view');
+    Route::get('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'show'])->middleware('permission:rutarecoleccion-show');
+    Route::post('rutas-recolecciones', [RutaRecoleccionController::class, 'store'])->middleware('permission:rutarecoleccion-create');
+    Route::put('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'update'])->middleware('permission:rutarecoleccion-update');
+    Route::delete('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'destroy'])->middleware('permission:rutarecoleccion-destroy');
 });

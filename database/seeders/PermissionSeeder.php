@@ -102,6 +102,11 @@ class PermissionSeeder extends Seeder
             'orden-create',
             'orden-update',
             'orden-destroy',
+            'rutarecolecion-view',
+            'rutarecolecion-show',
+            'rutarecolecion-create',
+            'rutarecolecion-update',
+            'rutarecolecion-destroy',
         ];
 
         foreach ($permissions as $permission) {
