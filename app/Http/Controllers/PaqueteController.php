@@ -146,11 +146,11 @@ class PaqueteController extends Controller
                     case 'palabra_clave':
                         $query->where(function ($q) use ($value) {
                             $q->where('paquetes.descripcion_contenido', 'like', '%' . $value . '%')
-                              ->orWhere('paquetes.uuid', 'like', '%' . $value . '%')
-                              ->orWhere('paquetes.tag', 'like', '%' . $value . '%')
-                              ->orWhere('tipo_paquete.nombre', 'like', '%' . $value . '%')
-                              ->orWhere('empaquetado.nombre', 'like', '%' . $value . '%')
-                              ->orWhere('estado_paquetes.nombre', 'like', '%' . $value . '%');
+                            ->orWhere('paquetes.uuid', 'like', '%' . $value . '%')
+                            ->orWhere('paquetes.tag', 'like', '%' . $value . '%')
+                            ->orWhere('tipo_paquete.nombre', 'like', '%' . $value . '%')
+                            ->orWhere('empaquetado.nombre', 'like', '%' . $value . '%')
+                            ->orWhere('estado_paquetes.nombre', 'like', '%' . $value . '%');
                         });
                         break;
         
