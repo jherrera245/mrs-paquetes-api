@@ -30,6 +30,8 @@ use App\Http\Controllers\VinetaController;
 use App\Http\Controllers\TarifasDestinosController;
 use App\Http\Controllers\RutaRecoleccionController;
 use App\Http\Controllers\OrdenRecoleccionController;
+use App\Http\Controllers\UbicacionController;
+use App\Http\Controllers\UbicacionPaqueteController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -272,6 +274,22 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('rutas-recolecciones', [RutaRecoleccionController::class, 'store'])->middleware('permission:rutarecoleccion-create');
     Route::put('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'update'])->middleware('permission:rutarecoleccion-update');
     Route::delete('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'destroy'])->middleware('permission:rutarecoleccion-destroy');
+
+   //Ubicaciones
+    
+      Route::get('ubicaciones', [UbicacionController::class, 'index']); // Listar todas las ubicaciones
+      Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']); // Mostrar una ubicación específica
+      Route::post('ubicaciones', [UbicacionController::class, 'store']); // Crear una nueva ubicación
+      Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']); // Actualizar una ubicación existente
+      Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']); // Eliminar una ubicación
+    
+    
+    // Rutas para el controlador UbicacionPaquete
+    Route::get('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'index']);
+    Route::get('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'show']);
+    Route::post('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'store']);
+    Route::put('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'update']);
+    Route::delete('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'destroy']);
 
     // orden recoleccion.
     Route::get('orden-recoleccion', [OrdenRecoleccionController::class, 'index'])->middleware('permission:ordenrecoleccion-view');

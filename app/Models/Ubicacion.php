@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bodega;
+use App\Models\Bodegas;
 
 
 class Ubicacion extends Model
@@ -22,8 +22,9 @@ class Ubicacion extends Model
     // Relación con la tabla `bodegas`.
     public function bodega()
     {
-        return $this->belongsTo(Bodega::class, 'id_bodega');
+        return $this->belongsTo(Bodegas::class, 'id_bodega');
     }
+    
 
     /**
      * Relación con la tabla `paquetes` a través de `ubicaciones_paquetes`.
