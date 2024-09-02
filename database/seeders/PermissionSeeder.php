@@ -102,6 +102,8 @@ class PermissionSeeder extends Seeder
             'orden-create',
             'orden-update',
             'orden-destroy',
+            'orden-cliente',
+            'mis-ordenes-cliente',
             'rutarecoleccion-view',
             'rutarecoleccion-show',
             'rutarecoleccion-create',
@@ -140,6 +142,8 @@ class PermissionSeeder extends Seeder
                 'direcciones-create',
                 'direcciones-update',
                 'direcciones-destroy',
+                'orden-cliente',
+                'mis-ordenes-cliente',
             ]);
         }
 

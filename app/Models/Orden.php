@@ -23,9 +23,10 @@ class Orden extends Model
         'concepto',
         'finished',
         'estado_pago',
+        'tipo_orden',
     ];
 
-    public function cliente(): BelongsTo{
+    public function cliente(){
         return $this->belongsTo(Clientes::class, 'id_cliente');
     }
     public function paquete()

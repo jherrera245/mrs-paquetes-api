@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_cliente');
+            $table->foreignId('id_cliente')->constrained('clientes')->onDelete('cascade');
             $table->foreignId('id_direccion');
             $table->foreignId('id_tipo_pago');
             $table->decimal('total_pagar', 10);
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('finished')->default(0);
             $table->string('numero_seguimiento')->nullable(); 
             $table->enum('tipo_documento', ['consumidor_final', 'credito_fiscal']);
+            $table->enum('tipo_orden', ['orden', 'preorden']);
             $table->timestamps();
         });
     }

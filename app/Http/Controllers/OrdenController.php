@@ -26,8 +26,10 @@ use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Component\HttpFoundation\Response;
 use App\Libraries\FormatterNumberLetter;
+use App\Models\Clientes;
 use App\Notifications\SendDocuments;
 use Illuminate\Support\Facades\Notification;
+use JWTAuth;
 
 class OrdenController extends Controller
 {
@@ -65,6 +67,8 @@ class OrdenController extends Controller
                 'concepto' => $orden->concepto,
                 'numero_seguimiento' => $orden->numero_seguimiento,
                 'estado_pago' => $orden->estado_pago,
+                'tipo_documento' => $orden->tipo_documento,
+                'tipo_orden' => $orden->tipo_orden,
                 'detalles' => $orden->detalles->map(function ($detalle) {
                     return [
                         'id_paquete' => $detalle->id_paquete,
@@ -104,6 +108,7 @@ class OrdenController extends Controller
             'costo_adicional' => 'nullable|numeric',
             'concepto' => 'required|string',
             'tipo_documento' => 'required|string',
+            'tipo_orden' => 'required|string',
             'detalles' => 'required|array'
         ]);
 
@@ -140,7 +145,6 @@ class OrdenController extends Controller
         }
     }
 
-
     private function createOrder($request)
     {
         $orden = new Orden();
@@ -152,6 +156,7 @@ class OrdenController extends Controller
         $orden->costo_adicional = $request->input('costo_adicional');
         $orden->concepto = $request->input('concepto');
         $orden->tipo_documento = $request->input('tipo_documento');
+        $orden->tipo_orden = $request->input('tipo_orden');
         $orden->save();
 
         return $orden;
@@ -194,27 +199,28 @@ class OrdenController extends Controller
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
         $paquete->save();
 
-        if ($paquete) {
-            $detalleOrden = new DetalleOrden();
-            $detalleOrden->id_orden = $orden->id;
-            $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
-            $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
-            $detalleOrden->id_paquete = $paquete->id;
-            $detalleOrden->validacion_entrega = 0;
-            $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
-            $detalleOrden->descripcion = $detalle['descripcion'];
-            $detalleOrden->precio = $detalle['precio'];
-            $detalleOrden->fecha_ingreso = now();
-            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
-            $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+        if ($paquete) 
+            {
+                $detalleOrden = new DetalleOrden();
+                $detalleOrden->id_orden = $orden->id;
+                $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
+                $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+                $detalleOrden->id_paquete = $paquete->id;
+                $detalleOrden->validacion_entrega = 0;
+                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
+                $detalleOrden->descripcion = $detalle['descripcion'];
+                $detalleOrden->precio = $detalle['precio'];
+                $detalleOrden->fecha_ingreso = now();
+                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
 
-            // Guardar el detalle de la orden para obtener su ID
-            $detalleOrden->save();
-
-           
-        } else {
-            throw new \Exception('Error al generar el paquete');
-        }
+                // Guardar el detalle de la orden para obtener su ID
+                $detalleOrden->save();    
+            } 
+        else 
+            {
+                throw new \Exception('Error al generar el paquete');
+            }
     }
 
 
@@ -418,6 +424,7 @@ class OrdenController extends Controller
         'costo_adicional' => $orden->costo_adicional,
         'estado_pago' => $orden->estado_pago,
         'tipo_documento' => $orden->tipo_documento,
+        'tipo_orden' => $orden->tipo_orden,
         'id_direccion' => $orden->id_direccion,
         'concepto' => $orden->concepto,
         'id_estado_paquetes' => $orden->id_estado_paquetes,
@@ -541,6 +548,8 @@ class OrdenController extends Controller
                 'tipo_pago' => optional($orden->tipoPago)->pago, // Usar optional para manejar nulos
                 'total_pagar' => $orden->total_pagar,
                 'costo_adicional' => $orden->costo_adicional,
+                'tipo_documento' => $orden->tipo_documento,
+                'tipo_orden' => $orden->tipo_orden,
                 'concepto' => $orden->concepto,
                 'finished' => $orden->finished,
                 'created_at' => $orden->created_at,
@@ -924,4 +933,145 @@ class OrdenController extends Controller
         return response()->json(['message' => 'Orden no encontrada'], 404);
     }
 
+    public function ordenCliente(Request $request)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], Response::HTTP_UNAUTHORIZED);
+            }
+    
+            // Obtén el cliente asociado al usuario
+            $cliente = $user->cliente;
+            if (!$cliente) {
+                return response()->json(['error' => 'Cliente not found for the authenticated user'], Response::HTTP_UNAUTHORIZED);
+            }
+    
+            // Valida los datos de la solicitud
+            $validator = Validator::make($request->all(), [
+                'id_direccion' => 'required|integer|exists:direcciones,id',
+                'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
+                'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
+                'total_pagar' => 'required|numeric',
+                'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
+                'costo_adicional' => 'nullable|numeric',
+                'concepto' => 'required|string',
+                'tipo_documento' => 'required|string',
+                'tipo_orden' => 'required|string',
+                'detalles' => 'required|array'
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+    
+            DB::beginTransaction();
+            try {
+                $orden = new Orden();
+                $orden->id_cliente = $cliente->id; // Usa el ID del cliente asociado
+                $orden->id_tipo_pago = $request->input('id_tipo_pago');
+                $orden->id_direccion = $request->id_direccion;
+                $orden->total_pagar = $request->input('total_pagar');
+                $orden->id_estado_paquetes = $request->input('id_estado_paquetes');
+                $orden->costo_adicional = $request->input('costo_adicional');
+                $orden->concepto = $request->input('concepto');
+                $orden->tipo_documento = $request->input('tipo_documento');
+                $orden->tipo_orden = $request->input('tipo_orden');
+                $orden->save();
+    
+                // Generar el número de seguimiento con el formato ORD00000000001
+                $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
+                $orden->numero_seguimiento = $numeroSeguimiento;
+                $orden->save();
+    
+                foreach ($request->input('detalles') as $detalle) {
+                    $this->createOrderDetail($orden, $detalle);
+                }
+    
+                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
+    
+                DB::commit();
+                return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(
+                    [
+                        'message' => 'Error',
+                        'error' => $e->getMessage(),
+                    ],
+                    Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token is invalid'], Response::HTTP_UNAUTHORIZED);
+        }
+    }
+
+    public function misOrdenesCliente()
+    {
+        try {
+            // Obtener el usuario autenticado
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // Obtener el cliente asociado al usuario
+            $cliente = $user->cliente;
+            if (!$cliente) {
+                return response()->json(['error' => 'Cliente not found for the authenticated user'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // Recuperar las órdenes asociadas al cliente junto con sus detalles
+            $ordenes = Orden::where('id_cliente', $cliente->id)
+                ->with(['detalles']) 
+                ->get();
+
+            // Formatear los datos para que incluyan todos los campos deseados
+            $result = $ordenes->map(function ($orden) {
+                return [
+                    'id' => $orden->id,
+                    'id_cliente' => $orden->id_cliente,
+                    'id_direccion' => $orden->id_direccion,
+                    'id_tipo_pago' => $orden->id_tipo_pago,
+                    'total_pagar' => $orden->total_pagar,
+                    'costo_adicional' => $orden->costo_adicional,
+                    'id_estado_paquetes' => $orden->id_estado_paquetes,
+                    'concepto' => $orden->concepto,
+                    'finished' => $orden->finished, 
+                    'numero_seguimiento' => $orden->numero_seguimiento,
+                    'tipo_documento' => $orden->tipo_documento,
+                    'tipo_orden' => $orden->tipo_orden,
+                    'tipo_pago' => $orden->tipoPago->pago ?? 'NA', 
+                    'detalles' => $orden->detalles->map(function ($detalle) {
+                        return [
+                            'id_orden' => $detalle->id_orden,
+                            'id_paquete' => $detalle->id_paquete,
+                            'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                            'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                            'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                            'validacion_entrega' => $detalle->validacion_entrega,
+                            'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                            'descripcion' => $detalle->descripcion,
+                            'precio' => $detalle->precio,
+                            'fecha_ingreso' => $detalle->fecha_ingreso,
+                            'fecha_entrega' => $detalle->fecha_entrega
+                        ];
+                    })
+                ];
+            });
+
+            // Registrar los datos de la consulta en el log para depuración (opcional)
+            \Log::info('Órdenes recuperadas para el cliente', [
+                'cliente_id' => $cliente->id,
+                'ordenes' => $result
+            ]);
+
+            return response()->json($result, Response::HTTP_OK);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token is invalid'], Response::HTTP_UNAUTHORIZED);
+        }
+    }
+    
 }
+

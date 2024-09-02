@@ -130,6 +130,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::get('ordenes/get_comprobante/{id}', [OrdenController::class, 'getComprobante'])->middleware('permission:orden-view');
     Route::get('ordenes/reenviar_comprobante/{id}', [OrdenController::class, 'reenviarComprobante']);
     Route::get('ordenes/{ordenes}/vineta', [VinetaController::class, 'generarVineta']);
+    Route::post('ordenes-cliente', [OrdenController::class, 'ordenCliente'])->middleware('permission:orden-cliente');
+    Route::get('ordenes-cliente/ver-ordenes', [OrdenController::class, 'misOrdenesCliente'])->middleware('permission:mis-ordenes-cliente');
 
     // Marca Vehículo
     Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');

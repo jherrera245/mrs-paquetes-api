@@ -41,12 +41,7 @@ class Clientes extends Model
     {
         return Clientes::where('id_user', $user_id)->exists();
     }
-    
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
+ 
     protected static function boot()
     {
         parent::boot();
@@ -129,6 +124,11 @@ class Clientes extends Model
         }
 
         return $query;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
     }
 }
 
