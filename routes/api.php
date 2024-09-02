@@ -269,4 +269,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
     Route::post('rutas-recolecciones', [RutaRecoleccionController::class, 'store'])->middleware('permission:rutarecoleccion-create');
     Route::put('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'update'])->middleware('permission:rutarecoleccion-update');
     Route::delete('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'destroy'])->middleware('permission:rutarecoleccion-destroy');
+
+    // orden recoleccion.
+    Route::get('orden-recoleccion', [OrdenRecoleccionController::class, 'index'])->middleware('permission:ordenrecoleccion-view');
+    Route::get('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'show'])->middleware('permission:ordenrecoleccion-show');
+    Route::post('orden-recoleccion', [OrdenRecoleccionController::class, 'store'])->middleware('permission:ordenrecoleccion-create');
+    Route::put('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'update'])->middleware('permission:ordenrecoleccion-update');
+    Route::delete('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'destroy'])->middleware('permission:ordenrecoleccion-destroy');
 });
