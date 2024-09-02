@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Paquete;
 use App\Models\Clientes;
 use App\Models\HistorialPaquete;
+use App\Models\Ubicacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -71,24 +72,26 @@ class PaqueteController extends Controller
         $perPage = $request->input('per_page', 10);
 
         $query = DB::table('paquetes')
-        ->select([
-            'paquetes.id',
-            'tipo_paquete.nombre as empaque',
-            'paquetes.peso',
-            'paquetes.uuid',
-            'paquetes.tag',
-            'estado_paquetes.nombre as estado_paquete',
-            'paquetes.fecha_envio',
-            'paquetes.fecha_entrega_estimada',
-            'paquetes.descripcion_contenido',
-            'paquetes.created_at',
-            'paquetes.updated_at',
-        ])
-        ->join('tipo_paquete', 'paquetes.id_tipo_paquete', '=', 'tipo_paquete.id')
-        ->join('empaquetado', 'paquetes.id_empaque', '=', 'tipo_paquete.id')
-        ->join('estado_paquetes', 'paquetes.id_estado_paquete', '=', 'estado_paquetes.id')
-        ->join('detalle_orden', 'detalle_orden.id_paquete', '=', 'paquetes.id')
-        ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden');
+            ->select([
+                'paquetes.id',
+                'tipo_paquete.nombre as empaque',
+                'paquetes.peso',
+                'paquetes.uuid',
+                'paquetes.tag',
+                'estado_paquetes.nombre as estado_paquete',
+                'paquetes.fecha_envio',
+                'paquetes.fecha_entrega_estimada',
+                'paquetes.descripcion_contenido',
+                'ubicaciones.nomenclatura as ubicacion',
+                'paquetes.created_at',
+                'paquetes.updated_at',
+            ])
+            ->join('tipo_paquete', 'paquetes.id_tipo_paquete', '=', 'tipo_paquete.id')
+            ->join('empaquetado', 'paquetes.id_empaque', '=', 'tipo_paquete.id')
+            ->join('estado_paquetes', 'paquetes.id_estado_paquete', '=', 'estado_paquetes.id')
+            ->join('ubicaciones', 'paquetes.id_ubicacion', '=', 'ubicaciones.id')
+            ->join('detalle_orden', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+            ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden');
 
         if ($user->hasRole('cliente')) {
             $cliente = Cliente::find($user->id);
@@ -101,59 +104,59 @@ class PaqueteController extends Controller
                     case 'tipo_paquete':
                         $query->where(function ($q) use ($value) {
                             $q->where('tipo_paquete.nombre', 'like', '%' . $value . '%')
-                              ->orWhere('paquetes.id_tipo_paquete', $value);
+                                ->orWhere('paquetes.id_tipo_paquete', $value);
                         });
                         break;
-        
+
                     case 'empaque':
                         $query->where(function ($q) use ($value) {
                             $q->where('empaquetado.nombre', 'like', '%' . $value . '%')
-                              ->orWhere('paquetes.id_empaque', $value);
+                                ->orWhere('paquetes.id_empaque', $value);
                         });
                         break;
-        
+
                     case 'estado_paquete':
                         $query->where(function ($q) use ($value) {
                             $q->where('estado_paquetes.nombre', 'like', '%' . $value . '%')
-                              ->orWhere('paquetes.id_estado_paquete', $value);
+                                ->orWhere('paquetes.id_estado_paquete', $value);
                         });
                         break;
-        
+
                     case 'descripcion_contenido':
                         $query->where('paquetes.descripcion_contenido', 'like', '%' . $value . '%');
                         break;
-        
+
                     case 'peso':
                         $query->where('paquetes.peso', $value);
                         break;
-        
+
                     case 'fecha_envio_desde':
                         $query->whereDate('paquetes.fecha_envio', '>=', $value);
                         break;
-        
+
                     case 'fecha_envio_hasta':
                         $query->whereDate('paquetes.fecha_envio', '<=', $value);
                         break;
-        
+
                     case 'fecha_entrega_estimada_desde':
                         $query->whereDate('paquetes.fecha_entrega_estimada', '>=', $value);
                         break;
-        
+
                     case 'fecha_entrega_estimada_hasta':
                         $query->whereDate('paquetes.fecha_entrega_estimada', '<=', $value);
                         break;
-        
+
                     case 'palabra_clave':
                         $query->where(function ($q) use ($value) {
                             $q->where('paquetes.descripcion_contenido', 'like', '%' . $value . '%')
-                            ->orWhere('paquetes.uuid', 'like', '%' . $value . '%')
-                            ->orWhere('paquetes.tag', 'like', '%' . $value . '%')
-                            ->orWhere('tipo_paquete.nombre', 'like', '%' . $value . '%')
-                            ->orWhere('empaquetado.nombre', 'like', '%' . $value . '%')
-                            ->orWhere('estado_paquetes.nombre', 'like', '%' . $value . '%');
+                                ->orWhere('paquetes.uuid', 'like', '%' . $value . '%')
+                                ->orWhere('paquetes.tag', 'like', '%' . $value . '%')
+                                ->orWhere('tipo_paquete.nombre', 'like', '%' . $value . '%')
+                                ->orWhere('empaquetado.nombre', 'like', '%' . $value . '%')
+                                ->orWhere('estado_paquetes.nombre', 'like', '%' . $value . '%');
                         });
                         break;
-        
+
                     default:
                         break;
                 }
@@ -168,11 +171,19 @@ class PaqueteController extends Controller
     public function store(Request $request)
     {
         $data = $request->only([
-            'id_tipo_paquete', 'id_tamano_paquete','id_empaque', 'peso', 'id_estado_paquete', 'fecha_envio', 'fecha_entrega_estimada', 'descripcion_contenido'
+            'id_tipo_paquete',
+            'id_tamano_paquete',
+            'id_empaque',
+            'peso',
+            'id_estado_paquete',
+            'fecha_envio',
+            'fecha_entrega_estimada',
+            'descripcion_contenido',
+            'id_ubicacion'
         ]);
 
         $uuid = Str::uuid();
-        $data['uuid'] = $uuid;
+        $data['uuid'] = $uuid->toString(); // Asegúrate de convertir el UUID a string
 
         try {
             // Genera el código QR
@@ -203,15 +214,16 @@ class PaqueteController extends Controller
         // Valida los datos del paquete
         $validator = Validator::make($data, [
             'id_tipo_paquete' => 'required|exists:tipo_paquete,id',
-            'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
+            'id_tamano_paquete' => 'required|exists:tamano_paquete,id',
             'id_empaque' => 'required|exists:empaquetado,id',
             'peso' => 'required|numeric|min:0',
-            'uuid' => 'required|unique:paquetes',
+            'uuid' => 'required|unique:paquetes,uuid',
             'tag' => 'required',
             'id_estado_paquete' => 'required|exists:estado_paquetes,id',
             'fecha_envio' => 'required|date',
             'fecha_entrega_estimada' => 'required|date|after_or_equal:fecha_envio',
             'descripcion_contenido' => 'required|string|max:1000',
+            'id_ubicacion' => 'required|exists:ubicaciones,id',
         ]);
 
         if ($validator->fails()) {
@@ -229,6 +241,7 @@ class PaqueteController extends Controller
                 'fecha_hora' => now(),
                 'id_usuario' => $userId,
                 'accion' => 'Paquete creado',
+                'estado' => 'Creado' 
             ]);
 
             return response()->json([
@@ -239,6 +252,7 @@ class PaqueteController extends Controller
             return response()->json(['error' => 'Error al crear el paquete: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function show($idOrQrCode)
     {
@@ -256,60 +270,65 @@ class PaqueteController extends Controller
     }
 
     public function update(Request $request, $param)
-{
-    try {
-        $paquete = is_numeric($param)
-            ? Paquete::whereNull('eliminado_at')->findOrFail($param)
-            : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
+    {
+        try {
+            $paquete = is_numeric($param)
+                ? Paquete::whereNull('eliminado_at')->findOrFail($param)
+                : Paquete::whereNull('eliminado_at')->where('uuid', $param)->firstOrFail();
 
-        $validator = Validator::make($request->all(), [
-            'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
-            'id_tamano_paquete'=> 'required|exists:tamano_paquete,id',
-            'id_empaque' => 'sometimes|required|exists:empaquetado,id',
-            'peso' => 'sometimes|required|numeric|min:0',
-            'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
-            'fecha_envio' => 'sometimes|required|date',
-            'fecha_entrega_estimada' => 'sometimes|required|date|after_or_equal:fecha_envio',
-            'descripcion_contenido' => 'sometimes|required|string|max:1000',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->all()], 400);
-        }
-
-        $originalData = $paquete->getOriginal();
-
-        $paquete->update($request->all());
-
-        $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
-
-        if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
-            HistorialPaquete::create([
-                'id_paquete' => $paquete->id,
-                'fecha_hora' => now(),
-                'id_usuario' => auth()->id(),
-                'accion' => 'Estado del paquete actualizado a ' . $estadoActual,
-                'estado' => $estadoActual
+            $validator = Validator::make($request->all(), [
+                'id_tipo_paquete' => 'sometimes|required|exists:tipo_paquete,id',
+                'id_tamano_paquete' => 'required|exists:tamano_paquete,id',
+                'id_empaque' => 'sometimes|required|exists:empaquetado,id',
+                'peso' => 'sometimes|required|numeric|min:0',
+                'id_estado_paquete' => 'sometimes|required|exists:estado_paquetes,id',
+                'fecha_envio' => 'sometimes|required|date',
+                'fecha_entrega_estimada' => 'sometimes|required|date|after_or_equal:fecha_envio',
+                'descripcion_contenido' => 'sometimes|required|string|max:1000',
             ]);
-        }
 
-        return response()->json([
-            'message' => 'Paquete actualizado correctamente',
-            'paquete' => $this->transformPaquete($paquete),
-        ]);
-    } catch (Exception $e) {
-        return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->all()], 400);
+            }
+
+            $originalData = $paquete->getOriginal();
+
+            $paquete->update($request->all());
+
+            $estadoActual = $paquete->estado ? $paquete->estado->nombre : null;
+
+            if ($request->has('id_estado_paquete') && $paquete->id_estado_paquete != $originalData['id_estado_paquete']) {
+                HistorialPaquete::create([
+                    'id_paquete' => $paquete->id,
+                    'fecha_hora' => now(),
+                    'id_usuario' => auth()->id(),
+                    'accion' => 'Estado del paquete actualizado a ' . $estadoActual,
+                    'estado' => $estadoActual
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Paquete actualizado correctamente',
+                'paquete' => $this->transformPaquete($paquete),
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error al actualizar el paquete: ' . $e->getMessage()], 500);
+        }
     }
-}
 
     public function destroy($id)
     {
         try {
             $paquete = Paquete::withEliminados()->findOrFail($id);
 
+            // Marcar el paquete como eliminado
             $paquete->update(['eliminado_at' => now()]);
 
-            $this->registerHistory($paquete->id, 'Paquete eliminado');
+            // Definir el estado actual para el registro de historial
+            $estadoActual = 'Eliminado';
+
+            // Registrar el historial del paquete con el estado actual
+            $this->registerHistory($paquete->id, 'Paquete eliminado', $estadoActual);
 
             return response()->json(['message' => 'Paquete marcado como eliminado correctamente']);
         } catch (Exception $e) {
@@ -325,7 +344,11 @@ class PaqueteController extends Controller
             if ($paquete->eliminado_at) {
                 $paquete->update(['eliminado_at' => null]);
 
-                $this->registerHistory($paquete->id, 'Paquete restaurado');
+                // Definir el estado actual para el registro de historial
+                $estadoActual = 'Restaurado';
+
+                // Registrar el historial del paquete con el estado actual
+                $this->registerHistory($paquete->id, 'Paquete restaurado', $estadoActual);
 
                 return response()->json(['message' => 'Paquete restaurado correctamente']);
             } else {
@@ -335,6 +358,7 @@ class PaqueteController extends Controller
             return response()->json(['error' => 'Error al restaurar el paquete: ' . $e->getMessage()], 500);
         }
     }
+
 
     private function transformPaquete($paquete)
     {
@@ -350,19 +374,27 @@ class PaqueteController extends Controller
             'fecha_envio' => $paquete->fecha_envio,
             'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
             'descripcion_contenido' => $paquete->descripcion_contenido,
+            'ubicacion' => $paquete->ubicacion ? $paquete->ubicacion->nomenclatura : null,
             'created_at' => $paquete->created_at,
             'updated_at' => $paquete->updated_at,
         ];
     }
 
-    private function registerHistory($paqueteId, $accion)
+
+    public function ubicacion()
+    {
+        return $this->belongsTo(Ubicacion::class, 'id_ubicacion');
+    }
+
+
+    private function registerHistory($paqueteId, $accion, $estado = null)
     {
         HistorialPaquete::create([
             'id_paquete' => $paqueteId,
             'fecha_hora' => now(),
             'id_usuario' => auth()->id(),
             'accion' => $accion,
-            'estado' => $estadoActual
+            'estado' => $estado,
         ]);
     }
 }

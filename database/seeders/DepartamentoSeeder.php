@@ -14,21 +14,28 @@ class DepartamentoSeeder extends Seeder
      */
     public function run()
     {
-       $data = [
-        ["nombre"=>'AHUACHAPAN'],
-        ["nombre"=>'SANTA ANA'],
-        ["nombre"=>'SONSONATE'],
-        ["nombre"=>'CHALATENANGO'],
-        ["nombre"=>'LA LIBERTAD'],
-        ["nombre"=>'SAN SALVADOR'],
-        ["nombre"=>'CUSCATLAN'],
-        ["nombre"=>'LA PAZ'],
-        ["nombre"=>'CABAÑAS'],
-        ["nombre"=> 'SAN VICENTE'],
-        ["nombre"=> 'USULUTAN'],
-        ["nombre"=> 'SAN MIGUEL'],
-        ["nombre"=> 'MORAZAN'],
-        ["nombre"=> 'LA UNION']
+        // Función personalizada para capitalizar correctamente palabras con tildes
+        function capitalizarPalabraConTildes($string)
+        {
+            return mb_convert_case(mb_strtolower($string), MB_CASE_TITLE, "UTF-8");
+        }
+
+        // Datos de prueba con formato adecuado de capitalización
+        $data = [
+            ["nombre" => capitalizarPalabraConTildes('AHUACHAPAN')],
+            ["nombre" => capitalizarPalabraConTildes('SANTA ANA')],
+            ["nombre" => capitalizarPalabraConTildes('SONSONATE')],
+            ["nombre" => capitalizarPalabraConTildes('CHALATENANGO')],
+            ["nombre" => capitalizarPalabraConTildes('LA LIBERTAD')],
+            ["nombre" => capitalizarPalabraConTildes('SAN SALVADOR')],
+            ["nombre" => capitalizarPalabraConTildes('CUSCATLAN')],
+            ["nombre" => capitalizarPalabraConTildes('LA PAZ')],
+            ["nombre" => capitalizarPalabraConTildes('CABAÑAS')],
+            ["nombre" => capitalizarPalabraConTildes('SAN VICENTE')],
+            ["nombre" => capitalizarPalabraConTildes('USULUTAN')],
+            ["nombre" => capitalizarPalabraConTildes('SAN MIGUEL')],
+            ["nombre" => capitalizarPalabraConTildes('MORAZAN')],
+            ["nombre" => capitalizarPalabraConTildes('LA UNION')],
         ];
 
         DB::table('departamento')->insert($data);

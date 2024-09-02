@@ -22,6 +22,7 @@ class Paquete extends Model
         'fecha_entrega_estimada',
         'descripcion_contenido',
         'eliminado_at',
+        'id_ubicacion', // Agregamos id_ubicacion aquí
     ];
 
     protected $dates = ['eliminado_at'];
@@ -46,32 +47,27 @@ class Paquete extends Model
 
     public function tamanoPaquete()
     {
-        return $this->belongsTo(TamanoPaquete::class, 'id');
+        return $this->belongsTo(TamanoPaquete::class, 'id_tamano_paquete');
     }
 
-    // relacion con kardex.
+    // Relación con Kardex
     public function kardex()
     {
         return $this->hasMany(Kardex::class, 'id_paquete');
     }
 
-    // Relación con la tabla de inventario.
+    // Relación con Inventario
     public function inventario()
     {
         return $this->hasMany(Inventario::class, 'id_paquete');
     }
 
-    // Relación con la tabla de transaccion.
+    // Relación con Transacción
     public function transacciones()
     {
         return $this->hasMany(Transaccion::class, 'id_paquete');
     }
 
-    // relacion con anaquel.
-    public function anaquel()
-    {
-        return $this->hasMany(Anaquel::class, 'id_paquete');
-    }
 
     public function empaquetado()
     {
@@ -79,13 +75,19 @@ class Paquete extends Model
     }
 
     public function cliente()
-{
-    return $this->belongsTo(Clientes::class, 'id_cliente');
-}
+    {
+        return $this->belongsTo(Clientes::class, 'id_cliente');
+    }
 
     public function estado()
     {
         return $this->belongsTo(EstadoPaquete::class, 'id_estado_paquete');
+    }
+
+    // Relación con Ubicación
+    public function ubicacion()
+    {
+        return $this->belongsTo(Ubicacion::class, 'id_ubicacion');
     }
 
     public static function search($filters)
@@ -116,6 +118,13 @@ class Paquete extends Model
                             })->orWhere('id_estado_paquete', $value); // Buscar por ID directamente
                         });
                         break;
+                    case 'ubicacion':
+                        $query->where(function ($q) use ($value) {
+                            $q->whereHas('ubicacion', function ($subq) use ($value) {
+                                $subq->where('nomenclatura', 'like', '%' . $value . '%');
+                            })->orWhere('id_ubicacion', $value); // Buscar por ID directamente
+                        });
+                        break;
                     case 'descripcion_contenido':
                         $query->where('descripcion_contenido', 'like', '%' . $value . '%');
                         break;
@@ -137,16 +146,19 @@ class Paquete extends Model
                     case 'palabra_clave':
                         $query->where(function ($q) use ($value) {
                             $q->where('descripcion_contenido', 'like', '%' . $value . '%')
-                            ->orWhere('uuid', 'like', '%' . $value . '%')
-                            ->orWhere('tag', 'like', '%' . $value . '%')
-                            ->orWhereHas('tipoPaquete', function ($subq) use ($value) {
-                                $subq->where('nombre', 'like', '%' . $value . '%');
-                            })
+                                ->orWhere('uuid', 'like', '%' . $value . '%')
+                                ->orWhere('tag', 'like', '%' . $value . '%')
+                                ->orWhereHas('tipoPaquete', function ($subq) use ($value) {
+                                    $subq->where('nombre', 'like', '%' . $value . '%');
+                                })
                                 ->orWhereHas('empaquetado', function ($subq) use ($value) {
-                                    $subq->where('empaquetado', 'like', '%' . $value . '%');
+                                    $subq->where('nombre', 'like', '%' . $value . '%');
                                 })
                                 ->orWhereHas('estado', function ($subq) use ($value) {
                                     $subq->where('nombre', 'like', '%' . $value . '%');
+                                })
+                                ->orWhereHas('ubicacion', function ($subq) use ($value) {
+                                    $subq->where('nomenclatura', 'like', '%' . $value . '%');
                                 });
                         });
                         break;
@@ -156,7 +168,6 @@ class Paquete extends Model
             }
         }
 
-        return $query->with(['tipoPaquete', 'empaquetado', 'estado']);
+        return $query->with(['tipoPaquete', 'empaquetado', 'estado', 'ubicacion']);
     }
-
 }

@@ -15,9 +15,9 @@ class TamanoPaqueteSeeder extends Seeder
     public function run()
     {
         $data = [
-            ["nombre"=>'pequeno'],
-            ["nombre"=>'mediano'],
-            ["nombre"=>'grande'],
+            ["nombre"=>'Pequeño'],
+            ["nombre"=>'Mediano'],
+            ["nombre"=>'Grande'],
             ];
     
             DB::table('tamano_paquete')->insert($data);

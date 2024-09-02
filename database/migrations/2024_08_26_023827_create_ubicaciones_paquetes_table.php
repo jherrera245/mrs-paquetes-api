@@ -15,11 +15,23 @@ class CreateUbicacionesPaquetesTable extends Migration
     {
         Schema::create('ubicaciones_paquetes', function (Blueprint $table) {
             $table->id();
-            // relacion con paquetes.
-            $table->foreignId('id_paquete')->constrained('paquetes');
-            $table->foreignId('id_ubicacion')->constrained('ubicaciones');
-            $table->boolean('estado')->default(1);
+            
+            // Relación con paquetes
+            $table->foreignId('id_paquete')
+                  ->constrained('paquetes')
+                  ->onDelete('cascade'); // Elimina la asignación si el paquete se elimina
+
+            // Relación con ubicaciones
+            $table->foreignId('id_ubicacion')
+                  ->constrained('ubicaciones')
+                  ->onDelete('cascade'); // Elimina la asignación si la ubicación se elimina
+
+            $table->boolean('estado')->default(1); // 1 puede significar 'en bodega' por defecto
+
             $table->timestamps();
+
+            // Índice único para evitar duplicados de paquete en la misma ubicación
+            $table->unique(['id_paquete', 'id_ubicacion']);
         });
     }
 

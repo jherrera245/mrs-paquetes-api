@@ -27,16 +27,16 @@ class TarifaDestinoSeeder extends Seeder
         ];
 
         // Usulután (solo municipio 198 con tarifa Urbana)
-        $this->insertDataForDepartamento(11, range(176, 198), $tarifas, $tamanoPaquete, 'usulutan', false, null, 198);
+        $this->insertDataForDepartamento(11, range(176, 198), $tarifas, $tamanoPaquete, 'Usulutan', false, null, 198);
 
         // San Miguel (solo municipio 215 con tarifa Urbana y Express)
-        $this->insertDataForDepartamento(12, range(199, 218), $tarifas, $tamanoPaquete, 'san_miguel', true, 215);
+        $this->insertDataForDepartamento(12, range(199, 218), $tarifas, $tamanoPaquete, 'San_miguel', true, 215);
 
         // Morazán (solo municipio 237 con tarifa Urbana)
-        $this->insertDataForDepartamento(13, range(219, 244), $tarifas, $tamanoPaquete, 'morazan', false, null, 237);
+        $this->insertDataForDepartamento(13, range(219, 244), $tarifas, $tamanoPaquete, 'Morazan', false, null, 237);
 
         // La Unión (solo municipio 252 con tarifa Urbana)
-        $this->insertDataForDepartamento(14, range(245, 262), $tarifas, $tamanoPaquete, 'la_union', false, null, 252);
+        $this->insertDataForDepartamento(14, range(245, 262), $tarifas, $tamanoPaquete, 'La_union', false, null, 252);
     }
 
     private function insertDataForDepartamento($departamentoId, $municipios, $tarifas, $tamanoPaquete, $departamento, $hasExpress, $expressMunicipioId = null, $urbanaMunicipioId = null)
@@ -50,7 +50,7 @@ class TarifaDestinoSeeder extends Seeder
                         'id_tamano_paquete' => $tamanoId,
                         'id_departamento' => $departamentoId,
                         'id_municipio' => $municipioId,
-                        'monto' => $this->getMonto($departamento, 'urbana', $tamanoId),
+                        'monto' => $this->getMonto($departamento, 'Urbana', $tamanoId),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -64,7 +64,7 @@ class TarifaDestinoSeeder extends Seeder
                             'id_tamano_paquete' => $tamanoId,
                             'id_departamento' => $departamentoId,
                             'id_municipio' => $municipioId,
-                            'monto' => $this->getMonto($departamento, 'urbana', $tamanoId),
+                            'monto' => $this->getMonto($departamento, 'Urbana', $tamanoId),
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
@@ -87,7 +87,7 @@ class TarifaDestinoSeeder extends Seeder
                             'id_tamano_paquete' => $tamanoId,
                             'id_departamento' => $departamentoId,
                             'id_municipio' => $municipioId,
-                            'monto' => $this->getMonto($departamento, 'rural', $tamanoId),
+                            'monto' => $this->getMonto($departamento, 'Rural', $tamanoId),
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
@@ -101,7 +101,7 @@ class TarifaDestinoSeeder extends Seeder
                         'id_tamano_paquete' => $tamanoId,
                         'id_departamento' => $departamentoId,
                         'id_municipio' => $municipioId,
-                        'monto' => $this->getMonto($departamento, 'urbana', $tamanoId),
+                        'monto' => $this->getMonto($departamento, 'Urbana', $tamanoId),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -114,7 +114,7 @@ class TarifaDestinoSeeder extends Seeder
                         'id_tamano_paquete' => $tamanoId,
                         'id_departamento' => $departamentoId,
                         'id_municipio' => $municipioId,
-                        'monto' => $this->getMonto($departamento, 'urbana', $tamanoId),
+                        'monto' => $this->getMonto($departamento, 'Urbana', $tamanoId),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -127,7 +127,7 @@ class TarifaDestinoSeeder extends Seeder
                         'id_tamano_paquete' => $tamanoId,
                         'id_departamento' => $departamentoId,
                         'id_municipio' => $municipioId,
-                        'monto' => $this->getMonto($departamento, 'rural', $tamanoId),
+                        'monto' => $this->getMonto($departamento, 'Rural', $tamanoId),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -156,21 +156,21 @@ class TarifaDestinoSeeder extends Seeder
     private function getMonto($departamento, $tipo, $tamanoId)
     {
         $montos = [
-            'usulutan' => [
-                'urbana' => [1 => 6.00, 2 => 7.00, 3 => 8.50],
-                'rural' => [1 => 8.00, 2 => 9.00, 3 => 10.50],
+            'Usulutan' => [
+                'Urbana' => [1 => 6.00, 2 => 7.00, 3 => 8.50],
+                'Rural' => [1 => 8.00, 2 => 9.00, 3 => 10.50],
             ],
-            'san_miguel' => [
-                'urbana' => [1 => 5.00, 2 => 6.00, 3 => 7.50],
-                'rural' => [1 => 7.00, 2 => 8.00, 3 => 9.50],
+            'San_miguel' => [
+                'Urbana' => [1 => 5.00, 2 => 6.00, 3 => 7.50],
+                'Rural' => [1 => 7.00, 2 => 8.00, 3 => 9.50],
             ], 
-            'morazan' => [
-                'urbana' => [1 => 7.00, 2 => 8.00, 3 => 9.50],
-                'rural' => [1 => 9.00, 2 => 10.00, 3 => 11.50],
+            'Morazan' => [
+                'Urbana' => [1 => 7.00, 2 => 8.00, 3 => 9.50],
+                'Rural' => [1 => 9.00, 2 => 10.00, 3 => 11.50],
             ],
-            'la_union' => [
-                'urbana' => [1 => 6.00, 2 => 7.00, 3 => 8.50],
-                'rural' => [1 => 8.00, 2 => 9.00, 3 => 10.50],
+            'La_union' => [
+                'Urbana' => [1 => 6.00, 2 => 7.00, 3 => 8.50],
+                'Rural' => [1 => 8.00, 2 => 9.00, 3 => 10.50],
             ],
         ];
 
