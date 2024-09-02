@@ -45,7 +45,6 @@ class RutaRecoleccionController extends Controller
             'id_ruta' => 'required|exists:rutas,id',
             'id_vehiculo' => 'required|exists:vehiculos,id',
             'fecha_asignacion' => 'required|date',
-            'estado' => 'required|string',
         ]);
 
         $rutaRecoleccion = RutaRecoleccion::create($validatedData);
@@ -89,7 +88,6 @@ class RutaRecoleccionController extends Controller
             'id_ruta' => 'required|exists:rutas,id',
             'id_vehiculo' => 'required|exists:vehiculos,id',
             'fecha_asignacion' => 'required|date',
-            'estado' => 'required|string',
         ]);
 
         $rutaRecoleccion = RutaRecoleccion::findOrFail($id);
@@ -109,6 +107,7 @@ class RutaRecoleccionController extends Controller
         $rutaRecoleccion = RutaRecoleccion::findOrFail($id);
         $rutaRecoleccion->delete();
 
-        return response()->json(null, 204);
+        // retornar mensaje personalizado.
+        return response()->json(['message' => 'Ruta de recolección eliminada correctamente.']);
     }
 }

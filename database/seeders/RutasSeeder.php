@@ -21,8 +21,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta001',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-05-01',
                 'created_at' => '2024-08-27 20:34:06',
                 'updated_at' => '2024-08-27 20:34:06'
@@ -32,8 +30,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta002',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-05-01',
                 'created_at' => '2024-08-27 20:34:27',
                 'updated_at' => '2024-08-27 20:34:27'
@@ -43,8 +39,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta003',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:35:16',
                 'updated_at' => '2024-08-27 20:35:16'
@@ -54,8 +48,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta004',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:38:02',
                 'updated_at' => '2024-08-27 20:38:02'
@@ -65,8 +57,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta005',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:38:14',
                 'updated_at' => '2024-08-27 20:38:14'
@@ -76,8 +66,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta006',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:38:30',
                 'updated_at' => '2024-08-27 20:38:30'
@@ -87,8 +75,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta007',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:38:41',
                 'updated_at' => '2024-08-27 20:38:41'
@@ -98,8 +84,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta008',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:39:03',
                 'updated_at' => '2024-08-27 20:39:03'
@@ -109,8 +93,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta009',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '1.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:39:15',
                 'updated_at' => '2024-08-27 20:39:15'
@@ -120,8 +102,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta010',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '15.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:39:33',
                 'updated_at' => '2024-08-27 20:39:33'
@@ -131,8 +111,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta0011',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '15.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:41:07',
                 'updated_at' => '2024-08-27 20:41:07'
@@ -142,8 +120,6 @@ class RutasSeeder extends Seeder
                 'nombre' => 'Ruta0012',
                 'id_bodega' => 1,
                 'estado' => 1,
-                'distancia_km' => '15.00',
-                'duracion_aproximada' => '1.00',
                 'fecha_programada' => '2024-08-28',
                 'created_at' => '2024-08-27 20:41:31',
                 'updated_at' => '2024-08-27 20:41:31'
