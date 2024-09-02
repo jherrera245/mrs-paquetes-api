@@ -14,11 +14,11 @@ class TarifasSeeder extends Seeder
     public function run()
     {
         $data = [
-            ["nombre"=>'Tarifa Rural'],
-            ["nombre"=>'Tarifa Urbana'],
-            ["nombre"=>'Tarifa Urbana Express'],
-            ];
-    
-            DB::table('tarifas')->insert($data);
+            ["nombre"=>'tarifa rural'],
+            ["nombre"=>'tarifa urbana'],
+            ["nombre"=>'tarifa urbana express'],
+        ];
+
+        DB::table('tarifas')->insert($data);
     }
 }
