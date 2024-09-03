@@ -232,7 +232,8 @@ class AuthController extends Controller
         }
         
         $datosCliente = [
-           'email' => $user->email,
+            'email' => $user->email,
+            'id'=> $cliente->id,
             'nombre' => $cliente->nombre,
             'apellido' => $cliente->apellido,
             'nombre_comercial' => $cliente->nombre_comercial,
