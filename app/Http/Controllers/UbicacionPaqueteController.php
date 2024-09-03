@@ -106,7 +106,7 @@ class UbicacionPaqueteController extends Controller
             $request->has('id_ubicacion') &&
             UbicacionPaquete::where('id_paquete', $request->id_paquete)
                 ->where('id_ubicacion', $request->id_ubicacion)
-                ->where('id', '!=', $id) // Ignora la misma relación que se está actualizando
+                ->where('id', '!=', $id) 
                 ->exists()
         ) {
             return response()->json(['error' => 'Este paquete ya tiene asignada esa ubicación.'], 400);

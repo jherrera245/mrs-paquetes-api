@@ -45,7 +45,7 @@ class UbicacionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nomenclatura' => 'required|string|max:255',
-            'id_bodega' => 'required|exists:bodegas,id'  // Asegúrate de que el nombre de la tabla sea correcto
+            'id_bodega' => 'required|exists:bodegas,id'  
         ]);
 
         if ($validator->fails()) {
@@ -67,7 +67,7 @@ class UbicacionController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nomenclatura' => 'sometimes|required|string|max:255',
-            'id_bodega' => 'sometimes|required|exists:bodegas,id'  // Verifica que la tabla coincida
+            'id_bodega' => 'sometimes|required|exists:bodegas,id'  
         ]);
 
         if ($validator->fails()) {

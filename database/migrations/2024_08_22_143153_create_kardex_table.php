@@ -33,6 +33,6 @@ class CreateKardexTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transacciones');
+        Schema::dropIfExists('kardex');
     }
 }
