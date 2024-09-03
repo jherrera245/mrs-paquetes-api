@@ -938,13 +938,13 @@ class OrdenController extends Controller
         try {
             $user = JWTAuth::parseToken()->authenticate();
             if (!$user) {
-                return response()->json(['error' => 'User not found'], Response::HTTP_UNAUTHORIZED);
+                return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
     
             // Obtén el cliente asociado al usuario
             $cliente = $user->cliente;
             if (!$cliente) {
-                return response()->json(['error' => 'Cliente not found for the authenticated user'], Response::HTTP_UNAUTHORIZED);
+                return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
     
             // Valida los datos de la solicitud
@@ -1013,13 +1013,13 @@ class OrdenController extends Controller
             // Obtener el usuario autenticado
             $user = JWTAuth::parseToken()->authenticate();
             if (!$user) {
-                return response()->json(['error' => 'User not found'], Response::HTTP_UNAUTHORIZED);
+                return response()->json(['error' => 'usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
 
             // Obtener el cliente asociado al usuario
             $cliente = $user->cliente;
             if (!$cliente) {
-                return response()->json(['error' => 'Cliente not found for the authenticated user'], Response::HTTP_UNAUTHORIZED);
+                return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
 
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
@@ -1061,15 +1061,15 @@ class OrdenController extends Controller
                 ];
             });
 
-            // Registrar los datos de la consulta en el log para depuración (opcional)
-            \Log::info('Órdenes recuperadas para el cliente', [
+    
+            \Log::info('ordenes del cliente', [
                 'cliente_id' => $cliente->id,
                 'ordenes' => $result
             ]);
 
             return response()->json($result, Response::HTTP_OK);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Token is invalid'], Response::HTTP_UNAUTHORIZED);
+            return response()->json(['error' => 'Token es invalido'], Response::HTTP_UNAUTHORIZED);
         }
     }
     
