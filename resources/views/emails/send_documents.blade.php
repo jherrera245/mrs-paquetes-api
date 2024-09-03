@@ -13,7 +13,7 @@
         </div>
         <div style="text-align: center; padding: 30px; color: #5a3f2a;">
             <p><strong>Estimado Cliente:</strong> {{ $cliente }}</p>
-            <p>Le saludamos de <strong>Mr. Paquetes</strong> _{{ $cliente }}_, adjunto enviamos Documentos Tributarios Electrónicos.</p>
+            <p>Le saludamos de <strong>Mr. Paquetes</strong> , adjunto enviamos Documentos Tributarios Electrónicos.</p>
             <h2 style="color: #5a3f2a; font-size: 22px; border-bottom: 2px solid #5a3f2a; padding-bottom: 10px; margin-top: 20px;">Detalle del documento:</h2>
             <ul style="list-style: none; padding: 0; text-align: left; display: inline-block;">
                 <li style="padding: 5px 0; color: #5a3f2a;"><strong>Número de Factura Electrónica:</strong> {{ $numero_control }}</li>
