@@ -17,7 +17,9 @@ class Kardex extends Model
         'cantidad',
         'numero_ingreso',
         'tipo_movimiento',
+        'tipo_transaccion',
         'fecha',
+        
     ];
 
     protected $casts = [

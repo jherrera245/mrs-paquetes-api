@@ -20,7 +20,8 @@ class CreateKardexTable extends Migration
             $table->integer('cantidad');
             $table->string('numero_ingreso');
             $table->string('tipo_movimiento');
-            $table->date('fecha');
+            $table->string('tipo_transaccion');
+            $table->date('fecha'); 
             $table->timestamps();
         });
     }
