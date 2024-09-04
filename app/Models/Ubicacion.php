@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bodegas;
-
 
 class Ubicacion extends Model
 {
@@ -17,6 +15,7 @@ class Ubicacion extends Model
     protected $fillable = [
         'nomenclatura',
         'id_bodega',
+        'id_pasillo',
     ];
 
     // Relación con la tabla `bodegas`.
@@ -24,7 +23,12 @@ class Ubicacion extends Model
     {
         return $this->belongsTo(Bodegas::class, 'id_bodega');
     }
-    
+
+    // Relación con la tabla `pasillos`.
+    public function pasillo()
+    {
+        return $this->belongsTo(Pasillo::class, 'id_pasillo');
+    }
 
     /**
      * Relación con la tabla `paquetes` a través de `ubicaciones_paquetes`.
@@ -32,5 +36,22 @@ class Ubicacion extends Model
     public function paquetes()
     {
         return $this->hasMany(UbicacionPaquete::class, 'id_ubicacion');
+    }
+
+    /**
+     * Obtener los datos formateados con nombres en lugar de IDs.
+     *
+     * @return array
+     */
+    public function getFormattedData()
+    {
+        return [
+            'id' => $this->id,
+            'nomenclatura' => $this->nomenclatura,
+            'bodega' => $this->bodega ? $this->bodega->nombre : 'N/A',
+            'id_bodega' => $this->bodega ? $this->bodega->id : 'N/A',
+            'pasillo' => $this->pasillo ? $this->pasillo->nombre : 'N/A',
+            'id_pasillo' => $this->pasillo ? $this->pasillo->id : 'N/A',
+        ];
     }
 }
