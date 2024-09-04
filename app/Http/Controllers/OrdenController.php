@@ -27,6 +27,8 @@ use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Component\HttpFoundation\Response;
 use App\Libraries\FormatterNumberLetter;
 use App\Models\Clientes;
+use App\Models\Inventario;
+use App\Models\Kardex;
 use App\Notifications\SendDocuments;
 use Illuminate\Support\Facades\Notification;
 use JWTAuth;
@@ -129,8 +131,6 @@ class OrdenController extends Controller
                 $this->createOrderDetail($orden, $detalle);
             }
 
-            $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
-
             DB::commit();
             return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
@@ -215,7 +215,30 @@ class OrdenController extends Controller
                 $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
 
                 // Guardar el detalle de la orden para obtener su ID
-                $detalleOrden->save();    
+                $detalleOrden->save(); 
+                
+                // crear la transaccion en el kardex e inventario.
+                $kardex = new Kardex();
+                $kardex->id_paquete = $paquete->id;
+                $kardex->id_orden = $orden->id;
+                $kardex->cantidad = 1;
+                $kardex->numero_ingreso = $orden->numero_seguimiento;
+                $kardex->tipo_movimiento = 'ENTRADA';
+                $kardex->tipo_transaccion = 'ORDEN';
+                $kardex->fecha = now();
+
+                $kardex->save();
+
+                // entrada en inventario.
+                $inventario = new Inventario();
+
+                $inventario->id_paquete = $paquete->id;
+                $inventario->numero_ingreso = $orden->numero_seguimiento;
+                $inventario->cantidad = 1;
+                $inventario->fecha_entrada = now();
+                $inventario->estado = 1;
+
+                $inventario->save();
             } 
         else 
             {
@@ -224,7 +247,7 @@ class OrdenController extends Controller
     }
 
 
-     public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
@@ -248,10 +271,6 @@ class OrdenController extends Controller
             $estadoAnterior = $orden->id_estado_paquetes;
             
             $this->updateOrder($orden, $request);
-
-             if ($estadoAnterior != $orden->id_estado_paquetes) {
-                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
-            }
 
             DetalleOrden::where('id_orden', $orden->id)->delete();
 
@@ -327,19 +346,6 @@ class OrdenController extends Controller
         }
     }
 
-    private function registrarCambioEstado(Orden $orden, $nuevoEstadoId)
-{
-    $nombreEstado = EstadoPaquete::find($nuevoEstadoId)->nombre;
-
-    HistorialOrdenTracking::create([
-        'id_orden' => $orden->id,
-        'numero_seguimiento' => $orden->numero_seguimiento,
-        'id_estado_paquete' => $nuevoEstadoId,
-        'fecha_hora' => now(), 
-        'comentario' => "Estado: {$nombreEstado}"
-    ]);
-}
-
     // funcion para listar los paquetes y sus estados de entrega segun la ruta a la que fueron asignados.
     public function listarPaquetesRuta($id)
     {
@@ -377,10 +383,24 @@ class OrdenController extends Controller
             if (!$orden) {
                 return response()->json(['message' => 'No se encontró la orden.'], Response::HTTP_NOT_FOUND);
             }
+            // obtenemos los paquetes de la orden.
+            $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
+            // recorremos la orden para cambiar el estado de los paquetes a cancelado.
+            foreach ($paquetes as $paquete) {
+                // marcar como salida en kardex.
+                $kardex = Kardex::where('id_orden', $orden->id)->first();
+                $kardex->id_paquete = $paquete->id_paquete;
+                $kardex->id_orden = $orden->id;
+                $kardex->cantidad = 1;
+                $kardex->numero_ingreso = $orden->numero_seguimiento;
+                $kardex->tipo_movimiento = 'SALIDA';
+                $kardex->tipo_transaccion = 'ORDEN_ELIMINADA';
+                $kardex->fecha = now();
+                $kardex->save();
+            }
 
             // Eliminar los detalles de la orden
-            DetalleOrden::where('id_orden', $orden->id)->delete();
-
+            DetalleOrden::where('id_orden', $orden->id)->delete();            
             // Eliminar la orden
             $orden->delete();
 
@@ -399,81 +419,81 @@ class OrdenController extends Controller
     }
 
     public function show($id)
-{
-    $orden = Orden::with([
-        'tipoPago',
-        'detalles.tipoEntrega',
-        'detalles.direccionEntrega.departamento',
-        'detalles.direccionEntrega.municipio',
-        'detalles.paquete.tipoPaquete',
-        'detalles.paquete.empaquetado',
-        'detalles.paquete.estado'
-    ])->find($id);
+    {
+        $orden = Orden::with([
+            'tipoPago',
+            'detalles.tipoEntrega',
+            'detalles.direccionEntrega.departamento',
+            'detalles.direccionEntrega.municipio',
+            'detalles.paquete.tipoPaquete',
+            'detalles.paquete.empaquetado',
+            'detalles.paquete.estado'
+        ])->find($id);
 
-    if (!$orden) {
-        return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        if (!$orden) {
+            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+
+        $direccion = Direcciones::with(['cliente', 'departamento', 'municipio'])->find($orden->id_direccion);
+
+        $response = [
+            'id' => $orden->id,
+            'id_cliente' => $orden->id_cliente,
+            'id_tipo_pago' => $orden->id_tipo_pago,
+            'total_pagar' => $orden->total_pagar,
+            'costo_adicional' => $orden->costo_adicional,
+            'estado_pago' => $orden->estado_pago,
+            'tipo_documento' => $orden->tipo_documento,
+            'tipo_orden' => $orden->tipo_orden,
+            'id_direccion' => $orden->id_direccion,
+            'concepto' => $orden->concepto,
+            'id_estado_paquetes' => $orden->id_estado_paquetes,
+            'numero_seguimiento' => $orden->numero_seguimiento,
+            'direccion_emisor' => $direccion ? [
+                'id_direccion' => $direccion->id,
+                'direccion' => $direccion->direccion,
+                'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
+                'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
+                'nombre_contacto' => $direccion->nombre_contacto,
+                'telefono' => $direccion->telefono,
+                'id_departamento' => $direccion->departamento->nombre ?? 'NA',
+                'id_municipio' => $direccion->municipio->nombre ?? 'NA',
+                'referencia' => $direccion->referencia,
+            ] : null,
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'id' => $detalle->id,
+                    'id_orden' => $detalle->id_orden,
+                    'id_paquete' => $detalle->id_paquete,
+                    'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                    'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                    'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                    'validacion_entrega' => $detalle->validacion_entrega,
+                    'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                    'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
+                    'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
+                    'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
+                    'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
+                    'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
+                    'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
+                    'fecha_ingreso' =>$detalle->fecha_ingreso,
+                    'fecha_entrega' =>$detalle->fecha_entrega,
+                    'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
+                    'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
+                    'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
+                    'peso' => $detalle->paquete->peso ?? 'NA',
+                    'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
+                    'fecha_envio' => $detalle->paquete->fecha_envio,
+                    'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
+                    'descripcion_contenido' => $detalle->paquete->descripcion_contenido
+                ];
+            }),
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
-
-    $direccion = Direcciones::with(['cliente', 'departamento', 'municipio'])->find($orden->id_direccion);
-
-    $response = [
-        'id' => $orden->id,
-        'id_cliente' => $orden->id_cliente,
-        'id_tipo_pago' => $orden->id_tipo_pago,
-        'total_pagar' => $orden->total_pagar,
-        'costo_adicional' => $orden->costo_adicional,
-        'estado_pago' => $orden->estado_pago,
-        'tipo_documento' => $orden->tipo_documento,
-        'tipo_orden' => $orden->tipo_orden,
-        'id_direccion' => $orden->id_direccion,
-        'concepto' => $orden->concepto,
-        'id_estado_paquetes' => $orden->id_estado_paquetes,
-        'numero_seguimiento' => $orden->numero_seguimiento,
-        'direccion_emisor' => $direccion ? [
-            'id_direccion' => $direccion->id,
-            'direccion' => $direccion->direccion,
-            'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
-            'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
-            'nombre_contacto' => $direccion->nombre_contacto,
-            'telefono' => $direccion->telefono,
-            'id_departamento' => $direccion->departamento->nombre ?? 'NA',
-            'id_municipio' => $direccion->municipio->nombre ?? 'NA',
-            'referencia' => $direccion->referencia,
-        ] : null,
-        'detalles' => $orden->detalles->map(function ($detalle) {
-            return [
-                'id' => $detalle->id,
-                'id_orden' => $detalle->id_orden,
-                'id_paquete' => $detalle->id_paquete,
-                'id_tipo_entrega' => $detalle->id_tipo_entrega,
-                'id_estado_paquetes' => $detalle->id_estado_paquetes,
-                'id_direccion_entrega' => $detalle->id_direccion_entrega,
-                'validacion_entrega' => $detalle->validacion_entrega,
-                'instrucciones_entrega' => $detalle->instrucciones_entrega,
-                'descripcion' => $detalle->descripcion,
-                'precio' => $detalle->precio,
-                'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
-                'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
-                'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
-                'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
-                'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
-                'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
-                'fecha_ingreso' =>$detalle->fecha_ingreso,
-                'fecha_entrega' =>$detalle->fecha_entrega,
-                'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
-                'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
-                'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
-                'peso' => $detalle->paquete->peso ?? 'NA',
-                'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
-                'fecha_envio' => $detalle->paquete->fecha_envio,
-                'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
-                'descripcion_contenido' => $detalle->paquete->descripcion_contenido
-            ];
-        }),
-    ];
-
-    return response()->json($response, Response::HTTP_OK);
-}
     /**
      * Requerimiento 2: Genera un PDF con los detalles de la orden especificada.
      *
@@ -987,8 +1007,6 @@ class OrdenController extends Controller
                 foreach ($request->input('detalles') as $detalle) {
                     $this->createOrderDetail($orden, $detalle);
                 }
-    
-                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
     
                 DB::commit();
                 return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);

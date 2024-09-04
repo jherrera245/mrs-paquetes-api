@@ -19,7 +19,6 @@ class Kardex extends Model
         'tipo_movimiento',
         'tipo_transaccion',
         'fecha',
-        
     ];
 
     protected $casts = [
