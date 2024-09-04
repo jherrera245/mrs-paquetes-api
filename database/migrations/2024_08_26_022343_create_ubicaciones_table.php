@@ -11,6 +11,7 @@ return new class extends Migration
             $table->id(); 
             $table->string('nomenclatura')->unique();
             $table->foreignId('id_bodega')->constrained('bodegas');
+            $table->foreignId('id_pasillo')->constrained('pasillos');
             $table->timestamps();
         });
     }

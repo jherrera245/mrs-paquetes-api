@@ -2,61 +2,88 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bodegas; 
 use App\Models\Ubicacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class UbicacionController extends Controller
 {
-    // Listar todas las ubicaciones
-    public function index()
+    // Listar todas las ubicaciones con filtros de búsqueda y paginación
+    public function index(Request $request)
     {
-        $ubicaciones = Ubicacion::with('bodega:id,nombre')->get()->map(function ($ubicacion) {
-            return [
-                'id' => $ubicacion->id,
-                'nomenclatura' => $ubicacion->nomenclatura,
-                'bodega' => $ubicacion->bodega ? $ubicacion->bodega->nombre : null,
-            ];
-        });
-        return response()->json($ubicaciones, 200);
+        try {
+            $query = Ubicacion::with(['bodega:id,nombre', 'pasillo:id,nombre']);
+
+            // Aplicar filtros basados en los parámetros de la solicitud
+            if ($request->has('nomenclatura')) {
+                $query->where('nomenclatura', 'like', '%' . $request->input('nomenclatura') . '%');
+            }
+
+            if ($request->has('id_bodega')) {
+                $query->where('id_bodega', $request->input('id_bodega'));
+            }
+
+            if ($request->has('id_pasillo')) {
+                $query->where('id_pasillo', $request->input('id_pasillo'));
+            }
+
+            // Paginación de resultados
+            $ubicaciones = $query->paginate(10); // Cambia el número de elementos por página según sea necesario
+
+            // Formatear resultados usando API Resource o un método de formateo
+            $formattedData = $ubicaciones->map(function ($ubicacion) {
+                return $ubicacion->getFormattedData(); // Usar el método del modelo para formatear los datos
+            });
+
+            return response()->json($formattedData, 200);
+        } catch (Exception $e) {
+            Log::error('Error en la lista de ubicaciones: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al obtener las ubicaciones'], 500);
+        }
     }
 
-    // Mostrar una ubicación específica
+    // Mostrar una ubicación específica con manejo de errores
     public function show($id)
     {
-        $ubicacion = Ubicacion::with('bodega:id,nombre')->find($id);
+        try {
+            $ubicacion = Ubicacion::with(['bodega:id,nombre', 'pasillo:id,nombre'])->find($id);
 
-        if (!$ubicacion) {
-            return response()->json(['error' => 'Ubicación no encontrada'], 404);
+            if (!$ubicacion) {
+                return response()->json(['error' => 'Ubicación no encontrada'], 404);
+            }
+
+            return response()->json($ubicacion->getFormattedData(), 200);
+        } catch (Exception $e) {
+            Log::error('Error al mostrar la ubicación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al mostrar la ubicación'], 500);
         }
-
-        $ubicacionData = [
-            'id' => $ubicacion->id,
-            'nomenclatura' => $ubicacion->nomenclatura,
-            'bodega' => $ubicacion->bodega ? $ubicacion->bodega->nombre : null,
-        ];
-
-        return response()->json($ubicacionData, 200);
     }
 
-    // Crear una nueva ubicación
+    // Crear una nueva ubicación con validación mejorada y manejo de errores
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nomenclatura' => 'required|string|max:255',
-            'id_bodega' => 'required|exists:bodegas,id'  
+            'nomenclatura' => 'required|string|max:255|unique:ubicaciones,nomenclatura', // Agregar regla de unicidad
+            'id_bodega' => 'required|exists:bodegas,id',
+            'id_pasillo' => 'required|exists:pasillos,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $ubicacion = Ubicacion::create($request->all());
-        return response()->json(['message' => 'Ubicación creada correctamente', 'ubicacion' => $ubicacion], 201);
+        try {
+            $ubicacion = Ubicacion::create($request->all());
+            return response()->json(['message' => 'Ubicación creada correctamente', 'ubicacion' => $ubicacion->getFormattedData()], 201);
+        } catch (Exception $e) {
+            Log::error('Error al crear la ubicación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al crear la ubicación'], 500);
+        }
     }
 
-    // Actualizar una ubicación existente
+    // Actualizar una ubicación existente con validación y manejo de errores
     public function update(Request $request, $id)
     {
         $ubicacion = Ubicacion::find($id);
@@ -66,19 +93,25 @@ class UbicacionController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'nomenclatura' => 'sometimes|required|string|max:255',
-            'id_bodega' => 'sometimes|required|exists:bodegas,id'  
+            'nomenclatura' => 'sometimes|required|string|max:255|unique:ubicaciones,nomenclatura,' . $id, // Unicidad excepto el mismo registro
+            'id_bodega' => 'sometimes|required|exists:bodegas,id',
+            'id_pasillo' => 'sometimes|required|exists:pasillos,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $ubicacion->update($request->all());
-        return response()->json(['message' => 'Ubicación actualizada correctamente', 'ubicacion' => $ubicacion], 200);
+        try {
+            $ubicacion->update($request->all());
+            return response()->json(['message' => 'Ubicación actualizada correctamente', 'ubicacion' => $ubicacion->getFormattedData()], 200);
+        } catch (Exception $e) {
+            Log::error('Error al actualizar la ubicación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al actualizar la ubicación'], 500);
+        }
     }
 
-    // Eliminar una ubicación
+    // Eliminar una ubicación con manejo de errores
     public function destroy($id)
     {
         $ubicacion = Ubicacion::find($id);
@@ -87,7 +120,12 @@ class UbicacionController extends Controller
             return response()->json(['error' => 'Ubicación no encontrada'], 404);
         }
 
-        $ubicacion->delete();
-        return response()->json(['message' => 'Ubicación eliminada correctamente'], 200);
+        try {
+            $ubicacion->delete();
+            return response()->json(['message' => 'Ubicación eliminada correctamente'], 200);
+        } catch (Exception $e) {
+            Log::error('Error al eliminar la ubicación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al eliminar la ubicación'], 500);
+        }
     }
 }
