@@ -261,11 +261,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes']);
 
 
-  // Requerimiento #3: Endpoint para de entregas
-  Route::post('/ordenes/hoja-trabajo', [OrdenController::class, 'generarHojaTrabajo']);
-
-  // Requerimiento #7: Implementacion de endpoint mis ordenes asignadas
-  Route::get('ordenes/mis-ordenes-asignadas', [OrdenController::class, 'misOrdenesAsignadas']);
 
   // Historial ordenes
   Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
