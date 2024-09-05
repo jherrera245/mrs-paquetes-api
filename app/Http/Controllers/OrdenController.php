@@ -247,7 +247,7 @@ class OrdenController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function updates(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
@@ -1051,6 +1051,124 @@ class OrdenController extends Controller
             return response()->json($result, Response::HTTP_OK);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token es invalido'], Response::HTTP_UNAUTHORIZED);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validación de la solicitud
+        $validator = Validator::make($request->all(), [
+            'id_cliente' => 'required|integer|exists:clientes,id',
+            'id_direccion' => 'required|integer|exists:direcciones,id',
+            'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
+            'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
+            'total_pagar' => 'required|numeric',
+            'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
+            'costo_adicional' => 'nullable|numeric',
+            'concepto' => 'required|string',
+            'tipo_documento' => 'required|string',
+            'tipo_orden' => 'required|string',
+            'detalles' => 'required|array',
+            'detalles.*.id_tipo_paquete' => 'required|integer',
+            'detalles.*.id_tamano_paquete' => 'required|integer',
+            'detalles.*.id_empaque' => 'required|integer',
+            'detalles.*.peso' => 'required|numeric',
+            'detalles.*.descripcion_contenido' => 'nullable|string',
+            'detalles.*.id_estado_paquete' => 'required|integer',
+            'detalles.*.fecha_envio' => 'required|date',
+            'detalles.*.fecha_entrega_estimada' => 'required|date',
+            'detalles.*.id_tipo_entrega' => 'required|integer',
+            'detalles.*.instrucciones_entrega' => 'nullable|string',
+            'detalles.*.descripcion' => 'nullable|string',
+            'detalles.*.precio' => 'required|numeric',
+            'detalles.*.fecha_entrega' => 'nullable|date',
+            'detalles.*.id_direccion' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Buscar y actualizar la orden
+            $orden = Orden::findOrFail($id);
+            $orden->id_cliente = $request->input('id_cliente');
+            $orden->id_tipo_pago = $request->input('id_tipo_pago');
+            $orden->id_direccion = $request->input('id_direccion');
+            $orden->total_pagar = $request->input('total_pagar');
+            $orden->id_estado_paquetes = $request->input('id_estado_paquetes');
+            $orden->costo_adicional = $request->input('costo_adicional');
+            $orden->concepto = $request->input('concepto');
+            $orden->tipo_documento = $request->input('tipo_documento');
+            $orden->tipo_orden = $request->input('tipo_orden');
+            $orden->save();
+
+            // Eliminar detalles existentes antes de agregar los nuevos
+            DetalleOrden::where('id_orden', $orden->id)->delete();
+
+        
+        
+            foreach ($request->input('detalles') as $detalle) {
+                // Buscar el paquete existente por ID
+                $paquete = Paquete::where('id_tipo_paquete', $detalle['id_tipo_paquete'])
+                    ->where('id_tamano_paquete', $detalle['id_tamano_paquete'])
+                    ->where('id_empaque', $detalle['id_empaque'])
+                    ->first();
+
+                // Si no existe el paquete, devolver error
+                if (!$paquete) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Paquete no existe'], Response::HTTP_NOT_FOUND);
+                }
+
+                // Crear o actualizar el detalle de la orden
+                $detalleOrden = new DetalleOrden();
+                $detalleOrden->id_orden = $orden->id;
+                $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
+                $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+                $detalleOrden->id_paquete = $paquete->id;
+                $detalleOrden->validacion_entrega = 0;
+                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
+                $detalleOrden->descripcion = $detalle['descripcion'];
+                $detalleOrden->precio = $detalle['precio'];
+                $detalleOrden->fecha_ingreso = now();
+                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+                $detalleOrden->save();
+
+                // Crear la transacción en Kardex
+                $kardex = new Kardex();
+                $kardex->id_paquete = $paquete->id;
+                $kardex->id_orden = $orden->id;
+                $kardex->cantidad = 1;
+                $kardex->numero_ingreso = $orden->numero_seguimiento;
+                $kardex->tipo_movimiento = 'ACTUALIZACION';
+                $kardex->tipo_transaccion = 'ORDEN';
+                $kardex->fecha = now();
+                $kardex->save();
+
+                // Crear entrada en Inventario
+                $inventario = new Inventario();
+                $inventario->id_paquete = $paquete->id;
+                $inventario->numero_ingreso = $orden->numero_seguimiento;
+                $inventario->cantidad = 1;
+                $inventario->fecha_entrada = now();
+                $inventario->estado = 1;
+                $inventario->save();
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Orden actualizada con éxito'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'message' => 'Error',
+                    'error' => $e->getMessage(),
+                ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
     }
     
