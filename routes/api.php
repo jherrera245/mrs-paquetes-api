@@ -275,11 +275,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   //Ubicaciones
 
-  Route::get('ubicaciones', [UbicacionController::class, 'index']); // Listar todas las ubicaciones
-  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']); // Mostrar una ubicación específica
-  Route::post('ubicaciones', [UbicacionController::class, 'store']); // Crear una nueva ubicación
-  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']); // Actualizar una ubicación existente
-  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']); // Eliminar una ubicación
+  Route::get('ubicaciones', [UbicacionController::class, 'index']); 
+  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']); 
+  Route::post('ubicaciones', [UbicacionController::class, 'store']); 
+  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']); 
+  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']); 
 
 
   // Rutas para el controlador UbicacionPaquete
@@ -291,11 +291,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   //Kardex
 
-  Route::get('kardex', [KardexController::class, 'index']);
-  Route::post('kardex', [KardexController::class, 'store']);
-  Route::get('kardex/{id}', [KardexController::class, 'show']);
-  Route::put('kardex/{id}', [KardexController::class, 'update']);
-  Route::delete('kardex/{id}', [KardexController::class, 'destroy']);
+
 
   //Traslado
   Route::get('traslados', [TrasladoController::class, 'index']); 
@@ -310,5 +306,5 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'show'])->middleware('permission:ordenrecoleccion-show');
   Route::post('orden-recoleccion', [OrdenRecoleccionController::class, 'store'])->middleware('permission:ordenrecoleccion-create');
   Route::put('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'update'])->middleware('permission:ordenrecoleccion-update');
-  Route::delete('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'destroy'])->middleware('permission:ordenrecoleccion-destroy');
+  Route::delete('detalle-orden/{id}', [OrdenController::class, 'destroyDetalleOrden']);
 });
