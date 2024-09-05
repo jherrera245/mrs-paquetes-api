@@ -199,21 +199,21 @@ class OrdenController extends Controller
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
         $paquete->save();
 
-        if ($paquete) {
-            $detalleOrden = new DetalleOrden();
-            $detalleOrden->id_orden = $orden->id;
-            $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
-            $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
-            $detalleOrden->id_paquete = $paquete->id;
-            $detalleOrden->validacion_entrega = 0;
-            $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
-            $detalleOrden->descripcion = $detalle['descripcion'];
-            $detalleOrden->precio = $detalle['precio'];
-            $detalleOrden->fecha_ingreso = now();
-            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
-            $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+        if ($paquete) 
+            {
+                $detalleOrden = new DetalleOrden();
+                $detalleOrden->id_orden = $orden->id;
+                $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
+                $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+                $detalleOrden->id_paquete = $paquete->id;
+                $detalleOrden->validacion_entrega = 0;
+                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
+                $detalleOrden->descripcion = $detalle['descripcion'];
+                $detalleOrden->precio = $detalle['precio'];
+                $detalleOrden->fecha_ingreso = now();
+                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
 
-<<<<<<< Updated upstream
                 // Guardar el detalle de la orden para obtener su ID
                 $detalleOrden->save(); 
                 
@@ -244,13 +244,6 @@ class OrdenController extends Controller
             {
                 throw new \Exception('Error al generar el paquete');
             }
-=======
-            // Guardar el detalle de la orden para obtener su ID
-            $detalleOrden->save();
-        } else {
-            throw new \Exception('Error al generar el paquete');
-        }
->>>>>>> Stashed changes
     }
 
 
@@ -276,16 +269,9 @@ class OrdenController extends Controller
         try {
             $orden = Orden::findOrFail($id);
             $estadoAnterior = $orden->id_estado_paquetes;
-
+            
             $this->updateOrder($orden, $request);
 
-<<<<<<< Updated upstream
-=======
-            if ($estadoAnterior != $orden->id_estado_paquetes) {
-                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
-            }
-
->>>>>>> Stashed changes
             DetalleOrden::where('id_orden', $orden->id)->delete();
 
             foreach ($request->input('detalles') as $detalle) {
@@ -360,22 +346,6 @@ class OrdenController extends Controller
         }
     }
 
-<<<<<<< Updated upstream
-=======
-    private function registrarCambioEstado(Orden $orden, $nuevoEstadoId)
-    {
-        $nombreEstado = EstadoPaquete::find($nuevoEstadoId)->nombre;
-
-        HistorialOrdenTracking::create([
-            'id_orden' => $orden->id,
-            'numero_seguimiento' => $orden->numero_seguimiento,
-            'id_estado_paquete' => $nuevoEstadoId,
-            'fecha_hora' => now(),
-            'comentario' => "Estado: {$nombreEstado}"
-        ]);
-    }
-
->>>>>>> Stashed changes
     // funcion para listar los paquetes y sus estados de entrega segun la ruta a la que fueron asignados.
     public function listarPaquetesRuta($id)
     {
@@ -405,13 +375,13 @@ class OrdenController extends Controller
         return response()->json($detalleOrden, Response::HTTP_OK);
     }
 
-    public function destroyDetalleOrden($id)
+    public function destroy($id)
     {
         DB::beginTransaction();
         try {
-            $detalleOrden = DetalleOrden::find($id);
-            if (!$detalleOrden) {
-                return response()->json(['mensaje' => 'Detalle de orden no encontrado.'], Response::HTTP_NOT_FOUND);
+            $orden = Orden::find($id);
+            if (!$orden) {
+                return response()->json(['message' => 'No se encontró la orden.'], Response::HTTP_NOT_FOUND);
             }
             // obtenemos los paquetes de la orden.
             $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
@@ -429,33 +399,24 @@ class OrdenController extends Controller
                 $kardex->save();
             }
 
-<<<<<<< Updated upstream
             // Eliminar los detalles de la orden
             DetalleOrden::where('id_orden', $orden->id)->delete();            
             // Eliminar la orden
             $orden->delete();
-=======
-            $detalleOrden->delete();
-
-            // También puedes eliminar el paquete relacionado si es necesario.
-            Paquete::where('id', $detalleOrden->id_paquete)->delete();
->>>>>>> Stashed changes
 
             DB::commit();
-            return response()->json(['mensaje' => 'Detalle de orden eliminado con éxito.'], Response::HTTP_OK);
+            return response()->json(['message' => 'Orden eliminada.'], Response::HTTP_OK);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
                 [
-                    'mensaje' => 'Error al eliminar el detalle de la orden.',
+                    'message' => 'Error',
                     'error' => $e->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
     }
-
-
 
     public function show($id)
     {
@@ -517,13 +478,8 @@ class OrdenController extends Controller
                     'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
                     'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
                     'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
-<<<<<<< Updated upstream
                     'fecha_ingreso' =>$detalle->fecha_ingreso,
                     'fecha_entrega' =>$detalle->fecha_entrega,
-=======
-                    'fecha_ingreso' => $detalle->fecha_ingreso,
-                    'fecha_entrega' => $detalle->fecha_entrega,
->>>>>>> Stashed changes
                     'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
                     'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
                     'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
@@ -756,10 +712,10 @@ class OrdenController extends Controller
 
         $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
         $view_render = $tipo_dte == '01' ? 'pdf.consumidor_final' : 'pdf.credito_fiscal';
-        $numero_control = 'DTE-' . $tipo_dte . '-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
+        $numero_control = 'DTE-'.$tipo_dte.'-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
         $codigo_generacion = Str::uuid();
         $sello_registro = sha1($codigo_generacion);
-        $sello_registro = date('Y') . substr($sello_registro, 0, 36);
+        $sello_registro = date('Y').substr($sello_registro, 0, 36);
 
         $formater = new FormatterNumberLetter();
         $total_letras = $formater->to_invoice($orden->total_pagar, 2, "DOLARES ESTADOUNIDENSES");
@@ -777,48 +733,47 @@ class OrdenController extends Controller
             ->build();
 
         $qrCodeBase64 = base64_encode($makeQr->getString());
-
+        
         $cliente = $results = DB::table('clientes as cli')
-            ->join('users as u', 'u.id', '=', 'cli.id_user')
-            ->select(
-                'cli.id',
-                'cli.nombre',
-                'cli.apellido',
-                'cli.nombre_comercial',
-                'cli.nombre_empresa',
-                'cli.direccion',
-                'cli.dui',
-                'cli.nit',
-                'cli.id_tipo_persona',
-                'cli.es_contribuyente',
-                'u.email',
-                'cli.telefono',
-                'cli.id_user',
-            )->where('cli.id', $orden->id_cliente)->first();
+        ->join('users as u', 'u.id', '=', 'cli.id_user')
+        ->select(
+            'cli.id',
+            'cli.nombre',
+            'cli.apellido',
+            'cli.nombre_comercial',
+            'cli.nombre_empresa',
+            'cli.direccion',
+            'cli.dui',
+            'cli.nit',
+            'cli.id_tipo_persona',
+            'cli.es_contribuyente',
+            'u.email',
+            'cli.telefono',
+            'cli.id_user',
+        )->where('cli.id', $orden->id_cliente)->first();
 
         $detalles =  DB::table('detalle_orden as do')
-            ->select(
-                'p.id as codigo_paquete',
-                'p.peso',
-                'p.uuid',
-                'do.descripcion',
-                'do.instrucciones_entrega',
-                'do.precio'
-            )
-            ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
-            ->where('do.id_orden', $id)
-            ->get();
+        ->select(
+            'p.id as codigo_paquete',
+            'p.peso',
+            'p.uuid',
+            'do.descripcion',
+            'do.instrucciones_entrega',
+            'do.precio'
+        )
+        ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
+        ->where('do.id_orden', $id)
+        ->get();
 
-        $pdf = PDF::loadView(
-            $view_render,
+        $pdf = PDF::loadView($view_render, 
             [
-                "orden" => $orden,
+                "orden" => $orden, 
                 "numero_control" => $numero_control,
                 "codigo_generacion" => $codigo_generacion,
                 "sello_recepcion" => $sello_registro,
                 "qrCodeBase64" => $qrCodeBase64,
                 'logo' => 'images/logo-claro.png',
-                "cliente" => $cliente,
+                "cliente" => $cliente, 
                 "detalles" => $detalles,
                 "total_letras" => $total_letras
             ]
@@ -828,7 +783,7 @@ class OrdenController extends Controller
 
         return [
             'id_user' => $cliente->id_user,
-            'cliente' => $cliente->nombre . ' ' . $cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de ' . $cliente->nombre_comercial),
+            'cliente' => $cliente->nombre.' '.$cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de '.$cliente->nombre_comercial),
             'numero_control' => $numero_control,
             'fecha' =>  $orden->created_at,
             'tipo_documento' =>  $tipo_dte == '01' ? 'Factura Consumidor Final' : 'Credito Fiscal',
@@ -836,46 +791,7 @@ class OrdenController extends Controller
             'pdfBase64' => base64_encode($output),
         ];
     }
-<<<<<<< Updated upstream
-   
-=======
-    public function generarHojaTrabajo(Request $request)
-    {
-        // Validar parámetros de la solicitud
-        $request->validate([
-            'id_ruta' => 'required|integer',
-            'id_vehiculo' => 'required|integer',
-            'id_conductor' => 'required|integer',
-        ]);
-
-        // Obtener los paquetes asignados
-        $asignaciones = AsignacionRutas::with(['paquete', 'paquete.cliente'])
-            ->where('id_ruta', $request->id_ruta)
-            ->where('id_vehiculo', $request->id_vehiculo)
-            ->whereHas('vehiculo.conductor', function ($query) use ($request) {
-                $query->where('id', $request->id_conductor);
-            })
-            ->get();
-
-        Pdf::setOptions([
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'enable_php' => true,
-            'chroot' => public_path('img')
-        ]);
-
-        // Genera el PDF
-        $pdf = PDF::loadView('pdf.hoja_trabajo', compact('asignaciones'));
-
-        // Convierte el PDF a Base64
-        $pdfBase64 = base64_encode($pdf->output());
-
-        // Retorna el PDF como JSON
-        return response()->json(['pdf' => $pdfBase64]);
-    }
-
-
-
+    
     public function misOrdenesAsignadas(Request $request)
     {
         $validated = $request->validate([
@@ -924,9 +840,8 @@ class OrdenController extends Controller
 
         return Response::json($detalles);
     }
->>>>>>> Stashed changes
 
-
+    
     public function buscarPorNumeroSeguimiento(Request $request)
     {
         // Validar el número de seguimiento
@@ -936,8 +851,8 @@ class OrdenController extends Controller
 
         // Buscar la orden por numero_seguimiento
         $orden = Orden::where('numero_seguimiento', $request->numero_seguimiento)
-            ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
-            ->first();
+                    ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
+                    ->first();
 
         if ($orden) {
             // Obtener detalles de la orden (suponiendo que todos los detalles son similares)
@@ -1008,13 +923,13 @@ class OrdenController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
-
+    
             // Obtén el cliente asociado al usuario
             $cliente = $user->cliente;
             if (!$cliente) {
                 return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
-
+    
             // Valida los datos de la solicitud
             $validator = Validator::make($request->all(), [
                 'id_direccion' => 'required|integer|exists:direcciones,id',
@@ -1028,11 +943,11 @@ class OrdenController extends Controller
                 'tipo_orden' => 'required|string',
                 'detalles' => 'required|array'
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-
+    
             DB::beginTransaction();
             try {
                 $orden = new Orden();
@@ -1046,22 +961,16 @@ class OrdenController extends Controller
                 $orden->tipo_documento = $request->input('tipo_documento');
                 $orden->tipo_orden = $request->input('tipo_orden');
                 $orden->save();
-
+    
                 // Generar el número de seguimiento con el formato ORD00000000001
                 $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
                 $orden->numero_seguimiento = $numeroSeguimiento;
                 $orden->save();
-
+    
                 foreach ($request->input('detalles') as $detalle) {
                     $this->createOrderDetail($orden, $detalle);
                 }
-<<<<<<< Updated upstream
     
-=======
-
-                $this->registrarCambioEstado($orden, $orden->id_estado_paquetes);
-
->>>>>>> Stashed changes
                 DB::commit();
                 return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
             } catch (\Exception $e) {
@@ -1096,7 +1005,7 @@ class OrdenController extends Controller
 
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
             $ordenes = Orden::where('id_cliente', $cliente->id)
-                ->with(['detalles'])
+                ->with(['detalles']) 
                 ->get();
 
             // Formatear los datos para que incluyan todos los campos deseados
@@ -1110,11 +1019,11 @@ class OrdenController extends Controller
                     'costo_adicional' => $orden->costo_adicional,
                     'id_estado_paquetes' => $orden->id_estado_paquetes,
                     'concepto' => $orden->concepto,
-                    'finished' => $orden->finished,
+                    'finished' => $orden->finished, 
                     'numero_seguimiento' => $orden->numero_seguimiento,
                     'tipo_documento' => $orden->tipo_documento,
                     'tipo_orden' => $orden->tipo_orden,
-                    'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+                    'tipo_pago' => $orden->tipoPago->pago ?? 'NA', 
                     'detalles' => $orden->detalles->map(function ($detalle) {
                         return [
                             'id_orden' => $detalle->id_orden,
@@ -1133,7 +1042,7 @@ class OrdenController extends Controller
                 ];
             });
 
-
+    
             \Log::info('ordenes del cliente', [
                 'cliente_id' => $cliente->id,
                 'ordenes' => $result
@@ -1144,4 +1053,6 @@ class OrdenController extends Controller
             return response()->json(['error' => 'Token es invalido'], Response::HTTP_UNAUTHORIZED);
         }
     }
+    
 }
+
