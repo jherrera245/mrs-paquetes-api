@@ -199,51 +199,48 @@ class OrdenController extends Controller
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
         $paquete->save();
 
-        if ($paquete) 
-            {
-                $detalleOrden = new DetalleOrden();
-                $detalleOrden->id_orden = $orden->id;
-                $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
-                $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
-                $detalleOrden->id_paquete = $paquete->id;
-                $detalleOrden->validacion_entrega = 0;
-                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
-                $detalleOrden->descripcion = $detalle['descripcion'];
-                $detalleOrden->precio = $detalle['precio'];
-                $detalleOrden->fecha_ingreso = now();
-                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
-                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+        if ($paquete) {
+            $detalleOrden = new DetalleOrden();
+            $detalleOrden->id_orden = $orden->id;
+            $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
+            $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+            $detalleOrden->id_paquete = $paquete->id;
+            $detalleOrden->validacion_entrega = 0;
+            $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
+            $detalleOrden->descripcion = $detalle['descripcion'];
+            $detalleOrden->precio = $detalle['precio'];
+            $detalleOrden->fecha_ingreso = now();
+            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+            $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
 
-                // Guardar el detalle de la orden para obtener su ID
-                $detalleOrden->save(); 
-                
-                // crear la transaccion en el kardex e inventario.
-                $kardex = new Kardex();
-                $kardex->id_paquete = $paquete->id;
-                $kardex->id_orden = $orden->id;
-                $kardex->cantidad = 1;
-                $kardex->numero_ingreso = $orden->numero_seguimiento;
-                $kardex->tipo_movimiento = 'ENTRADA';
-                $kardex->tipo_transaccion = 'ORDEN';
-                $kardex->fecha = now();
+            // Guardar el detalle de la orden para obtener su ID
+            $detalleOrden->save();
 
-                $kardex->save();
+            // crear la transaccion en el kardex e inventario.
+            $kardex = new Kardex();
+            $kardex->id_paquete = $paquete->id;
+            $kardex->id_orden = $orden->id;
+            $kardex->cantidad = 1;
+            $kardex->numero_ingreso = $orden->numero_seguimiento;
+            $kardex->tipo_movimiento = 'ENTRADA';
+            $kardex->tipo_transaccion = 'ORDEN';
+            $kardex->fecha = now();
 
-                // entrada en inventario.
-                $inventario = new Inventario();
+            $kardex->save();
 
-                $inventario->id_paquete = $paquete->id;
-                $inventario->numero_ingreso = $orden->numero_seguimiento;
-                $inventario->cantidad = 1;
-                $inventario->fecha_entrada = now();
-                $inventario->estado = 1;
+            // entrada en inventario.
+            $inventario = new Inventario();
 
-                $inventario->save();
-            } 
-        else 
-            {
-                throw new \Exception('Error al generar el paquete');
-            }
+            $inventario->id_paquete = $paquete->id;
+            $inventario->numero_ingreso = $orden->numero_seguimiento;
+            $inventario->cantidad = 1;
+            $inventario->fecha_entrada = now();
+            $inventario->estado = 1;
+
+            $inventario->save();
+        } else {
+            throw new \Exception('Error al generar el paquete');
+        }
     }
 
 
@@ -269,7 +266,7 @@ class OrdenController extends Controller
         try {
             $orden = Orden::findOrFail($id);
             $estadoAnterior = $orden->id_estado_paquetes;
-            
+
             $this->updateOrder($orden, $request);
 
             DetalleOrden::where('id_orden', $orden->id)->delete();
@@ -400,7 +397,7 @@ class OrdenController extends Controller
             }
 
             // Eliminar los detalles de la orden
-            DetalleOrden::where('id_orden', $orden->id)->delete();            
+            DetalleOrden::where('id_orden', $orden->id)->delete();
             // Eliminar la orden
             $orden->delete();
 
@@ -417,6 +414,30 @@ class OrdenController extends Controller
             );
         }
     }
+
+    // Método para eliminar un detalle de orden
+    public function destroyDetalleOrden($id)
+    {
+        try {
+            // Encuentra el detalle de la orden por ID
+            $detalleOrden = DetalleOrden::find($id);
+
+            if (!$detalleOrden) {
+                return response()->json(['mensaje' => 'Detalle de orden no encontrado'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Eliminar el detalle de la orden
+            $detalleOrden->delete();
+
+            return response()->json(['mensaje' => 'Detalle de orden eliminado correctamente'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al eliminar el detalle de la orden.',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public function show($id)
     {
@@ -478,8 +499,8 @@ class OrdenController extends Controller
                     'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
                     'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
                     'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
-                    'fecha_ingreso' =>$detalle->fecha_ingreso,
-                    'fecha_entrega' =>$detalle->fecha_entrega,
+                    'fecha_ingreso' => $detalle->fecha_ingreso,
+                    'fecha_entrega' => $detalle->fecha_entrega,
                     'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
                     'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
                     'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
@@ -712,10 +733,10 @@ class OrdenController extends Controller
 
         $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
         $view_render = $tipo_dte == '01' ? 'pdf.consumidor_final' : 'pdf.credito_fiscal';
-        $numero_control = 'DTE-'.$tipo_dte.'-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
+        $numero_control = 'DTE-' . $tipo_dte . '-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
         $codigo_generacion = Str::uuid();
         $sello_registro = sha1($codigo_generacion);
-        $sello_registro = date('Y').substr($sello_registro, 0, 36);
+        $sello_registro = date('Y') . substr($sello_registro, 0, 36);
 
         $formater = new FormatterNumberLetter();
         $total_letras = $formater->to_invoice($orden->total_pagar, 2, "DOLARES ESTADOUNIDENSES");
@@ -733,47 +754,48 @@ class OrdenController extends Controller
             ->build();
 
         $qrCodeBase64 = base64_encode($makeQr->getString());
-        
+
         $cliente = $results = DB::table('clientes as cli')
-        ->join('users as u', 'u.id', '=', 'cli.id_user')
-        ->select(
-            'cli.id',
-            'cli.nombre',
-            'cli.apellido',
-            'cli.nombre_comercial',
-            'cli.nombre_empresa',
-            'cli.direccion',
-            'cli.dui',
-            'cli.nit',
-            'cli.id_tipo_persona',
-            'cli.es_contribuyente',
-            'u.email',
-            'cli.telefono',
-            'cli.id_user',
-        )->where('cli.id', $orden->id_cliente)->first();
+            ->join('users as u', 'u.id', '=', 'cli.id_user')
+            ->select(
+                'cli.id',
+                'cli.nombre',
+                'cli.apellido',
+                'cli.nombre_comercial',
+                'cli.nombre_empresa',
+                'cli.direccion',
+                'cli.dui',
+                'cli.nit',
+                'cli.id_tipo_persona',
+                'cli.es_contribuyente',
+                'u.email',
+                'cli.telefono',
+                'cli.id_user',
+            )->where('cli.id', $orden->id_cliente)->first();
 
         $detalles =  DB::table('detalle_orden as do')
-        ->select(
-            'p.id as codigo_paquete',
-            'p.peso',
-            'p.uuid',
-            'do.descripcion',
-            'do.instrucciones_entrega',
-            'do.precio'
-        )
-        ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
-        ->where('do.id_orden', $id)
-        ->get();
+            ->select(
+                'p.id as codigo_paquete',
+                'p.peso',
+                'p.uuid',
+                'do.descripcion',
+                'do.instrucciones_entrega',
+                'do.precio'
+            )
+            ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
+            ->where('do.id_orden', $id)
+            ->get();
 
-        $pdf = PDF::loadView($view_render, 
+        $pdf = PDF::loadView(
+            $view_render,
             [
-                "orden" => $orden, 
+                "orden" => $orden,
                 "numero_control" => $numero_control,
                 "codigo_generacion" => $codigo_generacion,
                 "sello_recepcion" => $sello_registro,
                 "qrCodeBase64" => $qrCodeBase64,
                 'logo' => 'images/logo-claro.png',
-                "cliente" => $cliente, 
+                "cliente" => $cliente,
                 "detalles" => $detalles,
                 "total_letras" => $total_letras
             ]
@@ -783,7 +805,7 @@ class OrdenController extends Controller
 
         return [
             'id_user' => $cliente->id_user,
-            'cliente' => $cliente->nombre.' '.$cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de '.$cliente->nombre_comercial),
+            'cliente' => $cliente->nombre . ' ' . $cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de ' . $cliente->nombre_comercial),
             'numero_control' => $numero_control,
             'fecha' =>  $orden->created_at,
             'tipo_documento' =>  $tipo_dte == '01' ? 'Factura Consumidor Final' : 'Credito Fiscal',
@@ -791,7 +813,7 @@ class OrdenController extends Controller
             'pdfBase64' => base64_encode($output),
         ];
     }
-    
+
     public function misOrdenesAsignadas(Request $request)
     {
         $validated = $request->validate([
@@ -841,7 +863,7 @@ class OrdenController extends Controller
         return Response::json($detalles);
     }
 
-    
+
     public function buscarPorNumeroSeguimiento(Request $request)
     {
         // Validar el número de seguimiento
@@ -851,8 +873,8 @@ class OrdenController extends Controller
 
         // Buscar la orden por numero_seguimiento
         $orden = Orden::where('numero_seguimiento', $request->numero_seguimiento)
-                    ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
-                    ->first();
+            ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
+            ->first();
 
         if ($orden) {
             // Obtener detalles de la orden (suponiendo que todos los detalles son similares)
@@ -923,13 +945,13 @@ class OrdenController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
-    
+
             // Obtén el cliente asociado al usuario
             $cliente = $user->cliente;
             if (!$cliente) {
                 return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
-    
+
             // Valida los datos de la solicitud
             $validator = Validator::make($request->all(), [
                 'id_direccion' => 'required|integer|exists:direcciones,id',
@@ -943,11 +965,11 @@ class OrdenController extends Controller
                 'tipo_orden' => 'required|string',
                 'detalles' => 'required|array'
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-    
+
             DB::beginTransaction();
             try {
                 $orden = new Orden();
@@ -961,16 +983,16 @@ class OrdenController extends Controller
                 $orden->tipo_documento = $request->input('tipo_documento');
                 $orden->tipo_orden = $request->input('tipo_orden');
                 $orden->save();
-    
+
                 // Generar el número de seguimiento con el formato ORD00000000001
                 $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
                 $orden->numero_seguimiento = $numeroSeguimiento;
                 $orden->save();
-    
+
                 foreach ($request->input('detalles') as $detalle) {
                     $this->createOrderDetail($orden, $detalle);
                 }
-    
+
                 DB::commit();
                 return response()->json(['message' => 'Orden creada con éxito'], Response::HTTP_CREATED);
             } catch (\Exception $e) {
@@ -1005,7 +1027,7 @@ class OrdenController extends Controller
 
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
             $ordenes = Orden::where('id_cliente', $cliente->id)
-                ->with(['detalles']) 
+                ->with(['detalles'])
                 ->get();
 
             // Formatear los datos para que incluyan todos los campos deseados
@@ -1019,11 +1041,11 @@ class OrdenController extends Controller
                     'costo_adicional' => $orden->costo_adicional,
                     'id_estado_paquetes' => $orden->id_estado_paquetes,
                     'concepto' => $orden->concepto,
-                    'finished' => $orden->finished, 
+                    'finished' => $orden->finished,
                     'numero_seguimiento' => $orden->numero_seguimiento,
                     'tipo_documento' => $orden->tipo_documento,
                     'tipo_orden' => $orden->tipo_orden,
-                    'tipo_pago' => $orden->tipoPago->pago ?? 'NA', 
+                    'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
                     'detalles' => $orden->detalles->map(function ($detalle) {
                         return [
                             'id_orden' => $detalle->id_orden,
@@ -1042,7 +1064,7 @@ class OrdenController extends Controller
                 ];
             });
 
-    
+
             \Log::info('ordenes del cliente', [
                 'cliente_id' => $cliente->id,
                 'ordenes' => $result
@@ -1107,8 +1129,8 @@ class OrdenController extends Controller
             // Eliminar detalles existentes antes de agregar los nuevos
             DetalleOrden::where('id_orden', $orden->id)->delete();
 
-        
-        
+
+
             foreach ($request->input('detalles') as $detalle) {
                 // Buscar el paquete existente por ID
                 $paquete = Paquete::where('id_tipo_paquete', $detalle['id_tipo_paquete'])
@@ -1171,6 +1193,4 @@ class OrdenController extends Controller
             );
         }
     }
-    
 }
-
