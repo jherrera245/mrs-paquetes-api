@@ -1186,7 +1186,7 @@ class OrdenController extends Controller
                     'id_orden' => $orden->id,
                     'cantidad' => 1,
                     'numero_ingreso' => $orden->numero_seguimiento,
-                    'tipo_movimiento' => 'ACTUALIZACION',
+                    'tipo_movimiento' => 'ENTRADA',
                     'tipo_transaccion' => 'ORDEN',
                     'fecha' => now()
                 ]);
