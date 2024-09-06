@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignId('id_tipo_pago');
             $table->decimal('total_pagar', 10);
             $table->decimal('costo_adicional', 10);
-            $table->foreignId('id_estado_paquetes');
             $table->longText('concepto');
             $table->boolean('finished')->default(0);
             $table->string('numero_seguimiento')->nullable(); 
