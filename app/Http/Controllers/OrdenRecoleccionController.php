@@ -49,9 +49,15 @@ class OrdenRecoleccionController extends Controller
         $validatedData = $request->validate([
             'id_ruta_recoleccion' => 'required|exists:rutas_recolecciones,id',
             'id_orden' => 'required|exists:ordenes,id',
-            'estado' => 'required|integer',
         ]);
+        // verificar si la orden ya existe 
+        $ordenRecoleccionExistente = OrdenRecoleccion::where('id_ruta_recoleccion', $validatedData['id_ruta_recoleccion'])
+            ->where('id_orden', $validatedData['id_orden'])
+            ->first();
 
+        if ($ordenRecoleccionExistente) {
+            return response()->json(['message' => 'La orden de recolección ya existe'], 400);
+        }
         // create orden recoleccion
         $ordenRecoleccion = OrdenRecoleccion::create($validatedData);
 
@@ -102,6 +108,21 @@ class OrdenRecoleccionController extends Controller
         $ordenRecoleccion->update($validatedData);
 
         return response()->json($ordenRecoleccion);
+    }
+
+    // Endpoint para cambiar el estado de las recolecciones donde el estado sea 0.
+    public function updateEstadoRecolecciones()
+    {
+        // filtrar por donde el campo estado sea 0.
+        $ordenesRecolecciones = OrdenRecoleccion::where('estado', 1)->get();
+
+        //recorrer las recolecciones y cambiar el estado a 1.
+        foreach ($ordenesRecolecciones as $ordenRecoleccion) {
+            $ordenRecoleccion->recoleccion_iniciada = 1;
+            $ordenRecoleccion->save();
+        }
+
+        return response()->json(['message' => 'Estado de recolecciones actualizado correctamente']);
     }
 
     /**

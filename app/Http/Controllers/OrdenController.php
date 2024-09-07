@@ -241,51 +241,6 @@ class OrdenController extends Controller
         }
     }
 
-
-    public function updates(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'id_cliente' => 'required|integer|exists:clientes,id',
-            'id_direccion' => 'required|integer|exists:direcciones,id',
-            'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
-            'total_pagar' => 'required|numeric',
-            'costo_adicional' => 'nullable|numeric',
-            'concepto' => 'required|string',
-            'tipo_documento' => 'required|string',
-            'detalles' => 'required|array'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        DB::beginTransaction();
-        try {
-            $orden = Orden::findOrFail($id);
-            $estadoAnterior = $orden->id_estado_paquetes;
-
-            $this->updateOrder($orden, $request);
-
-            DetalleOrden::where('id_orden', $orden->id)->delete();
-
-            foreach ($request->input('detalles') as $detalle) {
-                $this->createOrderDetail($orden, $detalle);
-            }
-
-            DB::commit();
-            return response()->json(['message' => 'Orden actualizada con éxito'], Response::HTTP_OK);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(
-                [
-                    'message' => 'Error',
-                    'error' => $e->getMessage(),
-                ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-    }
-
     private function updateOrder($orden, $request)
     {
         $orden->id_cliente = $request->input('id_cliente');
@@ -417,10 +372,33 @@ class OrdenController extends Controller
         try {
             // Encuentra el detalle de la orden por ID
             $detalleOrden = DetalleOrden::find($id);
+            
+            // encuentra el numero de seguimiento de la orden.
+            $orden = Orden::find($detalleOrden->id_orden);
 
             if (!$detalleOrden) {
                 return response()->json(['mensaje' => 'Detalle de orden no encontrado'], Response::HTTP_NOT_FOUND);
             }
+            // REGISTRAR SALIDA DEL PAQUETE EN KARDEX.
+            $kardex = new Kardex();
+            $kardex->id_paquete = $detalleOrden->id_paquete;
+            $kardex->id_orden = $detalleOrden->id_orden;
+            $kardex->cantidad = 1;
+            $kardex->numero_ingreso = $orden->numero_seguimiento;
+            $kardex->tipo_movimiento = 'SALIDA';
+            $kardex->tipo_transaccion = 'CANCELADO';
+            $kardex->fecha = now();
+            $kardex->save();
+
+            // registro de salida en inventario.
+            $inventario = new Inventario();
+            $inventario->id_paquete = $detalleOrden->id_paquete;
+            $inventario->numero_ingreso = $orden->numero_seguimiento;
+            $inventario->cantidad = -1;
+            $inventario->fecha_salida = now();
+            $inventario->estado = 1;
+
+            $inventario->save();
 
             // Eliminar el detalle de la orden
             $detalleOrden->delete();
@@ -1165,22 +1143,6 @@ class OrdenController extends Controller
                     ]
                 );
 
-                $newPackageIds[] = $paquete->id;
-
-                $detalleOrden = new DetalleOrden();
-                $detalleOrden->id_orden = $orden->id;
-                $detalleOrden->id_tipo_entrega = $detalle['id_tipo_entrega'];
-                $detalleOrden->id_estado_paquetes = $detalle['id_estado_paquete'];
-                $detalleOrden->id_paquete = $paquete->id;
-                $detalleOrden->validacion_entrega = $detalle['validacion_entrega'] ?? 0;
-                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'] ?? null;
-                $detalleOrden->descripcion = $detalle['descripcion'] ?? null;
-                $detalleOrden->precio = $detalle['precio'];
-                $detalleOrden->fecha_ingreso = $detalle['fecha_ingreso'] ?? now();
-                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
-                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
-                $detalleOrden->save();
-
                 Kardex::create([
                     'id_paquete' => $paquete->id,
                     'id_orden' => $orden->id,
@@ -1198,6 +1160,22 @@ class OrdenController extends Controller
                     'fecha_entrada' => now(),
                     'estado' => 1
                 ]);
+
+                $newPackageIds[] = $paquete->id;
+
+                $detalleOrden = new DetalleOrden();
+                $detalleOrden->id_orden = $orden->id;
+                $detalleOrden->id_tipo_entrega = $detalle['id_tipo_entrega'];
+                $detalleOrden->id_estado_paquetes = $detalle['id_estado_paquete'];
+                $detalleOrden->id_paquete = $paquete->id;
+                $detalleOrden->validacion_entrega = $detalle['validacion_entrega'] ?? 0;
+                $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'] ?? null;
+                $detalleOrden->descripcion = $detalle['descripcion'] ?? null;
+                $detalleOrden->precio = $detalle['precio'];
+                $detalleOrden->fecha_ingreso = $detalle['fecha_ingreso'] ?? now();
+                $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+                $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+                $detalleOrden->save();
             }
 
             $packagesToSoftDelete = $existingPackageIds->diff($newPackageIds);

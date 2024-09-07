@@ -21,6 +21,8 @@ class CreateOrdenesRecoleccionesTable extends Migration
             $table->foreignId('id_orden')->constrained('ordenes');
             // estado (0,1)
             $table->boolean('estado')->default(1);
+            $table->boolean('recoleccion_iniciada')->nullable();
+            $table->boolean('recoleccion_finalizada')->nullable();
             $table->timestamps();
         });
     }

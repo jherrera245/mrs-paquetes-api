@@ -14,7 +14,9 @@ class OrdenRecoleccion extends Model
     protected $fillable = [
         'id_ruta_recoleccion',
         'id_orden',
-        'estado'
+        'estado',
+        'recoleccion_iniciada',
+        'recoleccion_finalizada',
     ];
 
     public function rutaRecoleccion()

@@ -18,7 +18,7 @@ class CreateInventarioTable extends Migration
             $table->foreignId('id_paquete')->constrained('paquetes');
             $table->string('numero_ingreso');
             $table->integer('cantidad');
-            $table->date('fecha_entrada');
+            $table->date('fecha_entrada')->nullable();
             $table->date('fecha_salida')->nullable();
             $table->boolean('estado')->default(1);
             $table->timestamps();
