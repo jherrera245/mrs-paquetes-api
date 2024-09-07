@@ -51,18 +51,32 @@ class DetalleOrdenController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validar y actualizar un detalle de orden específico
-        $detalleOrden = DetalleOrden::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'id_orden' => 'sometimes|required|integer|exists:ordenes,id',
-            'id_paquete' => 'sometimes|required|integer|exists:paquetes,id',
-            'descripcion' => 'sometimes|string',
-            'total_pago' => 'sometimes|required|numeric',
+        //valida los datos
+        $request->validate([
+            'id_orden' => 'required|integer|exists:ordenes,id',
+            'id_paquete' => 'required|integer|exists:paquetes,id',
+            'id_tipo_entrega' => 'required|integer|exists:tipo_entrega,id',
+            'id_estado_paquetes' => 'required|integer|exists:estado_paquetes,id',
+            'id_direccion_entrega' => 'required|integer|exists:direcciones,id',
+            'instrucciones_entrega' => 'nullable|string',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric',
+            'fecha_entrega' => 'required|date',
         ]);
 
-        $detalleOrden->update($validatedData);
-        return response()->json($detalleOrden);
+        // Buscar el registro por su ID
+        $detalleOrden = DetalleOrden::find($id);
+
+        // Verificar si el registro existe
+        if (!$detalleOrden) {
+            return response()->json(['message' => 'Registro no encontrado'], 404);
+        }
+
+        // Actualizar el registro con los datos de la solicitud
+        $detalleOrden->update($request->all());
+
+        // Devolver una respuesta exitosa
+        return response()->json(['message' => 'Registro actualizado exitosamente', 'data' => $detalleOrden], 200);
     }
 
     /**
