@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Symfony\Component\HttpFoundation\Response;
 
 class UbicacionController extends Controller
 {
@@ -127,24 +126,6 @@ class UbicacionController extends Controller
         } catch (Exception $e) {
             Log::error('Error al eliminar la ubicación: ' . $e->getMessage());
             return response()->json(['error' => 'Error al eliminar la ubicación'], 500);
-        }
-    }
-    public function ubicaciones()
-    {
-        try {
-            // Seleccionar solo los campos necesarios para un dropdown
-            $ubicaciones = Ubicacion::select('id', 'nomenclatura')->get();
-
-            if ($ubicaciones->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron ubicaciones disponibles.'], Response::HTTP_NOT_FOUND);
-            }
-
-            return response()->json($ubicaciones, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al obtener las ubicaciones.',
-                'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

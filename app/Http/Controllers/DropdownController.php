@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -14,11 +15,14 @@ use App\Models\Clientes;
 use App\Models\Empleado;
 use App\Models\Incidencia;
 use App\Models\Bodegas;
+use App\Models\Pasillo;
+use App\Models\Ubicacion;
 use App\Models\TipoPersona;
 use App\Models\TipoIncidencia;
 use App\Models\TipoPaquete;
 use App\Models\Empaque;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use DB;
 
 class DropdownController extends Controller
@@ -30,18 +34,18 @@ class DropdownController extends Controller
         return response()->json($departamentos);
     }
 
-    public function getMunicipios($id){
-       
+    public function getMunicipios($id)
+    {
 
-       $municipio = DB::table('municipios')->select('id', 'nombre')->where('id_departamento', $id)->get();
-       return response()->json(["municipio" => $municipio]);
+
+        $municipio = DB::table('municipios')->select('id', 'nombre')->where('id_departamento', $id)->get();
+        return response()->json(["municipio" => $municipio]);
     }
 
     public function getGeneros()
     {
         $generos = DB::table('genero')->select('id', 'nombre')->get();
         return response()->json(["generos" => $generos]);
-
     }
     public function getMarcas()
     {
@@ -58,7 +62,7 @@ class DropdownController extends Controller
     public function getModelosPorMarca($marcaId)
     {
         $modelos = DB::table('modelos')
-        ->where('id_marca', $marcaId)
+            ->where('id_marca', $marcaId)
             ->select('id', 'nombre', 'descripcion')
             ->get();
         return response()->json(["modelos" => $modelos]);
@@ -66,25 +70,25 @@ class DropdownController extends Controller
 
     public function getEstados()
     {
-        $estado = DB::table('estados')->select('id', 'nombre','descripcion')->get();
+        $estado = DB::table('estados')->select('id', 'nombre', 'descripcion')->get();
         return response()->json(["estados" => $estado]);
     }
 
     public function getEstadoPaquete()
     {
-        $estado_paquetes = DB::table('estado_paquetes')->select('id', 'nombre','descripcion')->get();
+        $estado_paquetes = DB::table('estado_paquetes')->select('id', 'nombre', 'descripcion')->get();
         return response()->json(["estado_paquetes" => $estado_paquetes]);
     }
 
     public function getPaquetes()
     {
         $paquetes = Paquete::all();
-        return response()->json(["paquetes"=>$paquetes]);
+        return response()->json(["paquetes" => $paquetes]);
     }
 
     public function getCargos()
     {
-        $cargos = DB::table('cargos')->select('id', 'nombre','descripcion')->get();
+        $cargos = DB::table('cargos')->select('id', 'nombre', 'descripcion')->get();
         return response()->json(["cargos" => $cargos]);
     }
 
@@ -98,41 +102,41 @@ class DropdownController extends Controller
     {
         $rutas = Rutas::all();
 
-        return response()->json(["rutas"=>$rutas]);
+        return response()->json(["rutas" => $rutas]);
     }
 
     public function getVehiculos()
     {
         $vehiculos = Vehiculo::all();
 
-        return response()->json(["vehiculos"=>$vehiculos]);
+        return response()->json(["vehiculos" => $vehiculos]);
     }
 
     public function getClientes()
     {
         $clientes = Clientes::all();
 
-        return response()->json(["clientes"=>$clientes]);
+        return response()->json(["clientes" => $clientes]);
     }
 
     public function getEmpleados()
     {
         $empleados = Empleado::all();
 
-        return response()->json(["empleados"=>$empleados]);
+        return response()->json(["empleados" => $empleados]);
     }
 
     public function getIncidencias()
     {
         $incidencias = Incidencia::all();
 
-        return response()->json(["incidencias"=>$incidencias]);
+        return response()->json(["incidencias" => $incidencias]);
     }
 
-    public function getBodegas() 
+    public function getBodegas()
     {
         $bodegas = Bodegas::all();
-        return response()->json(["bodegas"=>$bodegas]);
+        return response()->json(["bodegas" => $bodegas]);
     }
 
     public function getEstadoVehiculos()
@@ -144,18 +148,18 @@ class DropdownController extends Controller
     public function getTipoPersona()
     {
         $tipo_persona = TipoPersona::all();
-        return response()->json(["tipo_persona"=>$tipo_persona]);
+        return response()->json(["tipo_persona" => $tipo_persona]);
     }
 
     public function getTipoIncidencia()
     {
         $tipo_incidencia = TipoIncidencia::all();
-        return response()->json(["tipo_incidencia"=>$tipo_incidencia]);
+        return response()->json(["tipo_incidencia" => $tipo_incidencia]);
     }
 
     public function getTipoPaquete()
     {
-        $tipo_paquete = DB::table('tipo_paquete')->select('id', 'nombre','descripcion')->get();
+        $tipo_paquete = DB::table('tipo_paquete')->select('id', 'nombre', 'descripcion')->get();
         return response()->json(["tipo_paquete" => $tipo_paquete]);
     }
 
@@ -189,14 +193,14 @@ class DropdownController extends Controller
 
         if ($type == 0) {
             $empleados = DB::table('empleados')
-            ->leftJoin('users', 'empleados.id', '=', 'users.id_empleado')
-            ->whereNull('users.id_empleado')
-            ->select('empleados.*')
-            ->get();
+                ->leftJoin('users', 'empleados.id', '=', 'users.id_empleado')
+                ->whereNull('users.id_empleado')
+                ->select('empleados.*')
+                ->get();
 
             $data['empleados'] = $empleados;
         } else {
-            $clientes= DB::table('clientes')
+            $clientes = DB::table('clientes')
                 ->leftJoin('users', 'clientes.id', '=', 'users.id_cliente')
                 ->whereNull('users.id_cliente')
                 ->select('clientes.*')
@@ -226,27 +230,62 @@ class DropdownController extends Controller
 
         // Devolver solamente las direcciones en un formato adecuado para su uso en un dropdown
         return response()->json($direcciones);
-}
-
-public function getGiros()
-{
-    // Leer el archivo JSON desde el almacenamiento
-    $json = file_get_contents(base_path('app/json/giros.json'));
-
-    // Decodificar el JSON a un array PHP
-    $giros = json_decode($json, true);
-
-    // Verificar si la decodificación fue exitosa
-   if (json_last_error() === JSON_ERROR_NONE) {
-        // Devolver los datos en formato JSON
-      return response()->json($giros);
-    } else {
-        // Manejar errores de decodificación
-       return response()->json(['error' => 'Error al procesar el archivo JSON'], 500);
     }
-    
+
+    public function getGiros()
+    {
+        // Leer el archivo JSON desde el almacenamiento
+        $json = file_get_contents(base_path('app/json/giros.json'));
+
+        // Decodificar el JSON a un array PHP
+        $giros = json_decode($json, true);
+
+        // Verificar si la decodificación fue exitosa
+        if (json_last_error() === JSON_ERROR_NONE) {
+            // Devolver los datos en formato JSON
+            return response()->json($giros);
+        } else {
+            // Manejar errores de decodificación
+            return response()->json(['error' => 'Error al procesar el archivo JSON'], 500);
+        }
+    }
+
+    public function getUbicaciones()
+    {
+        try {
+            // Seleccionar solo los campos necesarios para un dropdown
+            $ubicaciones = Ubicacion::select('id', 'nomenclatura')->get();
+
+            if ($ubicaciones->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron ubicaciones disponibles.'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json($ubicaciones, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener las ubicaciones.',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public function getPasillos()
+    {
+        try {
+            // Seleccionar solo los campos necesarios para un dropdown
+            $pasillos = Pasillo::select('id', 'nombre')->get();
+
+            if ($pasillos->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron pasillos disponibles.'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json($pasillos, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los pasillos.',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
-
-}
-
-

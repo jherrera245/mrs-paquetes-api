@@ -171,22 +171,4 @@ class PasilloController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    public function pasillos()
-    {
-        try {
-            // Seleccionar solo los campos necesarios para un dropdown
-            $pasillos = Pasillo::select('id', 'nombre')->get();
-
-            if ($pasillos->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron pasillos disponibles.'], Response::HTTP_NOT_FOUND);
-            }
-
-            return response()->json($pasillos, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al obtener los pasillos.',
-                'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
 }

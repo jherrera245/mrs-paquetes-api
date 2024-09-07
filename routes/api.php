@@ -250,8 +250,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
   Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
   Route::get('dropdown/giros', [DropdownController::class, 'getGiros']);
-  Route::get('dropdown/pasillos', [DropdownController::class, 'pasillos']);
-  Route::get('dropdown/ubicaciones', [DropdownController::class, 'ubicaciones']);
+  Route::get('dropdown/get_pasillos', [DropdownController::class, 'getpasillos']);
+  Route::get('dropdown/get_ubicaciones', [DropdownController::class, 'getubicaciones']);
 
   // Detalle Orden
   Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);
