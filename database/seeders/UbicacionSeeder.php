@@ -16,21 +16,21 @@ class UbicacionSeeder extends Seeder
     {
      
         $ubicaciones = [
-            ['nomenclatura' => 'UB001', 'id_bodega' => 1, 'id_pasillo' => 1],
-            ['nomenclatura' => 'UB002', 'id_bodega' => 1, 'id_pasillo' => 2],
-            ['nomenclatura' => 'UB003', 'id_bodega' => 1, 'id_pasillo' => 3],
-            ['nomenclatura' => 'UB004', 'id_bodega' => 1, 'id_pasillo' => 1],
-            ['nomenclatura' => 'UB005', 'id_bodega' => 1, 'id_pasillo' => 2],
-            ['nomenclatura' => 'UB006', 'id_bodega' => 2, 'id_pasillo' => 4],
-            ['nomenclatura' => 'UB007', 'id_bodega' => 2, 'id_pasillo' => 5],
-            ['nomenclatura' => 'UB008', 'id_bodega' => 2, 'id_pasillo' => 6],
-            ['nomenclatura' => 'UB009', 'id_bodega' => 2, 'id_pasillo' => 4],
-            ['nomenclatura' => 'UB010', 'id_bodega' => 2, 'id_pasillo' => 5],
-            ['nomenclatura' => 'UB011', 'id_bodega' => 3, 'id_pasillo' => 7],
-            ['nomenclatura' => 'UB012', 'id_bodega' => 3, 'id_pasillo' => 8],
-            ['nomenclatura' => 'UB013', 'id_bodega' => 3, 'id_pasillo' => 9],
-            ['nomenclatura' => 'UB014', 'id_bodega' => 3, 'id_pasillo' => 7],
-            ['nomenclatura' => 'UB015', 'id_bodega' => 3, 'id_pasillo' => 8],
+            ['nomenclatura' => 'B1P1AN1', 'id_bodega' => 1, 'id_pasillo' => 1],
+            ['nomenclatura' => 'B1P2AN2', 'id_bodega' => 1, 'id_pasillo' => 2],
+            ['nomenclatura' => 'B1P3AN3', 'id_bodega' => 1, 'id_pasillo' => 3],
+            ['nomenclatura' => 'B1P1AN4', 'id_bodega' => 1, 'id_pasillo' => 1],
+            ['nomenclatura' => 'B1P2AN5', 'id_bodega' => 1, 'id_pasillo' => 2],
+            ['nomenclatura' => 'B2P4AN6', 'id_bodega' => 2, 'id_pasillo' => 4],
+            ['nomenclatura' => 'B2P5AN7', 'id_bodega' => 2, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B2P6AN8', 'id_bodega' => 2, 'id_pasillo' => 6],
+            ['nomenclatura' => 'B2P4AN9', 'id_bodega' => 2, 'id_pasillo' => 4],
+            ['nomenclatura' => 'B2P5AN10', 'id_bodega' => 2, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B3P7AN11', 'id_bodega' => 3, 'id_pasillo' => 7],
+            ['nomenclatura' => 'B3P8AN12', 'id_bodega' => 3, 'id_pasillo' => 8],
+            ['nomenclatura' => 'B3P9AN13', 'id_bodega' => 3, 'id_pasillo' => 9],
+            ['nomenclatura' => 'B3P7AN14', 'id_bodega' => 3, 'id_pasillo' => 7],
+            ['nomenclatura' => 'B3P8AN15', 'id_bodega' => 3, 'id_pasillo' => 8],
         ];
 
         DB::table('ubicaciones')->insert($ubicaciones);

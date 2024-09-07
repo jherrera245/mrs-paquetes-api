@@ -15,9 +15,11 @@ class CreatePasillosTable extends Migration
     {
         Schema::create('pasillos', function (Blueprint $table) {
             $table->id();
-            // relacion con bodega.
+            // Relación con bodega
             $table->foreignId('id_bodega')->constrained('bodegas');
             $table->string('nombre');
+            $table->integer('capacidad')->default(0);
+            $table->boolean('estado')->default(1); 
             $table->timestamps();
         });
     }
@@ -32,3 +34,4 @@ class CreatePasillosTable extends Migration
         Schema::dropIfExists('pasillos');
     }
 }
+

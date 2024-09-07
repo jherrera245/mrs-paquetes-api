@@ -34,6 +34,7 @@ use App\Http\Controllers\UbicacionController;
 use App\Http\Controllers\UbicacionPaqueteController;
 use App\Http\Controllers\KardexController;
 use App\Http\Controllers\TrasladoController;
+use App\Http\Controllers\PasilloController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -249,6 +250,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_people_data/{type}', [DropdownController::class, 'getPeopleData']);
   Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
   Route::get('dropdown/giros', [DropdownController::class, 'getGiros']);
+  Route::get('dropdown/pasillos', [DropdownController::class, 'pasillos']);
+  Route::get('dropdown/ubicaciones', [DropdownController::class, 'ubicaciones']);
 
   // Detalle Orden
   Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);
@@ -277,11 +280,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   //Ubicaciones
 
-  Route::get('ubicaciones', [UbicacionController::class, 'index']); 
-  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']); 
-  Route::post('ubicaciones', [UbicacionController::class, 'store']); 
-  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']); 
-  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']); 
+  Route::get('ubicaciones', [UbicacionController::class, 'index']);
+  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']);
+  Route::post('ubicaciones', [UbicacionController::class, 'store']);
+  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']);
+  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']);
 
 
   // Rutas para el controlador UbicacionPaquete
@@ -291,16 +294,21 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'update']);
   Route::delete('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'destroy']);
 
-  //Kardex
-
+  //Pasillos
+  Route::get('/pasillos', [PasilloController::class, 'index']);
+  Route::get('/pasillos/{id}', [PasilloController::class, 'show']);
+  Route::post('/pasillos', [PasilloController::class, 'store']);
+  Route::put('/pasillos/{id}', [PasilloController::class, 'update']);
+  Route::delete('/pasillos/{id}', [PasilloController::class, 'destroy']);
+  
 
 
   //Traslado
-  Route::get('traslados', [TrasladoController::class, 'index']); 
-  Route::post('traslados', [TrasladoController::class, 'store']); 
-  Route::get('traslados/{id}', [TrasladoController::class, 'show']); 
-  Route::put('traslados/{id}', [TrasladoController::class, 'update']); 
-  Route::delete('traslados/{id}', [TrasladoController::class, 'destroy']); 
+  Route::get('traslados', [TrasladoController::class, 'index']);
+  Route::post('traslados', [TrasladoController::class, 'store']);
+  Route::get('traslados/{id}', [TrasladoController::class, 'show']);
+  Route::put('traslados/{id}', [TrasladoController::class, 'update']);
+  Route::delete('traslados/{id}', [TrasladoController::class, 'destroy']);
 
 
   // orden recoleccion.

@@ -26,20 +26,12 @@ class Pasillo extends Model
     ];
 
     /**
-     * Relación con la tabla Bodega
+     * Relación con la tabla Bodegas
      */
     public function bodega()
     {
-        return $this->belongsTo(Bodegas::class, 'id_bodega');
+        return $this->belongsTo(Bodegas::class, 'id_bodega')->select(['id', 'nombre']);
     }
-
-    /**
-     * Relacion con la tabla transacciones
-    */
-    // public function transacciones()
-    // {
-    //     return $this->hasMany(Transaccion::class, 'id_pasillo');
-    // }
 
     /**
      * Scope para búsquedas generales con múltiples filtros
@@ -58,5 +50,4 @@ class Pasillo extends Model
             $query->where('estado', $filters['estado']);
         }
     }
-    
 }
