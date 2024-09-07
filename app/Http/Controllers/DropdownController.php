@@ -105,7 +105,7 @@ class DropdownController extends Controller
     {
         $vehiculos = Vehiculo::all();
 
-        return response()->json(["vehiculos"=>$vehiculo]);
+        return response()->json(["vehiculos"=>$vehiculos]);
     }
 
     public function getClientes()
