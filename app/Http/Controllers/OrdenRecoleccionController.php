@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\OrdenRecoleccion;
 use App\Models\Kardex;
 use Illuminate\Support\Facades\DB;
+// usamos logs
+use Illuminate\Support\Facades\Log;
 
 class OrdenRecoleccionController extends Controller
 {
@@ -112,19 +114,63 @@ class OrdenRecoleccionController extends Controller
         return response()->json($ordenRecoleccion);
     }
 
-    // Endpoint para cambiar el estado de las recolecciones donde el estado sea 0.
-    public function asignarRecolecciones()
+    public function asignarRecoleccion($id_orden_recoleccion)
     {
-        // filtrar por donde el campo estado sea 0.
-        $ordenesRecolecciones = OrdenRecoleccion::where('estado', 1)->get();
+        // Iniciar transacción
+        DB::beginTransaction();
 
-        //recorrer las recolecciones y cambiar el estado a 1.
-        foreach ($ordenesRecolecciones as $ordenRecoleccion) {
+        try {
+            // Obtiene la orden de recolección o lanzar un 404 en caso de un error
+            $ordenRecoleccion = OrdenRecoleccion::findOrFail($id_orden_recoleccion);
+
+            // Verificar que la orden tenga detalles antes de continuar
+            if (!$ordenRecoleccion->orden || $ordenRecoleccion->orden->detalles->isEmpty()) {
+                return response()->json(['error' => 'La orden de recolección no tiene detalles asociados'], 400);
+            }
+
+            // Cambiamos el estado de la orden de recoleccion.
             $ordenRecoleccion->recoleccion_iniciada = 1;
             $ordenRecoleccion->save();
-        }
 
-        return response()->json(['message' => 'Estado de recolecciones actualizado correctamente']);
+            // Recorrer el detalle de la orden de recolección
+            foreach ($ordenRecoleccion->orden->detalles as $detalle) {
+                // Registro de movimiento SALIDA en el kardex (ORDEN)
+                $kardexSalida = new Kardex();
+                $kardexSalida->id_paquete = $detalle->id_paquete;
+                $kardexSalida->id_orden = $detalle->id_orden;
+                $kardexSalida->cantidad = 1;
+                $kardexSalida->numero_ingreso = $detalle->orden->numero_seguimiento;
+                $kardexSalida->tipo_movimiento = 'SALIDA';
+                $kardexSalida->tipo_transaccion = 'ORDEN';
+                $kardexSalida->fecha = date('Y-m-d'); 
+                $kardexSalida->save();
+
+                // Registro de movimiento ENTRADA en el kardex (ESPERA_RECOLECCION)
+                $kardexEntrada = new Kardex();
+                $kardexEntrada->id_paquete = $detalle->id_paquete;
+                $kardexEntrada->id_orden = $detalle->id_orden;
+                $kardexEntrada->cantidad = 1;
+                $kardexEntrada->numero_ingreso = $detalle->orden->numero_seguimiento;
+                $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                $kardexEntrada->tipo_transaccion = 'ESPERA_RECOLECCION';
+                $kardexEntrada->fecha = date('Y-m-d');
+                $kardexEntrada->save();
+            }
+
+            // Confirmar la transacción
+            DB::commit();
+
+            return response()->json(['message' => 'Estado de recolecciones actualizado correctamente'], 200);
+        } catch (\Exception $e) {
+            // Si ocurre algún error, revertir la transacción
+            DB::rollback();
+
+            // Loguear el error si es necesario
+            Log::error('Error en la asignación de recolecciones: ' . $e->getMessage());
+
+            // Devolver una respuesta de error
+            return response()->json(['error' => 'Hubo un problema al actualizar las recolecciones'], 500);
+        }
     }
 
     // funcion para finalizar una orden de recoleccion
@@ -152,7 +198,7 @@ class OrdenRecoleccionController extends Controller
                 $kardexSalida->cantidad = 1;
                 $kardexSalida->numero_ingreso = $detalle->orden->numero_seguimiento;
                 $kardexSalida->tipo_movimiento = 'SALIDA';
-                $kardexSalida->tipo_transaccion = 'ORDEN';
+                $kardexSalida->tipo_transaccion = 'ESPERA_RECOLECCION';
                 $kardexSalida->fecha = date('Y-m-d');
                 $kardexSalida->save();
 
