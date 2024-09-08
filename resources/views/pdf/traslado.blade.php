@@ -89,6 +89,7 @@
             @if($single)
                 @foreach($paquetes as $paquete)
                     <tr>
+                        <td>{{ $index + 1 }}</td>
                         <td>{{ $traslado->id }}</td>
                         <td>{{ $paquete->uuid }}</td>
                         <td>{{ $paquete->descripcion_contenido }}</td>
@@ -100,6 +101,7 @@
                 @forelse($traslados as $traslado)
                     @foreach($traslado->paquetes as $paquete)
                         <tr>
+                            <td>{{ $index + 1 }}</td>
                             <td>{{ $traslado->id }}</td>
                             <td>{{ $paquete->uuid }}</td>
                             <td>{{ $paquete->descripcion_contenido }}</td>
