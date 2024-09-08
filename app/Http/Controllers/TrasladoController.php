@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bodegas;
+use App\Models\Destinos;
+use App\Models\Rutas;
+use App\Models\DetalleOrden;
+use App\Models\Paquete;
+use App\Models\Departamento;
 use App\Models\Traslado;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
 class TrasladoController extends Controller
@@ -221,4 +228,69 @@ class TrasladoController extends Controller
             return response()->json(['error' => 'Error al eliminar traslado'], 500);
         }
     }
+
+    public function trasladoPdf($id = null)
+    {
+        if ($id) {
+            // Generar PDF para un solo traslado
+            $traslado = Traslado::findOrFail($id);
+
+            // Obtener el destino y departamento
+            $destino = Destinos::find($traslado->id_asignacion_ruta);
+            $departamento = $destino ? Departamento::find($destino->id_departamento) : null;
+
+            // Obtener el nombre de la bodega
+            $bodega = Bodegas::find($traslado->id_bodega);
+
+            // Obtener todos los paquetes asociados a la orden
+            $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
+            $paquetes = $detalleOrdenes->map(function($detalle) {
+                return Paquete::find($detalle->id_paquete);
+            })->filter(); // Filter to remove null values
+
+            // Preparar los datos para el PDF
+            $data = [
+                'fecha' => now()->format('d/m/Y'),
+                'destino' => $destino ? $destino->nombre . ' ' . ($departamento ? $departamento->nombre : 'Departamento no disponible') : 'Destino no disponible',
+                'paquetes' => $paquetes,
+                'traslado' => $traslado,
+                'bodega' => $bodega ? $bodega->nombre : 'Bodega no disponible', // Agregar el nombre de la bodega
+                'single' => true
+            ];
+        } else {
+            // Generar PDF para múltiples traslados
+            $traslados = Traslado::all();
+
+            // Reemplazar codigo_qr con uuid para cada traslado
+            $trasladosConPaquetes = $traslados->map(function($traslado) {
+                $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
+                $paquetes = $detalleOrdenes->map(function($detalle) {
+                    return Paquete::find($detalle->id_paquete);
+                })->filter(); // Filter to remove null values
+                
+                $traslado->paquetes = $paquetes;
+                return $traslado;
+            });
+
+            // Obtener los nombres de las bodegas para cada traslado
+            $trasladosConBodegas = $trasladosConPaquetes->map(function($traslado) {
+                $traslado->bodega_nombre = Bodegas::find($traslado->id_bodega)->nombre ?? 'Bodega no disponible';
+                return $traslado;
+            });
+
+            $data = [
+                'fecha' => now()->format('d/m/Y'),
+                'traslados' => $trasladosConBodegas,
+                'single' => false
+            ];
+        }
+
+        // Generar el PDF
+        $pdf = Pdf::loadView('pdf.traslado', $data);
+        $pdfContent = $pdf->output();
+        $base64Pdf = base64_encode($pdfContent);
+
+        return response()->json(['pdf' => $base64Pdf]);
+    }
+    
 }

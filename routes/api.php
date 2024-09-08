@@ -301,8 +301,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::post('/pasillos', [PasilloController::class, 'store']);
   Route::put('/pasillos/{id}', [PasilloController::class, 'update']);
   Route::delete('/pasillos/{id}', [PasilloController::class, 'destroy']);
-  
-
 
   //Traslado
   Route::get('traslados', [TrasladoController::class, 'index']);
@@ -310,7 +308,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('traslados/{id}', [TrasladoController::class, 'show']);
   Route::put('traslados/{id}', [TrasladoController::class, 'update']);
   Route::delete('traslados/{id}', [TrasladoController::class, 'destroy']);
-
+  Route::get('traslado-pdf/{id?}', [TrasladoController::class, 'trasladoPdf']);
 
   // orden recoleccion.
   Route::get('orden-recoleccion', [OrdenRecoleccionController::class, 'index'])->middleware('permission:ordenrecoleccion-view');
