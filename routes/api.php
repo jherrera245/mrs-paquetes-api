@@ -35,6 +35,7 @@ use App\Http\Controllers\UbicacionPaqueteController;
 use App\Http\Controllers\KardexController;
 use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\PasilloController;
+use App\Http\Controllers\DashboardController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -318,4 +319,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::post('orden-recoleccion/asignar-recoleccion/{id_orden_recoleccion}', [OrdenRecoleccionController::class, 'asignarRecoleccion'])->middleware('permission:ordenrecoleccion-update');
   Route::delete('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'destroy'])->middleware('permission:ordenrecoleccion-destroy');
   Route::post('orden-recoleccion/finalizar-orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'finalizarOrdenRecoleccion'])->middleware('permission:ordenrecoleccion-create');
+
+  Route::get('dashboard/card_summary', [DashboardController::class, 'cardSummary']);
+  Route::get('dashboard/orders_by_day', [DashboardController::class, 'ordersByDay']);
 });
