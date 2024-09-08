@@ -269,18 +269,17 @@ class DropdownController extends Controller
         }
     }
 
-
-    public function getPasillos()
+    public function getPasillosPorBodega($bodegaId)
     {
         try {
-            // Seleccionar solo los campos necesarios para un dropdown
-            $pasillos = Pasillo::select('id', 'nombre')->get();
+            // Obtener todos los pasillos que pertenecen a la bodega especificada
+            $pasillos = Pasillo::where('id_bodega', $bodegaId)->get(['id', 'nombre']);
 
             if ($pasillos->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron pasillos disponibles.'], Response::HTTP_NOT_FOUND);
+                return response()->json(['error' => 'No se encontraron pasillos para la bodega especificada.'], Response::HTTP_NOT_FOUND);
             }
 
-            return response()->json($pasillos, Response::HTTP_OK);
+            return response()->json(["pasillos" => $pasillos], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al obtener los pasillos.',
@@ -289,6 +288,7 @@ class DropdownController extends Controller
         }
     }
 
+
     public function getPaquetesSinAsignar(Request $request)
     {
         //pasar como parametro el id de la asignacion al editar
@@ -296,21 +296,20 @@ class DropdownController extends Controller
 
         //hacer la consulta
         $paquetes = DB::table('paquetes AS p')
-        ->select('p.id', DB::raw("CONCAT('PAQUETE N#', p.id, ', [SEGUIMIENTO ', o.numero_seguimiento, ']') AS asignacion"))
-        ->join('detalle_orden AS do', 'p.id', '=', 'do.id_paquete')
-        ->join('ordenes AS o', 'o.id', '=', 'do.id_orden')
-        ->leftJoin('asignacion_rutas AS ar', 'p.id', '=', 'ar.id_paquete')
-        ->where(function($query) use ($id_asignacion_ruta) {
-            $query->whereNull('ar.id_paquete') // Paquetes sin asignar y Paquetes asignados a la ruta actual
-                ->orWhere('ar.id', $id_asignacion_ruta);
-        })
-        ->where(function($query) use ($id_asignacion_ruta) {
-            $query->whereNull('ar.id') // Paquetes no asignados a otras rutas
-                ->orWhere('ar.id', $id_asignacion_ruta); // O asignados solo a la ruta actual
-        })
-        ->get();
+            ->select('p.id', DB::raw("CONCAT('PAQUETE N#', p.id, ', [SEGUIMIENTO ', o.numero_seguimiento, ']') AS asignacion"))
+            ->join('detalle_orden AS do', 'p.id', '=', 'do.id_paquete')
+            ->join('ordenes AS o', 'o.id', '=', 'do.id_orden')
+            ->leftJoin('asignacion_rutas AS ar', 'p.id', '=', 'ar.id_paquete')
+            ->where(function ($query) use ($id_asignacion_ruta) {
+                $query->whereNull('ar.id_paquete') // Paquetes sin asignar y Paquetes asignados a la ruta actual
+                    ->orWhere('ar.id', $id_asignacion_ruta);
+            })
+            ->where(function ($query) use ($id_asignacion_ruta) {
+                $query->whereNull('ar.id') // Paquetes no asignados a otras rutas
+                    ->orWhere('ar.id', $id_asignacion_ruta); // O asignados solo a la ruta actual
+            })
+            ->get();
 
-    return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
+        return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
     }
-
 }
