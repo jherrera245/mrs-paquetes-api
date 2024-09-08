@@ -252,6 +252,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/giros', [DropdownController::class, 'getGiros']);
   Route::get('dropdown/get_pasillos', [DropdownController::class, 'getpasillos']);
   Route::get('dropdown/get_ubicaciones', [DropdownController::class, 'getubicaciones']);
+  Route::get('dropdown/get_paquetes_sin_asignar', [DropdownController::class, 'getPaquetesSinAsignar']);
 
   // Detalle Orden
   Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);

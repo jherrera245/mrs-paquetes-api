@@ -288,4 +288,22 @@ class DropdownController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function getPaquetesSinAsignar(Request $request)
+    {
+        
+        $paquetes = DB::table('paquetes AS p')
+        ->select('p.id', DB::raw("CONCAT('PAQUETE N#', p.id, ', [SEGUIMIENTO ', o.numero_seguimiento, ']') AS asignacion"))
+        ->join('detalle_orden AS do', 'p.id', '=', 'do.id_paquete')
+        ->join('ordenes AS o', 'o.id', '=', 'do.id_orden')
+        ->whereNotIn('p.id', function($query) {
+            $query->select('id_paquete')
+                ->from('asignacion_rutas');
+        })
+        ->get();
+
+        return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
+    }
+
+
 }
