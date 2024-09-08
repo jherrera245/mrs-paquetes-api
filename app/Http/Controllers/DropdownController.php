@@ -291,19 +291,26 @@ class DropdownController extends Controller
 
     public function getPaquetesSinAsignar(Request $request)
     {
-        
+        //pasar como parametro el id de la asignacion al editar
+        $id_asignacion_ruta = $request->input('id_asignacion_ruta');
+
+        //hacer la consulta
         $paquetes = DB::table('paquetes AS p')
         ->select('p.id', DB::raw("CONCAT('PAQUETE N#', p.id, ', [SEGUIMIENTO ', o.numero_seguimiento, ']') AS asignacion"))
         ->join('detalle_orden AS do', 'p.id', '=', 'do.id_paquete')
         ->join('ordenes AS o', 'o.id', '=', 'do.id_orden')
-        ->whereNotIn('p.id', function($query) {
-            $query->select('id_paquete')
-                ->from('asignacion_rutas');
+        ->leftJoin('asignacion_rutas AS ar', 'p.id', '=', 'ar.id_paquete')
+        ->where(function($query) use ($id_asignacion_ruta) {
+            $query->whereNull('ar.id_paquete') // Paquetes sin asignar y Paquetes asignados a la ruta actual
+                ->orWhere('ar.id_asignacion_ruta', $id_asignacion_ruta);
+        })
+        ->where(function($query) use ($id_asignacion_ruta) {
+            $query->whereNull('ar.id_asignacion_ruta') // Paquetes no asignados a otras rutas
+                ->orWhere('ar.id_asignacion_ruta', $id_asignacion_ruta); // O asignados solo a la ruta actual
         })
         ->get();
 
-        return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
+    return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
     }
-
 
 }
