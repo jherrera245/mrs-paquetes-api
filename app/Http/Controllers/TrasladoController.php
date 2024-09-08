@@ -8,6 +8,7 @@ use App\Models\Rutas;
 use App\Models\DetalleOrden;
 use App\Models\Paquete;
 use App\Models\Departamento;
+use App\Models\Orden;
 use App\Models\Traslado;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -242,6 +243,7 @@ class TrasladoController extends Controller
             // Obtener el nombre de la bodega
             $bodega = Bodegas::find($traslado->id_bodega);
 
+            $orden = Orden::find($traslado->id_orden);
             // Obtener todos los paquetes asociados a la orden
             $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
             $paquetes = $detalleOrdenes->map(function($detalle) {
@@ -255,6 +257,7 @@ class TrasladoController extends Controller
                 'paquetes' => $paquetes,
                 'traslado' => $traslado,
                 'bodega' => $bodega ? $bodega->nombre : 'Bodega no disponible', // Agregar el nombre de la bodega
+                'numero_seguimiento' => $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible',
                 'single' => true
             ];
         } else {
@@ -287,10 +290,11 @@ class TrasladoController extends Controller
 
         // Generar el PDF
         $pdf = Pdf::loadView('pdf.traslado', $data);
+        $pdf->setPaper('A4', 'portrait');
         $pdfContent = $pdf->output();
         $base64Pdf = base64_encode($pdfContent);
 
-        return response()->json(['pdf' => $base64Pdf]);
+        return response()->json([$base64Pdf]);
     }
     
 }
