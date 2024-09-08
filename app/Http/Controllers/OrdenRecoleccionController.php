@@ -113,7 +113,7 @@ class OrdenRecoleccionController extends Controller
     }
 
     // Endpoint para cambiar el estado de las recolecciones donde el estado sea 0.
-    public function updateEstadoRecolecciones()
+    public function asignarRecolecciones()
     {
         // filtrar por donde el campo estado sea 0.
         $ordenesRecolecciones = OrdenRecoleccion::where('estado', 1)->get();

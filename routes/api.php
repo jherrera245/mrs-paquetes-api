@@ -317,7 +317,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'show'])->middleware('permission:ordenrecoleccion-show');
   Route::post('orden-recoleccion', [OrdenRecoleccionController::class, 'store'])->middleware('permission:ordenrecoleccion-create');
   Route::put('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'update'])->middleware('permission:ordenrecoleccion-update');
-  Route::post('orden-recoleccion/update-estado-recolecciones', [OrdenRecoleccionController::class, 'updateEstadoRecolecciones'])->middleware('permission:ordenrecoleccion-update');
+  Route::post('orden-recoleccion/update-estado-recolecciones', [OrdenRecoleccionController::class, 'asignarRecolecciones'])->middleware('permission:ordenrecoleccion-update');
   Route::delete('orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'destroy'])->middleware('permission:ordenrecoleccion-destroy');
   Route::post('orden-recoleccion/finalizar-orden-recoleccion/{id}', [OrdenRecoleccionController::class, 'finalizarOrdenRecoleccion'])->middleware('permission:ordenrecoleccion-create');
 });
