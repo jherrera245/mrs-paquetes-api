@@ -302,11 +302,11 @@ class DropdownController extends Controller
         ->leftJoin('asignacion_rutas AS ar', 'p.id', '=', 'ar.id_paquete')
         ->where(function($query) use ($id_asignacion_ruta) {
             $query->whereNull('ar.id_paquete') // Paquetes sin asignar y Paquetes asignados a la ruta actual
-                ->orWhere('ar.id_asignacion_ruta', $id_asignacion_ruta);
+                ->orWhere('ar.id', $id_asignacion_ruta);
         })
         ->where(function($query) use ($id_asignacion_ruta) {
-            $query->whereNull('ar.id_asignacion_ruta') // Paquetes no asignados a otras rutas
-                ->orWhere('ar.id_asignacion_ruta', $id_asignacion_ruta); // O asignados solo a la ruta actual
+            $query->whereNull('ar.id') // Paquetes no asignados a otras rutas
+                ->orWhere('ar.id', $id_asignacion_ruta); // O asignados solo a la ruta actual
         })
         ->get();
 
