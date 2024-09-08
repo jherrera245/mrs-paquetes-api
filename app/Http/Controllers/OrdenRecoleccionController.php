@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OrdenRecoleccion;
+use App\Models\Kardex;
+use Illuminate\Support\Facades\DB;
 
 class OrdenRecoleccionController extends Controller
 {
@@ -124,6 +126,58 @@ class OrdenRecoleccionController extends Controller
 
         return response()->json(['message' => 'Estado de recolecciones actualizado correctamente']);
     }
+
+    // funcion para finalizar una orden de recoleccion
+    public function finalizarOrdenRecoleccion($id_orden_recoleccion)
+    {
+        // obtenemos la orden de recoleccion dela bd.
+        $ordenRecoleccion = OrdenRecoleccion::findOrFail($id_orden_recoleccion);
+
+        // Usamos rollback para que si hay un error en el proceso se revierta.
+        DB::beginTransaction();
+
+        try {
+            // Cambiamos el estado de la orden de recoleccion.
+            $ordenRecoleccion->recoleccion_finalizada = 1;
+            $ordenRecoleccion->estado = 0;
+            $ordenRecoleccion->recoleccion_iniciada = 0;
+            $ordenRecoleccion->save();
+
+            // recorremos el detalle de esa orden de recoleccion.
+            foreach ($ordenRecoleccion->orden->detalles as $detalle) {
+                // Registrar un movimiento en el kardex SALIDA en orden y ENTRADA en transacción RECOLECTADO.
+                $kardexSalida = new Kardex();
+                $kardexSalida->id_paquete = $detalle->id_paquete;
+                $kardexSalida->id_orden = $detalle->id_orden; 
+                $kardexSalida->cantidad = 1;
+                $kardexSalida->numero_ingreso = $detalle->orden->numero_seguimiento;
+                $kardexSalida->tipo_movimiento = 'SALIDA';
+                $kardexSalida->tipo_transaccion = 'ORDEN';
+                $kardexSalida->fecha = date('Y-m-d');
+                $kardexSalida->save();
+
+                $kardexEntrada = new Kardex();
+                $kardexEntrada->id_paquete = $detalle->id_paquete;
+                $kardexEntrada->id_orden = $detalle->id_orden; 
+                $kardexEntrada->cantidad = 1;
+                $kardexEntrada->numero_ingreso = $detalle->orden->numero_seguimiento;
+                $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                $kardexEntrada->tipo_transaccion = 'RECOLECTADO';
+                $kardexEntrada->fecha = date('Y-m-d');
+                $kardexEntrada->save();
+            }
+
+            // Confirmamos la transacción después de recorrer todo.
+            DB::commit();
+
+            return response()->json(['message' => 'Órden de recoleccion finalizada correctamente']);
+        } catch (\Throwable $th) {
+            // Si hay un error se hace rollback.
+            DB::rollback();
+            throw $th;
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.

@@ -30,14 +30,14 @@ class DetalleOrden extends Model
 
     public function orden(): BelongsTo
     {
-        return $this->belongsTo(Orden::class, 'id');
+        return $this->belongsTo(Orden::class, 'id_orden');
     }
 
     public function paquete(): BelongsTo
     {
-        return $this->belongsTo(Paquete::class, 'id');
-
+        return $this->belongsTo(Paquete::class, 'id_paquete');
     }
+
 
     public function asignacionRuta()
     {

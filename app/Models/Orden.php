@@ -20,6 +20,7 @@ class Orden extends Model
         'total_pagar',
         'costo_adicional',
         'concepto',
+        'numero_seguimiento',
         'finished',
         'estado_pago',
         'tipo_orden',
