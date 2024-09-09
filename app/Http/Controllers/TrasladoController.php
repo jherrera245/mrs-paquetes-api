@@ -231,70 +231,78 @@ class TrasladoController extends Controller
     }
 
     public function trasladoPdf($id = null)
-    {
-        if ($id) {
-            // Generar PDF para un solo traslado
-            $traslado = Traslado::findOrFail($id);
+{
+    if ($id) {
+        // Generar PDF para un solo traslado
+        $traslado = Traslado::findOrFail($id);
 
-            // Obtener el destino y departamento
-            $destino = Destinos::find($traslado->id_asignacion_ruta);
-            $departamento = $destino ? Departamento::find($destino->id_departamento) : null;
+        // Obtener el destino y departamento
+        $destino = Destinos::find($traslado->id_asignacion_ruta);
+        $departamento = $destino ? Departamento::find($destino->id_departamento) : null;
 
-            // Obtener el nombre de la bodega
-            $bodega = Bodegas::find($traslado->id_bodega);
+        // Obtener el nombre de la bodega
+        $bodega = Bodegas::find($traslado->id_bodega);
+        $bodegaNombre = $bodega ? $bodega->nombre : 'Bodega no disponible';
 
-            $orden = Orden::find($traslado->id_orden);
-            // Obtener todos los paquetes asociados a la orden
+        // Obtener la orden y paquetes asociados
+        $orden = Orden::find($traslado->id_orden);
+        $numeroSeguimiento = $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible';
+
+        $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
+        $paquetes = $detalleOrdenes->map(function($detalle) {
+            return Paquete::find($detalle->id_paquete);
+        })->filter(); // Filter to remove null values
+
+        // Preparar los datos para el PDF
+        $data = [
+            'fecha' => now()->format('d/m/Y'),
+            'destino' => $destino ? $destino->nombre . ' ' . ($departamento ? $departamento->nombre : 'Departamento no disponible') : 'Destino no disponible',
+            'paquetes' => $paquetes,
+            'traslado' => $traslado,
+            'bodega' => $bodegaNombre,
+            'numero_seguimiento' => $numeroSeguimiento,
+            'single' => true
+        ];
+    } else {
+        // Generar PDF para múltiples traslados
+        $traslados = Traslado::all();
+
+        // Reemplazar codigo_qr con uuid para cada traslado
+        $trasladosConPaquetes = $traslados->map(function($traslado) {
             $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
             $paquetes = $detalleOrdenes->map(function($detalle) {
                 return Paquete::find($detalle->id_paquete);
             })->filter(); // Filter to remove null values
+            
+            $traslado->paquetes = $paquetes;
+            return $traslado;
+        });
 
-            // Preparar los datos para el PDF
-            $data = [
-                'fecha' => now()->format('d/m/Y'),
-                'destino' => $destino ? $destino->nombre . ' ' . ($departamento ? $departamento->nombre : 'Departamento no disponible') : 'Destino no disponible',
-                'paquetes' => $paquetes,
-                'traslado' => $traslado,
-                'bodega' => $bodega ? $bodega->nombre : 'Bodega no disponible', // Agregar el nombre de la bodega
-                'numero_seguimiento' => $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible',
-                'single' => true
-            ];
-        } else {
-            // Generar PDF para múltiples traslados
-            $traslados = Traslado::all();
+        // Obtener los nombres de las bodegas para cada traslado y el numero_seguimiento
+        $trasladosConBodegas = $trasladosConPaquetes->map(function($traslado) {
+            $bodega = Bodegas::find($traslado->id_bodega);
+            $traslado->bodega_nombre = $bodega ? $bodega->nombre : 'Bodega no disponible';
 
-            // Reemplazar codigo_qr con uuid para cada traslado
-            $trasladosConPaquetes = $traslados->map(function($traslado) {
-                $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
-                $paquetes = $detalleOrdenes->map(function($detalle) {
-                    return Paquete::find($detalle->id_paquete);
-                })->filter(); // Filter to remove null values
-                
-                $traslado->paquetes = $paquetes;
-                return $traslado;
-            });
+            $orden = Orden::find($traslado->id_orden);
+            $traslado->numero_seguimiento = $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible';
+            
+            return $traslado;
+        });
 
-            // Obtener los nombres de las bodegas para cada traslado
-            $trasladosConBodegas = $trasladosConPaquetes->map(function($traslado) {
-                $traslado->bodega_nombre = Bodegas::find($traslado->id_bodega)->nombre ?? 'Bodega no disponible';
-                return $traslado;
-            });
-
-            $data = [
-                'fecha' => now()->format('d/m/Y'),
-                'traslados' => $trasladosConBodegas,
-                'single' => false
-            ];
-        }
-
-        // Generar el PDF
-        $pdf = Pdf::loadView('pdf.traslado', $data);
-        $pdf->setPaper('A4', 'portrait');
-        $pdfContent = $pdf->output();
-        $base64Pdf = base64_encode($pdfContent);
-
-        return response()->json([$base64Pdf]);
+        $data = [
+            'fecha' => now()->format('d/m/Y'),
+            'traslados' => $trasladosConBodegas,
+            'single' => false
+        ];
     }
-    
+
+    // Generar el PDF
+    $pdf = Pdf::loadView('pdf.traslado', $data);
+    $pdf->setPaper('A4', 'portrait');
+    $pdfContent = $pdf->output();
+    $base64Pdf = base64_encode($pdfContent);
+
+    return response()->json([$base64Pdf]);
+}
+
 }
