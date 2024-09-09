@@ -201,6 +201,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::delete('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy'])->middleware('permission:asignacionrutas-destroy');
 
   // Paquete
+  Route::get('paquete/filter-by-location', [PaqueteController::class, 'filterByLocation']);
   Route::get('paquete/get_paquetes_by_user', [PaqueteController::class, 'getPaquetesByUser']);
   Route::get('paquete', [PaqueteController::class, 'index'])->middleware('permission:paquete-view');
   Route::get('paquete/{paquete}', [PaqueteController::class, 'show'])->middleware('permission:paquete-show');
@@ -209,7 +210,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('paquete/{paquete}', [PaqueteController::class, 'update'])->middleware('permission:paquete-update');
   Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy'])->middleware('permission:paquete-destroy');
   Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore'])->middleware('permission:paquete-restore');
-  Route::get('paquete/filter-by-location', [PaqueteController::class, 'filterByLocation']);
   
   // Historial Paquetes
   Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');

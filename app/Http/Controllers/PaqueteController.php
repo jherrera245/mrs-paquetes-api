@@ -399,42 +399,42 @@ class PaqueteController extends Controller
     }
 
     public function filterByLocation(Request $request)
-{
-    // Obtiene los parámetros de la consulta
-    $idDepartamento = $request->query('id_departamento');
-    $idMunicipio = $request->query('id_municipio');
+    {
+        // Obtiene los parámetros de la consulta
+        $idDepartamento = $request->query('id_departamento');
+        $idMunicipio = $request->query('id_municipio');
 
-    // Validar que los parámetros sean numéricos si están presentes
-    if (($idDepartamento && !is_numeric($idDepartamento)) || ($idMunicipio && !is_numeric($idMunicipio))) {
-        return response()->json(['error' => 'Parámetros inválidos.'], 400);
+        // Validar que los parámetros sean numéricos si están presentes
+        if (($idDepartamento && !is_numeric($idDepartamento)) || ($idMunicipio && !is_numeric($idMunicipio))) {
+            return response()->json(['error' => 'Parámetros inválidos.'], 400);
+        }
+
+        // Construye la consulta con joins
+        $paquete = Paquete::select('paquetes.*')
+            ->join('detalle_orden', 'paquetes.id', '=', 'detalle_orden.id_paquete')
+            ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
+            ->join('direcciones', 'ordenes.id_direccion', '=', 'direcciones.id')
+            ->join('departamento', 'direcciones.id_departamento', '=', 'departamento.id')
+            ->join('municipios', 'direcciones.id_municipio', '=', 'municipios.id');
+
+        // Aplicar filtro de departamento si existe
+        if ($idDepartamento) {
+            $paquete->where('departamentos.id', $idDepartamento);
+        }
+
+        // Aplicar filtro de municipio si existe
+        if ($idMunicipio) {
+            $paquete->where('municipios.id', $idMunicipio);
+        }
+
+        // Obtener los resultados
+        $paquete = $paquete->get();
+
+        // Comprobar si hay resultados
+        if ($paquete->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron paquetes para los filtros especificados.'], 404);
+        }
+
+        return response()->json($paquete, 200);
     }
-
-    // Construye la consulta con joins
-    $paquete = Paquete::select('paquetes.*')
-        ->join('detalle_orden', 'paquetes.id', '=', 'detalle_orden.id_paquete')
-        ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
-        ->join('direcciones', 'ordenes.id_direccion', '=', 'direcciones.id')
-        ->join('departamentos', 'direcciones.id_departamento', '=', 'departamentos.id')
-        ->join('municipios', 'direcciones.id_municipio', '=', 'municipios.id');
-
-    // Aplicar filtro de departamento si existe
-    if ($idDepartamento) {
-        $paquete->where('departamentos.id', $idDepartamento);
-    }
-
-    // Aplicar filtro de municipio si existe
-    if ($idMunicipio) {
-        $paquete->where('municipios.id', $idMunicipio);
-    }
-
-    // Obtener los resultados
-    $paquete = $paquete->get();
-
-    // Comprobar si hay resultados
-    if ($paquete->isEmpty()) {
-        return response()->json(['message' => 'No se encontraron paquetes para los filtros especificados.'], 404);
-    }
-
-    return response()->json($paquete, 200);
-}
 }
