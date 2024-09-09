@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\AsignacionRutas;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Paquete;
+use Doctrine\DBAL\Query\QueryException;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AsignacionRutasController extends Controller
 {
@@ -219,6 +224,67 @@ class AsignacionRutasController extends Controller
         return response()->json([
             'paquetes' => $paquetes,
             'status' => 200
+        ], 200);
+    }
+
+    public function asignarRutasPaquetes(Request $request)
+    {
+        // Validar la solicitud
+        $validated = $request->validate([
+            'id_ruta' => 'required|integer',
+            'id_vehiculo' => 'required|integer',
+            'id_paquete' => 'required|array|min:1',
+            'id_paquete.*' => 'integer'
+        ]);
+
+        $idRuta = $validated['id_ruta'];
+        $idVehiculo = $validated['id_vehiculo'];
+        $paquetesIds = $validated['id_paquete'];
+        $fechaActual = now();
+
+        // Inicia una transacción para garantizar la integridad de los datos
+        $asignaciones = DB::transaction(function () use ($idRuta, $idVehiculo, $paquetesIds, $fechaActual) {
+        $asignaciones = [];
+        $codigoBase = 'AR-';
+
+        // Encuentra el último código generado
+        $ultimoCodigo = AsignacionRutas::latest('id')
+            ->first()
+            ->codigo_unico_asignacion;
+
+        // Extrae el número del último código (si existe) y calcula el siguiente número
+        $ultimoNumero = $ultimoCodigo ? (int) substr($ultimoCodigo, 3) : 0;
+        $siguienteNumero = $ultimoNumero + 1;
+        $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+
+        foreach ($paquetesIds as $idPaquete) {
+            $codigoUnico = $codigoBase . $formatoNumero;
+
+            $asignacion = AsignacionRutas::create([
+                'codigo_unico_asignacion' => $codigoUnico,
+                'id_ruta' => $idRuta,
+                'id_vehiculo' => $idVehiculo,
+                'id_paquete' => $idPaquete,
+                'fecha' => $fechaActual,
+                'id_estado' => 1, 
+                'created_at' => $fechaActual,
+                'updated_at' => $fechaActual
+            ]);
+
+            // Agregar la asignación a la lista
+            $asignaciones[] = $asignacion;
+
+            // Incrementa el número para el próximo código
+            $siguienteNumero++;
+            $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+        }
+
+            return $asignaciones;
+        });
+
+        return response()->json([
+            'message' => 'Paquetes asignados exitosamente',
+            'data' => $asignaciones
         ], 200);
     }
 

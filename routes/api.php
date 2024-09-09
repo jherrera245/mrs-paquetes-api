@@ -199,7 +199,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::post('asignacionrutas', [AsignacionRutasController::class, 'store'])->middleware('permission:asignacionrutas-create');
   Route::put('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'update'])->middleware('permission:asignacionrutas-update');
   Route::delete('asignacionrutas/{asignacionruta}', [AsignacionRutasController::class, 'destroy'])->middleware('permission:asignacionrutas-destroy');
-
+  Route::post('asignar-paquetes-ruta', [AsignacionRutasController::class, 'asignarRutasPaquetes']);
   // Paquete
   Route::get('paquete/filter-by-location', [PaqueteController::class, 'filterByLocation']);
   Route::get('paquete/get_paquetes_by_user', [PaqueteController::class, 'getPaquetesByUser']);
