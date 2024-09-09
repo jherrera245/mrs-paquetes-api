@@ -241,7 +241,7 @@ class OrdenController extends Controller
         }
     }
 
-    private function updateOrder($orden, $request)
+    public function updateOrder($orden, $request)
     {
         $orden->id_cliente = $request->input('id_cliente');
         $orden->id_tipo_pago = $request->input('id_tipo_pago');
@@ -1048,60 +1048,60 @@ class OrdenController extends Controller
     public function update(Request $request, $id)
     {
     
-    $validator = Validator::make($request->all(), [
-        'id_cliente' => 'required|integer|exists:clientes,id',
-        'id_direccion' => 'required|integer|exists:direcciones,id',
-        'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
-        'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
-        'total_pagar' => 'required|numeric',
-        'costo_adicional' => 'nullable|numeric',
-        'concepto' => 'required|string',
-        'tipo_documento' => 'required|string',
-        'tipo_orden' => 'required|string',
-        'detalles' => 'required|array',
-        'detalles.*.id_tipo_paquete' => 'required|integer',
-        'detalles.*.id_tamano_paquete' => 'required|integer',
-        'detalles.*.id_empaque' => 'required|integer',
-        'detalles.*.peso' => 'required|numeric',
-        'detalles.*.descripcion_contenido' => 'nullable|string',
-        'detalles.*.id_estado_paquete' => 'required|integer',
-        'detalles.*.fecha_envio' => 'required|date',
-        'detalles.*.fecha_entrega_estimada' => 'required|date',
-        'detalles.*.id_tipo_entrega' => 'required|integer',
-        'detalles.*.instrucciones_entrega' => 'nullable|string',
-        'detalles.*.descripcion' => 'nullable|string',
-        'detalles.*.precio' => 'required|numeric',
-        'detalles.*.fecha_entrega' => 'nullable|date',
-        'detalles.*.id_direccion' => 'required|integer'
-    ]);
+        $validator = Validator::make($request->all(), [
+            'id_cliente' => 'required|integer|exists:clientes,id',
+            'id_direccion' => 'required|integer|exists:direcciones,id',
+            'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
+            'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
+            'total_pagar' => 'required|numeric',
+            'costo_adicional' => 'nullable|numeric',
+            'concepto' => 'required|string',
+            'tipo_documento' => 'required|string',
+            'tipo_orden' => 'required|string',
+            'detalles' => 'required|array',
+            'detalles.*.id_tipo_paquete' => 'required|integer',
+            'detalles.*.id_tamano_paquete' => 'required|integer',
+            'detalles.*.id_empaque' => 'required|integer',
+            'detalles.*.peso' => 'required|numeric',
+            'detalles.*.descripcion_contenido' => 'nullable|string',
+            'detalles.*.id_estado_paquete' => 'required|integer',
+            'detalles.*.fecha_envio' => 'required|date',
+            'detalles.*.fecha_entrega_estimada' => 'required|date',
+            'detalles.*.id_tipo_entrega' => 'required|integer',
+            'detalles.*.instrucciones_entrega' => 'nullable|string',
+            'detalles.*.descripcion' => 'nullable|string',
+            'detalles.*.precio' => 'required|numeric',
+            'detalles.*.fecha_entrega' => 'nullable|date',
+            'detalles.*.id_direccion' => 'required|integer'
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-    DB::beginTransaction();
-    try {
-        
-        $orden = Orden::findOrFail($id);
-        $orden->id_cliente = $request->input('id_cliente');
-        $orden->id_tipo_pago = $request->input('id_tipo_pago');
-        $orden->id_direccion = $request->input('id_direccion');
-        $orden->total_pagar = $request->input('total_pagar');
-        $orden->costo_adicional = $request->input('costo_adicional');
-        $orden->concepto = $request->input('concepto');
-        $orden->tipo_documento = $request->input('tipo_documento');
-        $orden->tipo_orden = $request->input('tipo_orden');
-        $orden->save();
+        DB::beginTransaction();
+        try {
+            
+            $orden = Orden::findOrFail($id);
+            $orden->id_cliente = $request->input('id_cliente');
+            $orden->id_tipo_pago = $request->input('id_tipo_pago');
+            $orden->id_direccion = $request->input('id_direccion');
+            $orden->total_pagar = $request->input('total_pagar');
+            $orden->costo_adicional = $request->input('costo_adicional');
+            $orden->concepto = $request->input('concepto');
+            $orden->tipo_documento = $request->input('tipo_documento');
+            $orden->tipo_orden = $request->input('tipo_orden');
+            $orden->save();
 
-        $existingPackageIds = DB::table('ordenes')
-            ->join('detalle_orden', 'ordenes.id', '=', 'detalle_orden.id_orden')
-            ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
-            ->where('ordenes.id', $orden->id)
-            ->pluck('detalle_orden.id_paquete');
+            $existingPackageIds = DB::table('ordenes')
+                ->join('detalle_orden', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+                ->where('ordenes.id', $orden->id)
+                ->pluck('detalle_orden.id_paquete');
 
-        DetalleOrden::where('id_orden', $orden->id)->delete();
+            DetalleOrden::where('id_orden', $orden->id)->delete();
 
-        $newPackageIds = [];
+            $newPackageIds = [];
 
             foreach ($request->input('detalles') as $detalle) {
                 // Check if 'id_paquete' exists in the detail
@@ -1197,5 +1197,135 @@ class OrdenController extends Controller
         }
     }
 
-    
+    // funcion para actualizar el detalle de una orden.
+    public function updateDetalleOrden(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_tipo_entrega' => 'required|integer',
+            'id_estado_paquetes' => 'required|integer',
+            'id_paquete' => 'required|integer',
+            'validacion_entrega' => 'integer',
+            'instrucciones_entrega' => 'nullable|string',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric',
+            'fecha_ingreso' => 'required|date',
+            'fecha_entrega' => 'required|date',
+            'id_direccion_entrega' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        DB::beginTransaction();
+        try {
+            $detalleOrden = DetalleOrden::findOrFail($id);
+            $detalleOrden->id_tipo_entrega = $request->input('id_tipo_entrega');
+            $detalleOrden->id_estado_paquetes = $request->input('id_estado_paquetes');
+            $detalleOrden->id_paquete = $request->input('id_paquete');
+            $detalleOrden->validacion_entrega = $request->input('validacion_entrega');
+            $detalleOrden->instrucciones_entrega = $request->input('instrucciones_entrega');
+            $detalleOrden->descripcion = $request->input('descripcion');
+            $detalleOrden->precio = $request->input('precio');
+            $detalleOrden->fecha_ingreso = $request->input('fecha_ingreso');
+            $detalleOrden->fecha_entrega = $request->input('fecha_entrega');
+            $detalleOrden->id_direccion_entrega = $request->input('id_direccion_entrega');
+            $detalleOrden->save();
+            
+            DB::commit();
+            return response()->json(['message' => 'Detalle de orden actualizado con éxito'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'message' => 'Error',
+                    'error' => $e->getMessage(),
+                ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+    }
+
+
+    // funcion para crear un nuevo detalle de una orden existente.
+    public function createOrderDetailByOrdenId($id_orden, $numero_seguimiento, $detalle)
+    {
+        $uuid = Str::uuid();
+        $result = Builder::create()
+            ->writer(new PngWriter())
+            ->data($uuid)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->size(200)
+            ->margin(10)
+            ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->build();
+
+        $filename = $uuid . '.png';
+        $path = 'qr_codes/' . $filename;
+        Storage::disk('s3')->put($path, $result->getString());
+
+        $bucketName = env('AWS_BUCKET');
+        $region = env('AWS_DEFAULT_REGION');
+        $qrCodeUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
+        $tag = $qrCodeUrl;
+
+        $paquete = new Paquete();
+        $paquete->id_tipo_paquete = $detalle["id_tipo_paquete"];
+        $paquete->id_tamano_paquete = $detalle["id_tamano_paquete"];
+        // enviamos la ubicacion del paquete como nulo.
+        $paquete->id_ubicacion = null;
+        $paquete->id_empaque = $detalle["id_empaque"];
+        $paquete->peso = $detalle["peso"];
+        $paquete->uuid = $uuid;
+        $paquete->tag = $tag;
+        $paquete->id_estado_paquete = $detalle["id_estado_paquete"];
+        $paquete->fecha_envio = $detalle["fecha_envio"];
+        $paquete->fecha_entrega_estimada = $detalle["fecha_entrega_estimada"];
+        $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
+        $paquete->save();
+
+        if ($paquete) {
+            $detalleOrden = new DetalleOrden();
+            $detalleOrden->id_orden = $id_orden;
+            $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
+            $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+            $detalleOrden->id_paquete = $paquete->id;
+            $detalleOrden->validacion_entrega = 0;
+            $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
+            $detalleOrden->descripcion = $detalle['descripcion'];
+            $detalleOrden->precio = $detalle['precio'];
+            $detalleOrden->fecha_ingreso = now();
+            $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
+            $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+
+            // Guardar el detalle de la orden para obtener su ID
+            $detalleOrden->save();
+
+            // crear la transaccion en el kardex e inventario.
+            $kardex = new Kardex();
+            $kardex->id_paquete = $paquete->id;
+            $kardex->id_orden = $id_orden;
+            $kardex->cantidad = 1;
+            $kardex->numero_ingreso = $numero_seguimiento;
+            $kardex->tipo_movimiento = 'ENTRADA';
+            $kardex->tipo_transaccion = 'ORDEN';
+            $kardex->fecha = now();
+
+            $kardex->save();
+
+            // entrada en inventario.
+            $inventario = new Inventario();
+
+            $inventario->id_paquete = $paquete->id;
+            $inventario->numero_ingreso = $numero_seguimiento;
+            $inventario->cantidad = 1;
+            $inventario->fecha_entrada = now();
+            $inventario->estado = 1;
+
+            $inventario->save();
+        } else {
+            throw new \Exception('Error al generar el paquete');
+        }
+    }
 }
