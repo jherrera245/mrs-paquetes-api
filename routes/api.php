@@ -131,7 +131,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('ordenes', [OrdenController::class, 'index'])->middleware('permission:orden-view');
   Route::get('ordenes/{ordenes}', [OrdenController::class, 'show'])->middleware('permission:orden-show');
   Route::post('ordenes', [OrdenController::class, 'store'])->middleware('permission:orden-create');
-  //Route::put('ordenes/{ordenes}', [OrdenController::class, 'update'])->middleware('permission:orden-update');
+  Route::put('ordenes/{ordenes}', [OrdenController::class, 'update'])->middleware('permission:orden-update');
   Route::delete('ordenes/{ordenes}', [OrdenController::class, 'destroy'])->middleware('permission:orden-destroy');
   Route::post('ordenes/{ordenes}/procesar-pago', [OrdenController::class, 'procesarPago'])->middleware('permission:orden-update');
   Route::get('ordenes/get_comprobante/{id}', [OrdenController::class, 'getComprobante'])->middleware('permission:orden-view');
@@ -139,9 +139,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('ordenes/{ordenes}/vineta', [VinetaController::class, 'generarVineta']);
   Route::post('ordenes-cliente', [OrdenController::class, 'ordenCliente'])->middleware('permission:orden-cliente');
   Route::get('ordenes-cliente/ver-ordenes', [OrdenController::class, 'misOrdenesCliente'])->middleware('permission:mis-ordenes-cliente');
-  Route::put('ordenes/actualizar-orden/{id_orden}', [OrdenController::class, 'updateOrder'])->middleware('permission:orden-update');
-  Route::put('ordenes/actualizar-detalle-orden/{id_detalle_orden}', [OrdenController::class, 'updateDetalleOrden'])->middleware('permission:orden-update');
-  Route::post('ordenes/crear-detalle-orden/{id_orden}/{numero_seguimiento}', [OrdenController::class, 'createOrderDetailByOrdenId'])->middleware('permission:orden-create');
 
   // Marca Vehículo
   Route::get('marcaVehiculo', [MarcaVehiculoController::class, 'index'])->middleware('permission:marcaVehiculo-view');
@@ -212,7 +209,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('paquete/{paquete}', [PaqueteController::class, 'update'])->middleware('permission:paquete-update');
   Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy'])->middleware('permission:paquete-destroy');
   Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore'])->middleware('permission:paquete-restore');
-
+  Route::get('paquete/filter-by-location', [PaqueteController::class, 'filterByLocation']);
+  
   // Historial Paquetes
   Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');
   Route::get('historialpaquete/{paqueteId}', [HistorialPaqueteController::class, 'show'])->middleware('permission:historialpaquete-show');

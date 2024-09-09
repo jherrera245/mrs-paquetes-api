@@ -258,8 +258,8 @@ class PaqueteController extends Controller
     {
         try {
             $paquete = is_numeric($idOrQrCode)
-                ? Paquete::with('tipoPaquete', 'empaquetado', 'estado', 'tamanoPaquete')->whereNull('eliminado_at')->findOrFail($idOrQrCode)
-                : Paquete::with('tipoPaquete', 'empaquetado', 'estado', 'tamanoPaquete')->whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
+                ? Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->findOrFail($idOrQrCode)
+                : Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
                     $query->where('tag', $idOrQrCode)->orWhere('uuid', $idOrQrCode);
                 })->firstOrFail();
 
@@ -361,24 +361,23 @@ class PaqueteController extends Controller
 
 
     private function transformPaquete($paquete)
-    {
-        return [
-            'id' => $paquete->id,
-            'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
-            'estado_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
-            'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
-            'tamano_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
-            'peso' => $paquete->peso,
-            'uuid' => $paquete->uuid,
-            'tag' => $paquete->tag,
-            'estado_paquete' => $paquete->estado ? $paquete->estado->nombre : null,
-            'fecha_envio' => $paquete->fecha_envio,
-            'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
-            'descripcion_contenido' => $paquete->descripcion_contenido,
-            'ubicacion' => $paquete->ubicacion ? $paquete->ubicacion->nomenclatura : null,
-            'created_at' => $paquete->created_at,
-            'updated_at' => $paquete->updated_at,
-        ];
+{
+    return [
+        'id' => $paquete->id,
+        'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
+        'tamano_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
+        'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
+        'peso' => $paquete->peso,
+        'uuid' => $paquete->uuid,
+        'tag' => $paquete->tag,
+        'estado_paquete' => $paquete->estado ? $paquete->estado->nombre : null,
+        'fecha_envio' => $paquete->fecha_envio,
+        'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
+        'descripcion_contenido' => $paquete->descripcion_contenido,
+        'ubicacion' => $paquete->ubicacion ? $paquete->ubicacion->nomenclatura : null,
+        'created_at' => $paquete->created_at,
+        'updated_at' => $paquete->updated_at,
+    ];
     }
 
 
@@ -398,4 +397,44 @@ class PaqueteController extends Controller
             'estado' => $estado,
         ]);
     }
+
+    public function filterByLocation(Request $request)
+{
+    // Obtiene los parámetros de la consulta
+    $idDepartamento = $request->query('id_departamento');
+    $idMunicipio = $request->query('id_municipio');
+
+    // Validar que los parámetros sean numéricos si están presentes
+    if (($idDepartamento && !is_numeric($idDepartamento)) || ($idMunicipio && !is_numeric($idMunicipio))) {
+        return response()->json(['error' => 'Parámetros inválidos.'], 400);
+    }
+
+    // Construye la consulta con joins
+    $paquete = Paquete::select('paquetes.*')
+        ->join('detalle_orden', 'paquetes.id', '=', 'detalle_orden.id_paquete')
+        ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
+        ->join('direcciones', 'ordenes.id_direccion', '=', 'direcciones.id')
+        ->join('departamentos', 'direcciones.id_departamento', '=', 'departamentos.id')
+        ->join('municipios', 'direcciones.id_municipio', '=', 'municipios.id');
+
+    // Aplicar filtro de departamento si existe
+    if ($idDepartamento) {
+        $paquete->where('departamentos.id', $idDepartamento);
+    }
+
+    // Aplicar filtro de municipio si existe
+    if ($idMunicipio) {
+        $paquete->where('municipios.id', $idMunicipio);
+    }
+
+    // Obtener los resultados
+    $paquete = $paquete->get();
+
+    // Comprobar si hay resultados
+    if ($paquete->isEmpty()) {
+        return response()->json(['message' => 'No se encontraron paquetes para los filtros especificados.'], 404);
+    }
+
+    return response()->json($paquete, 200);
+}
 }

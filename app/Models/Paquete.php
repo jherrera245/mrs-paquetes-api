@@ -74,6 +74,11 @@ class Paquete extends Model
         return $this->belongsTo(Empaquetado::class, 'id_empaque');
     }
 
+    public function detalleOrden()
+{
+    return $this->hasOne(DetalleOrden::class, 'id_paquete');
+}
+
     public function cliente()
     {
         return $this->belongsTo(Clientes::class, 'id_cliente');
