@@ -70,4 +70,65 @@ class DashboardController extends Controller
             Response::HTTP_OK
         );
     }
+
+    public function deliveredByDepartment()
+    {
+        $hoy = Carbon::today(); //facha actual
+        $inicio = $hoy->copy()->subDays(29); // 29 dias anteriores
+
+        $start = Carbon::parse($inicio)->format('Y-m-d');
+        $end = Carbon::parse($hoy)->format('Y-m-d');
+
+        $result = DB::table('departamento')
+        ->leftJoin('direcciones', 'direcciones.id_departamento', '=', 'departamento.id')
+        ->leftJoin('detalle_orden', function ($join) use ($start, $end) {
+            $join->on('detalle_orden.id_direccion_entrega', '=', 'direcciones.id')
+                 ->where('detalle_orden.validacion_entrega', '<>', '0')
+                 ->whereBetween(DB::raw('DATE(detalle_orden.updated_at)'), [$start, $end]);
+        })
+        ->select(
+            'departamento.nombre AS departamento',
+            DB::raw('COUNT(detalle_orden.id) AS paquetes')
+        )
+        ->whereIn('departamento.id', [11, 12, 13, 14])
+        ->groupBy('departamento.nombre')
+        ->orderBy('departamento.nombre')
+        ->get();
+
+        return response()->json(
+            [
+                'departamentos' => $result
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    public function packagesByStatus()
+    {
+        $hoy = Carbon::today(); //facha actual
+        $inicio = $hoy->copy()->subDays(29); // 29 dias anteriores
+
+        $start = Carbon::parse($inicio)->format('Y-m-d');
+        $end = Carbon::parse($hoy)->format('Y-m-d');
+
+        $result = DB::table('estado_paquetes')
+        ->leftJoin('detalle_orden', function ($join) use ($start, $end) {
+            $join->on('detalle_orden.id_estado_paquetes', '=', 'estado_paquetes.id')
+                ->whereBetween('detalle_orden.updated_at', [$start, $end]);
+        })
+        ->select(
+            'estado_paquetes.nombre',
+            DB::raw('COUNT(detalle_orden.id) AS paquetes')
+        )
+        ->groupBy('estado_paquetes.nombre')
+        ->orderBy('estado_paquetes.nombre')
+        ->get();
+
+        return response()->json(
+            [
+                'estados' => $result
+            ],
+            Response::HTTP_OK
+        );
+    }
 }
