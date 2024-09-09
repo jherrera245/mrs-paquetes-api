@@ -258,8 +258,8 @@ class PaqueteController extends Controller
     {
         try {
             $paquete = is_numeric($idOrQrCode)
-                ? Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->findOrFail($idOrQrCode)
-                : Paquete::with('tipoPaquete', 'empaquetado', 'estado')->whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
+                ? Paquete::with('tipoPaquete', 'empaquetado', 'estado', 'tamanoPaquete')->whereNull('eliminado_at')->findOrFail($idOrQrCode)
+                : Paquete::with('tipoPaquete', 'empaquetado', 'estado', 'tamanoPaquete')->whereNull('eliminado_at')->where(function ($query) use ($idOrQrCode) {
                     $query->where('tag', $idOrQrCode)->orWhere('uuid', $idOrQrCode);
                 })->firstOrFail();
 
@@ -367,6 +367,7 @@ class PaqueteController extends Controller
             'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
             'estado_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
             'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
+            'tamano_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
             'peso' => $paquete->peso,
             'uuid' => $paquete->uuid,
             'tag' => $paquete->tag,

@@ -32,4 +32,10 @@ class TamanoPaquete extends Model
     {
         return $this->hasMany(TarifasDestinos::class, 'id_tamano_paquete');
     }
+
+    // relación con paquetes.
+    public function paquetes()
+    {
+        return $this->hasMany(Paquete::class, 'id_tamano_paquete');
+    }
 }
