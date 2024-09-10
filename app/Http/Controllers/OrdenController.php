@@ -47,8 +47,10 @@ class OrdenController extends Controller
 
         $perPage = $request->input('per_page', 10);
 
-        $ordenesQuery = Orden::with(['cliente', 'tipoPago', 'direccion', 'detalles'])
-            ->search($filters);
+        $ordenesQuery = Orden::with(['cliente', 'tipoPago', 'direccion', 'detalles' => function ($query) {
+            // Excluir detalles de órdenes canceladas
+            $query->where('id_estado_paquetes', '!=', 13);
+        }])->where('estado', '!=', 'Cancelada')->search($filters);
 
         $ordenes = $ordenesQuery->paginate($perPage);
 
@@ -57,44 +59,7 @@ class OrdenController extends Controller
         }
 
         $ordenes->getCollection()->transform(function ($orden) {
-            return [
-                'id' => $orden->id,
-                'id_cliente' => $orden->id_cliente,
-                'cliente' => [
-                    'nombre' => $orden->cliente->nombre,
-                    'apellido' => $orden->cliente->apellido,
-                ],
-                'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
-                'total_pagar' => $orden->total_pagar,
-                'costo_adicional' => $orden->costo_adicional,
-                'concepto' => $orden->concepto,
-                'numero_seguimiento' => $orden->numero_seguimiento,
-                'estado_pago' => $orden->estado_pago,
-                'tipo_documento' => $orden->tipo_documento,
-                'tipo_orden' => $orden->tipo_orden,
-                'detalles' => $orden->detalles->map(function ($detalle) {
-                    return [
-                        'id_paquete' => $detalle->id_paquete,
-                        'descripcion' => $detalle->descripcion,
-                        'precio' => $detalle->precio,
-                        'tipo_entrega' => $detalle->tipoEntrega->entrega,
-                        'recibe' => $detalle->direccionEntrega->nombre_contacto,
-                        'telefono' => $detalle->direccionEntrega->telefono,
-                        'departamento' => $detalle->direccionEntrega->departamento->nombre,
-                        'municipio' => $detalle->direccionEntrega->municipio->nombre,
-                        'direccion' => $detalle->direccionEntrega->direccion,
-                        'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
-                        'tipo_caja' => $detalle->paquete->empaquetado->empaquetado,
-                        'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
-                        'tamano_paquete' => $detalle->paquete->tamanoPaquete->nombre,
-                        'peso' => $detalle->paquete->peso,
-                        'estado_paquete' => $detalle->paquete->estado->nombre,
-                        "validacion_entrega" => $detalle->validacion_entrega,
-                    ];
-                }),
-                'created_at' => $orden->created_at,
-                'updated_at' => $orden->updated_at,
-            ];
+            return $this->transformOrden($orden);
         });
 
         return response()->json($ordenes, Response::HTTP_OK);
@@ -146,6 +111,7 @@ class OrdenController extends Controller
             );
         }
     }
+
 
     private function createOrder($request)
     {
@@ -498,6 +464,7 @@ class OrdenController extends Controller
             'id_tipo_pago' => $orden->id_tipo_pago,
             'total_pagar' => $orden->total_pagar,
             'costo_adicional' => $orden->costo_adicional,
+            'estado' => $orden->estado,  
             'estado_pago' => $orden->estado_pago,
             'tipo_documento' => $orden->tipo_documento,
             'tipo_orden' => $orden->tipo_orden,
@@ -549,6 +516,7 @@ class OrdenController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
+
     /**
      * Requerimiento 2: Genera un PDF con los detalles de la orden especificada.
      *
@@ -556,37 +524,38 @@ class OrdenController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-
     public function generatePDF($id)
     {
         $orden = Orden::with([
-            'cliente:id,nombre,apellido', // Asegura que cargas el nombre del cliente
-            'direccion:id,direccion,nombre_contacto,telefono,referencia', // Carga la dirección con sus detalles
-            'detalles:id,id_orden,id_paquete,id_tipo_entrega,descripcion,precio',
+            'cliente:id,nombre,apellido',
+            'direccion:id,direccion,nombre_contacto,telefono,referencia',
+            'detalles' => function ($query) {
+                // Excluir detalles de órdenes canceladas
+                $query->where('id_estado_paquetes', '!=', 13);
+            },
             'detalles.paquete:id,descripcion_contenido,peso',
-            'tipoPago:id,pago' // Carga el nombre del tipo de pago
+            'tipoPago:id,pago'
         ])->find($id);
 
-        // Manejar el caso donde la orden no se encuentra
-        if (!$orden) {
-            return response()->json(['message' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+        if (!$orden || $orden->estado === 'Cancelada') {
+            return response()->json(['message' => 'Orden no encontrada o está cancelada'], Response::HTTP_NOT_FOUND);
         }
 
-        // Obtener la dirección del emisor
+
         $direccion_emisor = $orden->direccion;
 
-        // Cargar la vista y generar el PDF
-        $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor'));
+        // Filtrar detalles de órdenes canceladas antes de enviarlos a la vista
+        $detalles = $orden->detalles->filter(function ($detalle) {
+            return $detalle->id_estado_paquetes != 13;
+        });
 
-        // Devolver el PDF como string base64 para que el frontend pueda manejarlo
+        $pdf = PDF::loadView('pdf.orden', compact('orden', 'direccion_emisor', 'detalles'));
         $pdfContent = $pdf->output();
 
-        // Devolver la respuesta con el PDF codificado en base64
         return response()->json(['pdf' => base64_encode($pdfContent)], 200);
-
-        // Devolver el PDF sin codificación, directamente como un archivo PDF
-        // return $pdf->download('orden.pdf'); // Puedes cambiar 'orden.pdf' por el nombre que desees para el archivo
     }
+
+
 
     /**
      * Requerimiento 8: Mostrar órdenes del cliente autenticado.
@@ -596,24 +565,23 @@ class OrdenController extends Controller
      */
     public function misOrdenes(Request $request)
     {
-        // Obtener el cliente autenticado
         $cliente_id = Auth::id();
 
-        // Buscar las órdenes del cliente autenticado y cargar las relaciones necesarias
+        // Obtener todas las órdenes del cliente, sin filtrar los detalles cancelados
         $ordenes = Orden::where('id_cliente', $cliente_id)
-            ->with(['detalles', 'direccion', 'tipoPago', 'cliente'])
+            ->with(['detalles', 'direccion', 'tipoPago', 'cliente']) // Incluir todas las relaciones sin filtrar
             ->get();
 
-        // Verificar si el cliente tiene órdenes
         if ($ordenes->isEmpty()) {
             return response()->json(['message' => 'No se encontraron órdenes'], Response::HTTP_NOT_FOUND);
         }
 
-        // Formatear la respuesta para incluir los nombres en lugar de los IDs
+        // Mapear las órdenes para incluir el estado de la orden
         $ordenes = $ordenes->map(function ($orden) {
             return [
                 'id' => $orden->id,
                 'cliente' => optional($orden->cliente)->nombre,
+                'estado' => $orden->estado,
                 'direccion' => [
                     'nombre_contacto' => optional($orden->direccion)->nombre_contacto,
                     'telefono' => optional($orden->direccion)->telefono,
@@ -641,9 +609,10 @@ class OrdenController extends Controller
             ];
         });
 
-        // Devolver las órdenes del cliente
         return response()->json($ordenes, Response::HTTP_OK);
     }
+
+
 
     private function transformOrden($orden)
     {
@@ -690,30 +659,13 @@ class OrdenController extends Controller
             return response()->json(['message' => 'Esta orden ya ha sido pagada'], 400);
         }
 
-        $tipoPago = $orden->tipoPago->pago;
-
-        if ($tipoPago === 'Tarjeta') {
-            $validator = Validator::make($request->all(), [
-                'nombre_titular' => 'required|string|max:255',
-                'numero_tarjeta' => 'required|string|size:16',
-                'fecha_vencimiento' => 'required|date_format:m/Y|after:today',
-                'cvv' => 'required|string|size:3',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-            // Aquí iría la lógica de procesamiento del pago con tarjeta
-            // Por ahora, simularemos un pago exitoso
-        }
-
-        // Procesar el pago (simulado)
+        // Actualizar el estado de la orden
         $orden->estado_pago = 'pagado';
+        $orden->tipo_orden = 'orden';
         $orden->estado = 'Completada';
         $orden->save();
 
-        // Generar comprobante
+        // Generar y enviar el comprobante
         $comprobante = $this->generarComprobante($orden->id);
 
         if (array_key_exists('error', $comprobante)) {
@@ -734,6 +686,13 @@ class OrdenController extends Controller
 
     public function getComprobante($id)
     {
+        $orden = Orden::find($id);
+
+        // Verificar que la orden no esté cancelada
+        if (!$orden || $orden->estado === 'Cancelada') {
+            return response()->json(['message' => 'No se puede generar comprobante para una orden cancelada o la orden no fue encontrada.'], Response::HTTP_NOT_FOUND);
+        }
+
         $comprobante = $this->generarComprobante($id);
 
         if (array_key_exists('error', $comprobante)) {
@@ -745,6 +704,13 @@ class OrdenController extends Controller
 
     public function reenviarComprobante(Request $request, $id)
     {
+        $orden = Orden::find($id);
+
+        // Verificar que la orden no esté cancelada
+        if (!$orden || $orden->estado === 'Cancelada') {
+            return response()->json(['message' => 'No se puede reenviar comprobante para una orden cancelada o la orden no fue encontrada.'], Response::HTTP_NOT_FOUND);
+        }
+
         $comprobante = $this->generarComprobante($id);
 
         if (array_key_exists('error', $comprobante)) {
@@ -759,11 +725,11 @@ class OrdenController extends Controller
 
     public function generarComprobante($id)
     {
-        $orden = DB::table('ordenes')->where('id', $id)->first();
+        $orden = DB::table('ordenes')->where('id', $id)->where('estado', '!=', 'Cancelada')->first();
 
         if (!$orden) {
             return [
-                'error' => ["error" => "Order not found"],
+                'error' => ["error" => "Order not found or is canceled"],
                 'status' =>  Response::HTTP_NOT_FOUND
             ];
         }
@@ -910,8 +876,10 @@ class OrdenController extends Controller
 
         // Buscar la orden por numero_seguimiento
         $orden = Orden::where('numero_seguimiento', $request->numero_seguimiento)
+            ->where('estado', '!=', 'Cancelada') // Excluir órdenes canceladas
             ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
             ->first();
+
 
         if ($orden) {
             // Obtener detalles de la orden (suponiendo que todos los detalles son similares)
@@ -1059,19 +1027,27 @@ class OrdenController extends Controller
                 return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
 
-            $hoy = Carbon::today(); //facha actual
-            $inicio = $hoy->copy()->subDays(29); // 29 dias anteriores
+            $hoy = Carbon::today(); // Fecha actual
+            $inicio = $hoy->copy()->subDays(29); // 29 días anteriores
 
             $start = Carbon::parse($inicio)->format('Y-m-d');
             $end = Carbon::parse($hoy)->format('Y-m-d');
 
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
-            $ordenes = Orden::where('id_cliente', $cliente->id)->whereBetween(DB::raw('DATE(created_at)'), [$start, $end])
-                ->with(['detalles'])
+            $ordenes = Orden::where('id_cliente', $cliente_id)
+                ->where('estado', '!=', 'Cancelada') // Excluir órdenes canceladas
+                ->with(['detalles' => function ($query) {
+                    $query->where('id_estado_paquetes', '!=', 13); // Excluir detalles cancelados
+                }, 'direccion', 'tipoPago', 'cliente'])
                 ->get();
 
-            // Formatear los datos para que incluyan todos los campos deseados
+
+            // Filtrar detalles cancelados antes de procesar
             $result = $ordenes->map(function ($orden) {
+                $orden->detalles = $orden->detalles->filter(function ($detalle) {
+                    return $detalle->id_estado_paquetes != 13;
+                });
+
                 return [
                     'id' => $orden->id,
                     'id_cliente' => $orden->id_cliente,
@@ -1104,12 +1080,6 @@ class OrdenController extends Controller
                     })
                 ];
             });
-
-
-            \Log::info('ordenes del cliente', [
-                'cliente_id' => $cliente->id,
-                'ordenes' => $result
-            ]);
 
             return response()->json($result, Response::HTTP_OK);
         } catch (JWTException $e) {

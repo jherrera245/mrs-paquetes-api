@@ -18,6 +18,22 @@ class VinetaController extends Controller
     {
         $orden = Orden::with(['cliente', 'direccion', 'detalles.paquete', 'tipoPago'])->findOrFail($id);
 
+        // Validar si el estado de la orden es "Cancelada"
+        if ($orden->estado === 'Cancelada') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede generar la viñeta porque la orden está cancelada.'
+            ], 400);
+        }
+
+        // Validar si el estado de la orden es "En_proceso"
+        if ($orden->estado === 'En_proceso') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede generar la viñeta porque la orden está en proceso.'
+            ], 400);
+        }
+
         // Generar el código QR
         $result = Builder::create()
             ->writer(new PngWriter())
