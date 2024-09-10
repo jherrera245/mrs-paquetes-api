@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('numero_seguimiento')->nullable(); 
             $table->enum('tipo_documento', ['consumidor_final', 'credito_fiscal']);
             $table->enum('tipo_orden', ['orden', 'preorden']);
+            $table->enum('estado', ['En_proceso', 'Completada', 'Cancelada'])->default('En_proceso'); 
             $table->timestamps();
         });
     }

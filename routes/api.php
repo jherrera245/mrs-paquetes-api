@@ -261,6 +261,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('detalle-orden/{id}', [DetalleOrdenController::class, 'detalles_orden_id']);
   Route::delete('detalle-orden/{id}', [OrdenController::class, 'destroyDetalleOrden']);
   Route::put('detalle-orden/{id}', [DetalleOrdenController::class, 'update']);
+  Route::put('ordenes/{id}/cancelar', [OrdenController::class, 'cancelOrder']);
 
   // Requerimiento 2: Generar PDF de la orden
   Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF']);

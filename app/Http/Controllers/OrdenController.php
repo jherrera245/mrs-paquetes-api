@@ -158,6 +158,7 @@ class OrdenController extends Controller
         $orden->concepto = $request->input('concepto');
         $orden->tipo_documento = $request->input('tipo_documento');
         $orden->tipo_orden = $request->input('tipo_orden');
+        $orden->estado = 'En_Proceso';
         $orden->save();
 
         return $orden;
@@ -215,6 +216,7 @@ class OrdenController extends Controller
             $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
             $detalleOrden->direccion_registrada = json_encode(Direcciones::find($detalle['id_direccion']));
 
+            $orden->estado = 'En_Proceso';
             // Guardar el detalle de la orden para obtener su ID
             $detalleOrden->save();
 
@@ -274,10 +276,8 @@ class OrdenController extends Controller
             $orden->save();
 
             return response()->json(['message' => 'Orden actualizada correctamente', 'orden' => $orden], Response::HTTP_OK);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Hubo un error al actualizar la orden', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -351,42 +351,67 @@ class OrdenController extends Controller
         return response()->json($detalleOrden, Response::HTTP_OK);
     }
 
-    public function destroy($id)
+    public function cancelOrder($id)
     {
         DB::beginTransaction();
         try {
+            // Buscar la orden por ID
             $orden = Orden::find($id);
             if (!$orden) {
                 return response()->json(['message' => 'No se encontró la orden.'], Response::HTTP_NOT_FOUND);
             }
-            // obtenemos los paquetes de la orden.
+
+            // Verificar si la orden ya está cancelada
+            if ($orden->estado === 'Cancelada') {
+                return response()->json(['message' => 'La orden ya está cancelada.'], Response::HTTP_CONFLICT);
+            }
+
+            // Verificar si la orden ya está completada
+            if ($orden->estado === 'Completada') {
+                return response()->json(['message' => 'No se puede cancelar una orden que ya está completada.'], Response::HTTP_CONFLICT);
+            }
+
+            // Verificar si el estado de la orden es 'En_proceso'
+            if ($orden->estado !== 'En_proceso') {
+                return response()->json(['message' => 'Solo se pueden cancelar órdenes en estado En_proceso.'], Response::HTTP_CONFLICT);
+            }
+
+            // Cambiar el estado de la orden a "Cancelada"
+            $orden->estado = 'Cancelada';
+            $orden->save();
+
+            // Si hay paquetes relacionados, también cambiar su estado a "Cancelado"
             $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
-            // recorremos la orden para cambiar el estado de los paquetes a cancelado.
             foreach ($paquetes as $paquete) {
-                // marcar como salida en kardex.
-                $kardex = Kardex::where('id_orden', $orden->id)->first();
-                $kardex->id_paquete = $paquete->id_paquete;
+                // Asegúrate de que la columna correcta existe en la tabla detalle_orden
+                $detallePaquete = DetalleOrden::find($paquete->id);
+                if (isset($detallePaquete->id_estado_paquetes)) {
+                    $detallePaquete->id_estado_paquetes = 13; // Usar el ID 13 para estado 'Cancelado'
+                    $detallePaquete->save();
+                } else {
+                    // Manejar el caso donde la columna no existe
+                    throw new \Exception('La columna id_estado_paquete no existe en la tabla detalle_orden');
+                }
+
+                // Registrar la salida en el Kardex
+                $kardex = new Kardex();
+                $kardex->id_paquete = $detallePaquete->id_paquete;
                 $kardex->id_orden = $orden->id;
                 $kardex->cantidad = 1;
                 $kardex->numero_ingreso = $orden->numero_seguimiento;
                 $kardex->tipo_movimiento = 'SALIDA';
-                $kardex->tipo_transaccion = 'ORDEN_ELIMINADA';
+                $kardex->tipo_transaccion = 'ORDEN_CANCELADA';
                 $kardex->fecha = now();
                 $kardex->save();
             }
 
-            // Eliminar los detalles de la orden
-            DetalleOrden::where('id_orden', $orden->id)->delete();
-            // Eliminar la orden
-            $orden->delete();
-
             DB::commit();
-            return response()->json(['message' => 'Orden eliminada.'], Response::HTTP_OK);
+            return response()->json(['message' => 'Orden cancelada correctamente.'], Response::HTTP_OK);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(
                 [
-                    'message' => 'Error',
+                    'message' => 'Error al cancelar la orden',
                     'error' => $e->getMessage(),
                 ],
                 Response::HTTP_UNPROCESSABLE_ENTITY
@@ -394,19 +419,29 @@ class OrdenController extends Controller
         }
     }
 
-    // Método para eliminar un detalle de orden
     public function destroyDetalleOrden($id)
     {
         try {
             // Encuentra el detalle de la orden por ID
             $detalleOrden = DetalleOrden::find($id);
-            
-            // encuentra el numero de seguimiento de la orden.
-            $orden = Orden::find($detalleOrden->id_orden);
 
             if (!$detalleOrden) {
                 return response()->json(['mensaje' => 'Detalle de orden no encontrado'], Response::HTTP_NOT_FOUND);
             }
+
+            // Encuentra la orden asociada al detalle de la orden
+            $orden = Orden::find($detalleOrden->id_orden);
+
+            // Verificar si la orden existe
+            if (!$orden) {
+                return response()->json(['mensaje' => 'Orden no encontrada'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Verificar si el estado de la orden es "Completada"
+            if ($orden->estado === 'Completada') {
+                return response()->json(['mensaje' => 'No se puede eliminar el detalle de una orden completada'], Response::HTTP_CONFLICT);
+            }
+
             // REGISTRAR SALIDA DEL PAQUETE EN KARDEX.
             $kardex = new Kardex();
             $kardex->id_paquete = $detalleOrden->id_paquete;
@@ -418,14 +453,13 @@ class OrdenController extends Controller
             $kardex->fecha = now();
             $kardex->save();
 
-            // registro de salida en inventario.
+            // REGISTRAR SALIDA EN INVENTARIO
             $inventario = new Inventario();
             $inventario->id_paquete = $detalleOrden->id_paquete;
             $inventario->numero_ingreso = $orden->numero_seguimiento;
             $inventario->cantidad = -1;
             $inventario->fecha_salida = now();
             $inventario->estado = 1;
-
             $inventario->save();
 
             // Eliminar el detalle de la orden
@@ -439,7 +473,6 @@ class OrdenController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function show($id)
     {
@@ -580,14 +613,14 @@ class OrdenController extends Controller
         $ordenes = $ordenes->map(function ($orden) {
             return [
                 'id' => $orden->id,
-                'cliente' => optional($orden->cliente)->nombre, 
+                'cliente' => optional($orden->cliente)->nombre,
                 'direccion' => [
                     'nombre_contacto' => optional($orden->direccion)->nombre_contacto,
                     'telefono' => optional($orden->direccion)->telefono,
                     'direccion' => optional($orden->direccion)->direccion,
                     'referencia' => optional($orden->direccion)->referencia,
                 ],
-                'tipo_pago' => optional($orden->tipoPago)->pago, 
+                'tipo_pago' => optional($orden->tipoPago)->pago,
                 'total_pagar' => $orden->total_pagar,
                 'costo_adicional' => $orden->costo_adicional,
                 'tipo_documento' => $orden->tipo_documento,
@@ -677,6 +710,7 @@ class OrdenController extends Controller
 
         // Procesar el pago (simulado)
         $orden->estado_pago = 'pagado';
+        $orden->estado = 'Completada';
         $orden->save();
 
         // Generar comprobante
@@ -1085,7 +1119,7 @@ class OrdenController extends Controller
 
     public function update(Request $request, $id)
     {
-    
+
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
             'id_direccion' => 'required|integer|exists:direcciones,id',
@@ -1119,7 +1153,7 @@ class OrdenController extends Controller
 
         DB::beginTransaction();
         try {
-            
+
             $orden = Orden::findOrFail($id);
             $orden->id_cliente = $request->input('id_cliente');
             $orden->id_tipo_pago = $request->input('id_tipo_pago');
@@ -1176,8 +1210,8 @@ class OrdenController extends Controller
                         'id_estado_paquete' => $detalle['id_estado_paquete'],
                         'fecha_envio' => $detalle['fecha_envio'],
                         'fecha_entrega_estimada' => $detalle['fecha_entrega_estimada'],
-                        'uuid' => $uuid, 
-                        'tag' => $qrCodeUrl 
+                        'uuid' => $uuid,
+                        'tag' => $qrCodeUrl
                     ]
                 );
 
@@ -1277,7 +1311,7 @@ class OrdenController extends Controller
 
             // Guardar cambios
             $detalleOrden->save();
-            
+
             // Confirmar la transacción
             DB::commit();
 
@@ -1297,7 +1331,7 @@ class OrdenController extends Controller
     }
 
     // funcion para crear un nuevo detalle de una orden existente.
-    public function createOrderDetailByOrdenId($id_orden, $numero_seguimiento,Request $detalle)
+    public function createOrderDetailByOrdenId($id_orden, $numero_seguimiento, Request $detalle)
     {
         DB::beginTransaction(); // Iniciar una transacción para que todo sea atómico
 
@@ -1382,11 +1416,9 @@ class OrdenController extends Controller
             } else {
                 throw new \Exception('Error al generar el paquete.');
             }
-
         } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción si ocurre algún error
             return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
         }
     }
-
 }

@@ -22,29 +22,31 @@ class Orden extends Model
         'concepto',
         'numero_seguimiento',
         'finished',
+        'estado',
         'estado_pago',
         'tipo_orden',
     ];
 
-    public function cliente(){
+    public function cliente(): BelongsTo
+    {
         return $this->belongsTo(Clientes::class, 'id_cliente');
     }
-    public function paquete()
+
+    public function paquete(): BelongsTo
     {
         return $this->belongsTo(Paquete::class, 'id_paquete');
     }  
-    // Relación con el modelo TipoPago
-    public function tipoPago()
+
+    public function tipoPago(): BelongsTo
     {
         return $this->belongsTo(TipoPago::class, 'id_tipo_pago');
     }
 
-    // relacion con kardex.
     public function kardex()
     {
         return $this->hasMany(Kardex::class, 'id_orden');
     }
-    
+
     public function direccion(): BelongsTo
     {
         return $this->belongsTo(Direcciones::class, 'id_direccion');
@@ -54,6 +56,7 @@ class Orden extends Model
     {
         return $this->hasMany(DetalleOrden::class, 'id_orden');
     }
+
     public function detalleOrden()
     {
         return $this->hasMany(DetalleOrden::class, 'id_orden');
@@ -64,7 +67,6 @@ class Orden extends Model
         return $this->hasMany(EstadoPaquete::class, 'id');
     }
 
-    // relacion con orden recoleccion.
     public function ordenesRecolecciones()
     {
         return $this->hasMany(OrdenRecoleccion::class, 'id_orden');
@@ -78,6 +80,10 @@ class Orden extends Model
 
         if (isset($filters['estado_pago'])) {
             $query->where('estado_pago', $filters['estado_pago']);
+        }
+
+        if (isset($filters['estado'])) {
+            $query->where('estado', $filters['estado']); 
         }
 
         if (isset($filters['fecha_inicio']) && isset($filters['fecha_fin'])) {
