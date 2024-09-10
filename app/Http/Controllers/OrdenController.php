@@ -1020,8 +1020,14 @@ class OrdenController extends Controller
                 return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_UNAUTHORIZED);
             }
 
+            $hoy = Carbon::today(); //facha actual
+            $inicio = $hoy->copy()->subDays(29); // 29 dias anteriores
+
+            $start = Carbon::parse($inicio)->format('Y-m-d');
+            $end = Carbon::parse($hoy)->format('Y-m-d');
+
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
-            $ordenes = Orden::where('id_cliente', $cliente->id)
+            $ordenes = Orden::where('id_cliente', $cliente->id)->whereBetween(DB::raw('DATE(created_at)'), [$start, $end])
                 ->with(['detalles'])
                 ->get();
 

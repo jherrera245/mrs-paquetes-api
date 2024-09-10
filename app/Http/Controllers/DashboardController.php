@@ -114,7 +114,7 @@ class DashboardController extends Controller
         $result = DB::table('estado_paquetes')
         ->leftJoin('detalle_orden', function ($join) use ($start, $end) {
             $join->on('detalle_orden.id_estado_paquetes', '=', 'estado_paquetes.id')
-                ->whereBetween('detalle_orden.updated_at', [$start, $end]);
+                ->whereBetween(DB::raw('detalle_orden.updated_at'), [$start, $end]);
         })
         ->select(
             'estado_paquetes.nombre',
