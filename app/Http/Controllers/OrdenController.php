@@ -85,6 +85,8 @@ class OrdenController extends Controller
                         'direccion' => $detalle->direccionEntrega->direccion,
                         'tipo_paquete' => $detalle->paquete->tipoPaquete->nombre,
                         'tipo_caja' => $detalle->paquete->empaquetado->empaquetado,
+                        'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
+                        'tamano_paquete' => $detalle->paquete->tamanoPaquete->nombre,
                         'peso' => $detalle->paquete->peso,
                         'estado_paquete' => $detalle->paquete->estado->nombre,
                         "validacion_entrega" => $detalle->validacion_entrega,
@@ -599,6 +601,8 @@ class OrdenController extends Controller
                         'id_paquete' => $detalle->id_paquete,
                         'descripcion' => $detalle->descripcion,
                         'precio' => $detalle->precio,
+                        'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
+                        'tamano_paquete' => $detalle->paquete->tamanoPaquete->nombre,
                     ];
                 }),
             ];
@@ -1051,6 +1055,8 @@ class OrdenController extends Controller
                         return [
                             'id_orden' => $detalle->id_orden,
                             'id_paquete' => $detalle->id_paquete,
+                            'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete,
+                            'tamano_paquete' => $detalle->paquete->tamanoPaquete->nombre,
                             'id_tipo_entrega' => $detalle->id_tipo_entrega,
                             'id_estado_paquetes' => $detalle->id_estado_paquetes,
                             'id_direccion_entrega' => $detalle->id_direccion_entrega,
