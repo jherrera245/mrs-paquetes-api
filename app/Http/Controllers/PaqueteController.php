@@ -419,7 +419,7 @@ class PaqueteController extends Controller
 
         // Aplicar filtro de departamento si existe
         if ($idDepartamento) {
-            $paquete->where('departamentos.id', $idDepartamento);
+            $paquete->where('departamento.id', $idDepartamento);
         }
 
         // Aplicar filtro de municipio si existe
