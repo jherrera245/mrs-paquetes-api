@@ -37,14 +37,16 @@ class UbicacionPaqueteController extends Controller
                 $query->where('estado', $filters['estado']);
             }
 
-            $ubicacionPaquetes = $query->paginate($request->input('per_page', 10));
+            // Paginar los resultados
+            $perPage = $request->input('per_page', 10); // Tamaño de página por defecto 10
+            $ubicacionPaquetes = $query->paginate($perPage);
 
             if ($ubicacionPaquetes->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron ubicaciones de paquetes.'], 404);
             }
 
             // Formatear los datos manualmente en el controlador
-            $formattedData = $ubicacionPaquetes->map(function ($ubicacionPaquete) {
+            $formattedData = $ubicacionPaquetes->getCollection()->map(function ($ubicacionPaquete) {
                 return [
                     'id' => $ubicacionPaquete->id,
                     'paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->descripcion_contenido : 'N/A',
@@ -55,12 +57,25 @@ class UbicacionPaqueteController extends Controller
                 ];
             });
 
-            return response()->json($formattedData, 200);
-        } catch (Exception $e) {
+            // Devolver la respuesta paginada
+            return response()->json([
+                'data' => $formattedData, // Datos formateados
+                'pagination' => [
+                    'current_page' => $ubicacionPaquetes->currentPage(),
+                    'per_page' => $ubicacionPaquetes->perPage(),
+                    'total' => $ubicacionPaquetes->total(),
+                    'last_page' => $ubicacionPaquetes->lastPage(),
+                    'from' => $ubicacionPaquetes->firstItem(),
+                    'to' => $ubicacionPaquetes->lastItem(),
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
             Log::error('Error al listar ubicaciones de paquetes: ' . $e->getMessage());
             return response()->json(['error' => 'Error al listar ubicaciones de paquetes', 'details' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Mostrar una relación específica de ubicación con paquete.
