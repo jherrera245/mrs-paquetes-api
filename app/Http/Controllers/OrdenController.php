@@ -211,6 +211,7 @@ class OrdenController extends Controller
             $detalleOrden->fecha_ingreso = now();
             $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
             $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+            $detalleOrden->direccion_registrada = json_encode(Direcciones::find($detalle['id_direccion']));
 
             // Guardar el detalle de la orden para obtener su ID
             $detalleOrden->save();
@@ -1206,6 +1207,7 @@ class OrdenController extends Controller
                 $detalleOrden->fecha_ingreso = $detalle['fecha_ingreso'] ?? now();
                 $detalleOrden->fecha_entrega = $detalle['fecha_entrega'];
                 $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+                $detalleOrden->direccion_registrada = json_encode(Direcciones::find($detalle['id_direccion']));
                 $detalleOrden->save();
             }
 
@@ -1265,6 +1267,7 @@ class OrdenController extends Controller
             $detalleOrden->precio = $request->input('precio');
             $detalleOrden->fecha_ingreso = $request->input('fecha_ingreso');
             $detalleOrden->fecha_entrega = $request->input('fecha_entrega');
+            $detalleOrden->direccion_registrada = json_encode(Direcciones::find($detalleOrden->id_direccion_entrega));
 
             // Guardar cambios
             $detalleOrden->save();
@@ -1345,6 +1348,7 @@ class OrdenController extends Controller
                 $detalleOrden->fecha_ingreso = Carbon::now();
                 $detalleOrden->fecha_entrega = Carbon::parse($detalle['fecha_entrega']);
                 $detalleOrden->id_direccion_entrega = $detalle['id_direccion'];
+                $detalleOrden->direccion_registrada = json_encode(Direcciones::find($detalle['id_direccion']));
                 $detalleOrden->save();
 
                 // Registrar el movimiento en el Kardex
