@@ -250,17 +250,16 @@ class DropdownController extends Controller
         }
     }
 
-    public function getUbicaciones($estado)
+    public function getUbicacionesSinPaquetes()
     {
         try {
-            // Validar el parámetro de estado (0 para desocupado, 1 para ocupado)
-            if (!in_array($estado, [0, 1])) {
-                return response()->json(['message' => 'Estado inválido. Utilice 0 para desocupado o 1 para ocupado.'], Response::HTTP_BAD_REQUEST);
-            }
-
-            // Seleccionar solo los campos necesarios para un dropdown con el estado de ocupado o desocupado
+            // Obtener todas las ubicaciones que no están vinculadas a ninguna entrada en ubicaciones_paquetes
+            // o que están vinculadas pero con un estado de 0 en la tabla ubicaciones_paquetes
             $ubicaciones = Ubicacion::select('id', 'nomenclatura')
-                ->where('ocupado', $estado)
+                ->whereDoesntHave('paquetes') // Ubicaciones sin paquetes
+                ->orWhereHas('paquetes', function ($query) {
+                    $query->where('estado', 0); // Ubicaciones con paquetes en estado 0 en ubicaciones_paquetes
+                })
                 ->get();
 
             if ($ubicaciones->isEmpty()) {
@@ -275,6 +274,7 @@ class DropdownController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function getPasillosPorBodega($bodegaId)
     {

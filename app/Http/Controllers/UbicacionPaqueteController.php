@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UbicacionPaquete;
+use App\Models\Paquete;
 use App\Models\Kardex;
 use App\Models\DetalleOrden;
 use App\Models\Orden;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Resources\UbicacionPaqueteResource;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+
+
 
 class UbicacionPaqueteController extends Controller
 {
@@ -144,29 +147,37 @@ class UbicacionPaqueteController extends Controller
         DB::beginTransaction(); // Iniciar transacción
 
         try {
-            // Verificar si ya existe una ubicación para el paquete
-            $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $request->id_paquete)->first();
+            // Verificar si ya existe una relación de ubicación para el paquete con la misma ubicación
+            $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $request->id_paquete)
+                ->where('id_ubicacion', $request->id_ubicacion)
+                ->first();
 
             if ($existingUbicacionPaquete) {
-                return response()->json(['error' => 'Este paquete ya tiene una ubicación asignada.'], 400);
+                return response()->json(['error' => 'Esta ubicación ya está asignada a este paquete.'], 400);
             }
 
             // Crear la nueva relación de ubicación con paquete
-            $ubicacionPaquete = UbicacionPaquete::create($request->all());
+            $ubicacionPaquete = new UbicacionPaquete();
+            $ubicacionPaquete->id_paquete = $request->id_paquete;
+            $ubicacionPaquete->id_ubicacion = $request->id_ubicacion;
+            $ubicacionPaquete->estado = $request->estado;
+            $ubicacionPaquete->save();
 
             // Actualizar el campo id_ubicacion en el paquete
             $paquete = Paquete::find($ubicacionPaquete->id_paquete);
             $paquete->id_ubicacion = $ubicacionPaquete->id_ubicacion;
             $paquete->save();
 
-            // Actualizar el campo 'ocupado' en la tabla 'Ubicacion'
-            $ubicacion = Ubicacion::find($ubicacionPaquete->id_ubicacion);
-            $ubicacion->ocupado = 1; // Marcar como ocupado
-            $ubicacion->save();
-
             // **Agregar los movimientos en el Kardex**
             $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
+            if (!$detalleOrden) {
+                throw new Exception('Detalle de orden no encontrado para el paquete.');
+            }
+
             $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
+            if (!$numeroSeguimiento) {
+                throw new Exception('Número de seguimiento no encontrado para la orden.');
+            }
 
             // 1. **SALIDA de RECOLECTADO**
             $kardexSalida = new Kardex();
@@ -193,12 +204,13 @@ class UbicacionPaqueteController extends Controller
             DB::commit(); // Confirmar la transacción
 
             return response()->json(['message' => 'Relación de Ubicación con Paquete creada correctamente y Kardex actualizado.'], 201);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción si hay algún error
             Log::error('Error al crear la relación: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al crear la relación'], 500);
+            return response()->json(['error' => 'Error al crear la relación', 'details' => $e->getMessage()], 500);
         }
     }
+
 
 
     public function update(Request $request, $id)
@@ -320,12 +332,6 @@ class UbicacionPaqueteController extends Controller
                 return response()->json(['error' => 'Relación no encontrada'], 404);
             }
 
-            // Establecer la ubicación como 'Desocupado' antes de proceder
-            $ubicacion = $ubicacionPaquete->ubicacion;
-            if ($ubicacion) {
-                $ubicacion->ocupado = 0; // Establecer a '0' o cualquier valor que indique desocupado
-                $ubicacion->save();
-            }
 
             // Establecer el campo id_ubicacion como NULL en la tabla paquete para el paquete relacionado
             $paquete = $ubicacionPaquete->paquete;

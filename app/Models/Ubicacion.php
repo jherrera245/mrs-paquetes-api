@@ -19,6 +19,7 @@ class Ubicacion extends Model
         // Eliminar 'ocupado' del fillable, ya que ahora se determina dinámicamente.
     ];
 
+
     // Relación con la tabla `bodegas`.
     public function bodega()
     {
@@ -37,12 +38,6 @@ class Ubicacion extends Model
         return $this->hasMany(UbicacionPaquete::class, 'id_ubicacion');
     }
 
-    // Método accesor para obtener el estado de "ocupado" de la ubicación
-    public function getOcupadoAttribute()
-    {
-        // Verificar si hay paquetes relacionados en ubicaciones_paquetes
-        return $this->paquetes()->exists() ? 'Ocupado' : 'Desocupado';
-    }
 
     /**
      * Obtener los datos formateados con nombres en lugar de IDs.
@@ -58,7 +53,6 @@ class Ubicacion extends Model
             'id_bodega' => $this->bodega ? $this->bodega->id : 'N/A',
             'pasillo' => $this->pasillo ? $this->pasillo->nombre : 'N/A',
             'id_pasillo' => $this->pasillo ? $this->pasillo->id : 'N/A',
-            'ocupado' => $this->ocupado, 
         ];
     }
 }
