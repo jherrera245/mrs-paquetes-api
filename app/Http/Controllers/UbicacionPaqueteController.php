@@ -6,6 +6,7 @@ use App\Models\UbicacionPaquete;
 use App\Models\Kardex;
 use App\Models\DetalleOrden;
 use App\Models\Orden;
+use App\Models\Ubicacion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -73,7 +74,6 @@ class UbicacionPaqueteController extends Controller
                     'to' => $ubicacionPaquetes->lastItem(),
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al listar ubicaciones de paquetes: ' . $e->getMessage());
             return response()->json(['error' => 'Error al listar ubicaciones de paquetes', 'details' => $e->getMessage()], 500);
@@ -152,43 +152,17 @@ class UbicacionPaqueteController extends Controller
             // Crear la nueva relación de ubicación con paquete
             $ubicacionPaquete = UbicacionPaquete::create($request->all());
 
-            // Obtener el detalle de la orden.
-            $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
+            // Actualizar el campo id_ubicacion en el paquete
+            $paquete = $ubicacionPaquete->paquete;
+            $paquete->id_ubicacion = $ubicacionPaquete->id_ubicacion;
+            $paquete->save();
 
-            // Verificar que la orden existe
-            if ($detalleOrden) {
-                // Obtener la orden asociada
-                $orden = Orden::find($detalleOrden->id_orden);
+            // **Update the 'ocupado' field in the 'Ubicacion' table**
+            $ubicacion = $ubicacionPaquete->ubicacion;
+            $ubicacion->ocupado = 1; // Set to '1' or any value that indicates occupied
+            $ubicacion->save();
 
-                if ($orden) {
-                    // Crear la entrada en el Kardex con el número de seguimiento (numero_seguimiento) como SALIDA de recoleccion
-                    $kardex = new Kardex();
-                    $kardex->id_paquete = $ubicacionPaquete->id_paquete;
-                    $kardex->id_orden = $detalleOrden->id_orden;
-                    $kardex->cantidad = 1;
-                    $kardex->numero_ingreso = $orden->numero_seguimiento;
-                    $kardex->tipo_movimiento = 'SALIDA';
-                    $kardex->tipo_transaccion = 'RECOLECTADO';
-                    $kardex->fecha = now();
-                    $kardex->save();
-
-
-                    // Crear entrada en el kardex con el numero de seguimiento como ENTRADA de almacenado
-                    $kardex = new Kardex();
-                    $kardex->id_paquete = $ubicacionPaquete->id_paquete;
-                    $kardex->id_orden = $detalleOrden->id_orden;
-                    $kardex->cantidad = 1;
-                    $kardex->numero_ingreso = $orden->numero_seguimiento; 
-                    $kardex->tipo_movimiento = 'ENTRADA';
-                    $kardex->tipo_transaccion = 'ALMACENADO';
-                    $kardex->fecha = now();
-                    $kardex->save();
-                } else {
-                    return response()->json(['error' => 'Orden no encontrada.'], 404);
-                }
-            } else {
-                return response()->json(['error' => 'Detalle de la orden no encontrado.'], 404);
-            }
+            // Rest of your logic for Kardex and Orden
 
             return response()->json(['message' => 'Relación de Ubicación con Paquete creada correctamente.'], 201);
         } catch (Exception $e) {
@@ -197,14 +171,6 @@ class UbicacionPaqueteController extends Controller
         }
     }
 
-
-    /**
-     * Actualizar una relación existente.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
         DB::beginTransaction(); // Iniciar una transacción
@@ -222,11 +188,18 @@ class UbicacionPaqueteController extends Controller
                 $request->has('id_paquete') &&
                 $request->has('id_ubicacion') &&
                 UbicacionPaquete::where('id_paquete', $request->id_paquete)
-                    ->where('id_ubicacion', $request->id_ubicacion)
-                    ->where('id', '!=', $id)
-                    ->exists()
+                ->where('id_ubicacion', $request->id_ubicacion)
+                ->where('id', '!=', $id)
+                ->exists()
             ) {
                 return response()->json(['error' => 'Este paquete ya tiene asignada esa ubicación.'], 400);
+            }
+
+            // Set the old location to 'Desocupado'
+            $oldUbicacion = $ubicacionPaquete->ubicacion;
+            if ($oldUbicacion) {
+                $oldUbicacion->ocupado = 0; // Set to '0' or any value that indicates unoccupied
+                $oldUbicacion->save();
             }
 
             // Obtener el detalle de la orden del paquete que se está quitando
@@ -281,21 +254,25 @@ class UbicacionPaqueteController extends Controller
             $kardexEntradaNuevo->fecha = now();
             $kardexEntradaNuevo->save();
 
+            // Update the new location to 'Ocupado'
+            $newUbicacion = Ubicacion::find($request->id_ubicacion);
+            if ($newUbicacion) {
+                $newUbicacion->ocupado = 1; // Set to '1' or any value that indicates occupied
+                $newUbicacion->save();
+            }
+
             // Actualizar la relación de ubicación
             $ubicacionPaquete->update($request->all());
 
             DB::commit(); // Confirmar la transacción
 
             return response()->json(['message' => 'Ubicación de los paquetes actualizada correctamente.'], 200);
-
         } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción en caso de error
             Log::error('Error al actualizar la ubicación: ' . $e->getMessage());
             return response()->json(['error' => 'Error al actualizar la ubicación'], 500);
         }
     }
-
-
 
     /**
      * Eliminar una relación.
@@ -306,54 +283,70 @@ class UbicacionPaqueteController extends Controller
     public function destroy($id)
     {
         try {
+            // Comenzar buscando el UbicacionPaquete
             $ubicacionPaquete = UbicacionPaquete::find($id);
 
             if (!$ubicacionPaquete) {
                 return response()->json(['error' => 'Relación no encontrada'], 404);
             }
 
-            $ubicacionPaquete->delete();
+            // Establecer la ubicación como 'Desocupado' antes de proceder
+            $ubicacion = $ubicacionPaquete->ubicacion;
+            if ($ubicacion) {
+                $ubicacion->ocupado = 0; // Establecer a '0' o cualquier valor que indique desocupado
+                $ubicacion->save();
+            }
+
+            // Establecer el campo id_ubicacion como NULL en la tabla paquete para el paquete relacionado
+            $paquete = $ubicacionPaquete->paquete;
+            if ($paquete) {
+                $paquete->id_ubicacion = null; // Establecer a NULL para eliminar la asociación
+                $paquete->save();
+            }
 
             // salida de Almacenado en kardex.
             // Obtener el detalle de la orden.
             $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
 
-            // Verificar que la orden existe
-            if ($detalleOrden) {
-                // Obtener la orden asociada
-                $orden = Orden::find($detalleOrden->id_orden);
-
-                if ($orden) {
-                    // Crear la entrada en el Kardex con el número de seguimiento (numero_seguimiento) como SALIDA de recoleccion
-                    $kardex = new Kardex();
-                    $kardex->id_paquete = $ubicacionPaquete->id_paquete;
-                    $kardex->id_orden = $detalleOrden->id_orden;
-                    $kardex->cantidad = 1;
-                    $kardex->numero_ingreso = $orden->numero_seguimiento;
-                    $kardex->tipo_movimiento = 'SALIDA';
-                    $kardex->tipo_transaccion = 'RETIRO_ALMACEN';
-                    $kardex->fecha = now();
-                    $kardex->save();
-
-
-                    // Crear entrada en el kardex con el numero de seguimiento como ENTRADA de almacenado
-                    $kardex = new Kardex();
-                    $kardex->id_paquete = $ubicacionPaquete->id_paquete;
-                    $kardex->id_orden = $detalleOrden->id_orden;
-                    $kardex->cantidad = 1;
-                    $kardex->numero_ingreso = $orden->numero_seguimiento; 
-                    $kardex->tipo_movimiento = 'ENTRADA';
-                    $kardex->tipo_transaccion = 'DEVOLUCION_RECOLECCION';
-                    $kardex->fecha = now();
-                    $kardex->save();
-                } else {
-                    return response()->json(['error' => 'Orden no encontrada.'], 404);
-                }
-            } else {
-                return response()->json(['error' => 'Detalle de la orden no encontrado.'], 404);
+            if (!$detalleOrden) {
+                // Si no se encuentra el DetalleOrden, continuar sin lanzar error
+                $ubicacionPaquete->delete(); // Eliminar la relación de todos modos
+                return response()->json(['message' => 'Ubicación eliminada correctamente, pero no se encontró el detalle de la orden asociado.'], 200);
             }
 
-            return response()->json(['message' => 'Ubicacion eliminada correctamente.'], 200);
+            // Verificar que la orden existe
+            $orden = Orden::find($detalleOrden->id_orden);
+            if (!$orden) {
+                return response()->json(['error' => 'Orden no encontrada.'], 404);
+            }
+
+            // Crear la entrada en el Kardex con el número de seguimiento (numero_seguimiento) como SALIDA de recolección
+            $kardexSalida = new Kardex();
+            $kardexSalida->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexSalida->id_orden = $detalleOrden->id_orden;
+            $kardexSalida->cantidad = 1;
+            $kardexSalida->numero_ingreso = $orden->numero_seguimiento;
+            $kardexSalida->tipo_movimiento = 'SALIDA';
+            $kardexSalida->tipo_transaccion = 'RETIRO_ALMACEN';
+            $kardexSalida->fecha = now();
+            $kardexSalida->save();
+
+            // Crear entrada en el kardex con el numero de seguimiento como ENTRADA de almacenado
+            $kardexEntrada = new Kardex();
+            $kardexEntrada->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexEntrada->id_orden = $detalleOrden->id_orden;
+            $kardexEntrada->cantidad = 1;
+            $kardexEntrada->numero_ingreso = $orden->numero_seguimiento;
+            $kardexEntrada->tipo_movimiento = 'ENTRADA';
+            $kardexEntrada->tipo_transaccion = 'DEVOLUCION_RECOLECCION';
+            $kardexEntrada->fecha = now();
+            $kardexEntrada->save();
+
+            // Solo eliminar después de que todas las operaciones sean exitosas
+            $ubicacionPaquete->delete();
+
+            // Retornar un mensaje de éxito
+            return response()->json(['message' => 'Ubicación eliminada correctamente.'], 200);
         } catch (Exception $e) {
             Log::error('Error al eliminar la relación: ' . $e->getMessage());
             return response()->json(['error' => 'Error al eliminar la relación'], 500);

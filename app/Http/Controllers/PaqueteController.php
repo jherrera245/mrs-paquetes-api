@@ -223,7 +223,7 @@ class PaqueteController extends Controller
             'fecha_envio' => 'required|date',
             'fecha_entrega_estimada' => 'required|date|after_or_equal:fecha_envio',
             'descripcion_contenido' => 'required|string|max:1000',
-            'id_ubicacion' => 'required|exists:ubicaciones,id',
+            'id_ubicacion' => 'nullable|exists:ubicaciones,id',
         ]);
 
         if ($validator->fails()) {

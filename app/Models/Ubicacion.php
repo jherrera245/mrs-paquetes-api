@@ -16,6 +16,7 @@ class Ubicacion extends Model
         'nomenclatura',
         'id_bodega',
         'id_pasillo',
+        // Eliminar 'ocupado' del fillable, ya que ahora se determina dinámicamente.
     ];
 
     // Relación con la tabla `bodegas`.
@@ -30,12 +31,17 @@ class Ubicacion extends Model
         return $this->belongsTo(Pasillo::class, 'id_pasillo');
     }
 
-    /**
-     * Relación con la tabla `paquetes` a través de `ubicaciones_paquetes`.
-     */
+    // Relación con la tabla `paquetes` a través de `ubicaciones_paquetes`.
     public function paquetes()
     {
         return $this->hasMany(UbicacionPaquete::class, 'id_ubicacion');
+    }
+
+    // Método accesor para obtener el estado de "ocupado" de la ubicación
+    public function getOcupadoAttribute()
+    {
+        // Verificar si hay paquetes relacionados en ubicaciones_paquetes
+        return $this->paquetes()->exists() ? 'Ocupado' : 'Desocupado';
     }
 
     /**
@@ -52,6 +58,7 @@ class Ubicacion extends Model
             'id_bodega' => $this->bodega ? $this->bodega->id : 'N/A',
             'pasillo' => $this->pasillo ? $this->pasillo->nombre : 'N/A',
             'id_pasillo' => $this->pasillo ? $this->pasillo->id : 'N/A',
+            'ocupado' => $this->ocupado, 
         ];
     }
 }

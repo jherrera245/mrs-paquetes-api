@@ -30,11 +30,11 @@ class UbicacionPaqueteSeeder extends Seeder
             ['id_paquete' => 13, 'id_ubicacion' => 13, 'estado' => 1],
             ['id_paquete' => 14, 'id_ubicacion' => 14, 'estado' => 1],
             ['id_paquete' => 15, 'id_ubicacion' => 15, 'estado' => 1],
-            ['id_paquete' => 16, 'id_ubicacion' => 1, 'estado' => 1],
-            ['id_paquete' => 17, 'id_ubicacion' => 2, 'estado' => 1],
-            ['id_paquete' => 18, 'id_ubicacion' => 3, 'estado' => 1],
-            ['id_paquete' => 19, 'id_ubicacion' => 4, 'estado' => 1],
-            ['id_paquete' => 20, 'id_ubicacion' => 5, 'estado' => 1],
+            ['id_paquete' => 16, 'id_ubicacion' => 16, 'estado' => 1],
+            ['id_paquete' => 17, 'id_ubicacion' => 17, 'estado' => 1],
+            ['id_paquete' => 18, 'id_ubicacion' => 18, 'estado' => 1],
+            ['id_paquete' => 19, 'id_ubicacion' => 19, 'estado' => 1],
+            ['id_paquete' => 20, 'id_ubicacion' => 20, 'estado' => 1],
    
         ];
 
