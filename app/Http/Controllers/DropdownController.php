@@ -250,11 +250,18 @@ class DropdownController extends Controller
         }
     }
 
-    public function getUbicaciones()
+    public function getUbicaciones($estado)
     {
         try {
-            // Seleccionar solo los campos necesarios para un dropdown
-            $ubicaciones = Ubicacion::select('id', 'nomenclatura')->get();
+            // Validar el parámetro de estado (0 para desocupado, 1 para ocupado)
+            if (!in_array($estado, [0, 1])) {
+                return response()->json(['message' => 'Estado inválido. Utilice 0 para desocupado o 1 para ocupado.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Seleccionar solo los campos necesarios para un dropdown con el estado de ocupado o desocupado
+            $ubicaciones = Ubicacion::select('id', 'nomenclatura')
+                ->where('ocupado', $estado)
+                ->get();
 
             if ($ubicaciones->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron ubicaciones disponibles.'], Response::HTTP_NOT_FOUND);

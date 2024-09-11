@@ -253,7 +253,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_direcciones/{id}', [DropdownController::class, 'getDirecciones']);
   Route::get('dropdown/giros', [DropdownController::class, 'getGiros']);
   Route::get('dropdown/get_pasillos/{bodegaId}', [DropdownController::class, 'getPasillosPorBodega']);
-  Route::get('dropdown/get_ubicaciones', [DropdownController::class, 'getubicaciones']);
+  Route::get('dropdown/get_ubicaciones/{estado}', [DropdownController::class, 'getUbicaciones']);
   Route::get('dropdown/get_paquetes_sin_asignar', [DropdownController::class, 'getPaquetesSinAsignar']);
 
   // Detalle Orden
@@ -289,6 +289,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::post('ubicaciones', [UbicacionController::class, 'store']);
   Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']);
   Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']);
+  
 
 
   // Rutas para el controlador UbicacionPaquete
