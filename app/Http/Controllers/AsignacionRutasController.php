@@ -177,26 +177,27 @@ class AsignacionRutasController extends Controller
      * @param  \App\Models\AsignacionRutas  $asignacionRutas
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
         $asignacionRuta = AsignacionRutas::find($id);
 
-    if (!$asignacionRuta) {
+        if (!$asignacionRuta) {
+            $data = [
+                'message' => 'asignaciond Ruta no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        // en lugar de hacer el delete, cambiamos el estado.
+        $asignacionRuta->estado = 0;
+        $asignacionRuta->save();
         $data = [
-            'message' => 'asignaciond Ruta no encontrada',
-            'status' => 404
+            'message' => 'asignacion de Ruta eliminada',
+            'status' => 200
         ];
-        return response()->json($data, 404);
-    }
 
-    $asignacionRuta->delete();
-
-    $data = [
-        'message' => 'asignacion de Ruta eliminada',
-        'status' => 200
-    ];
-
-    return response()->json($data, 200);
+        return response()->json($data, 200);
     }
 
     // funcion para determinar los estados de los paquetes asignados a una ruta, recibe el id de la ruta como parámetro.
