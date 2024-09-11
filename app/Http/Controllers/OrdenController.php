@@ -615,41 +615,84 @@ class OrdenController extends Controller
 
 
     private function transformOrden($orden)
-    {
-        $direccion = $orden->direccion;
+{
+    $direccion = $orden->direccion;
 
-        return [
-            'id' => $orden->id,
-            'id_cliente' => $orden->id_cliente,
-            'cliente' => [
-                'nombre' => $orden->cliente->nombre,
-                'apellido' => $orden->cliente->apellido,
-            ],
-            'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
-            'total_pagar' => $orden->total_pagar,
-            'costo_adicional' => $orden->costo_adicional,
-            'concepto' => $orden->concepto,
-            'estado_pago' => $orden->estado_pago,
-            'direccion_emisor' => [
-                'id_direccion' => $direccion->id,
-                'direccion' => $direccion->direccion,
-                'nombre_contacto' => $direccion->nombre_contacto,
-                'telefono' => $direccion->telefono,
-                'departamento' => $direccion->departamento->nombre,
-                'municipio' => $direccion->municipio->nombre,
-                'referencia' => $direccion->referencia,
-            ],
-            'detalles' => $orden->detalles->map(function ($detalle) {
-                return [
-                    'id_paquete' => $detalle->id_paquete,
-                    'descripcion' => $detalle->descripcion,
-                    'precio' => $detalle->precio,
-                ];
-            }),
-            'created_at' => $orden->created_at,
-            'updated_at' => $orden->updated_at,
-        ];
-    }
+    return [
+        // Datos principales de la orden
+        'id' => $orden->id,
+        'id_cliente' => $orden->id_cliente,
+        'cliente' => [
+            'nombre' => $orden->cliente->nombre ?? 'NA',
+            'apellido' => $orden->cliente->apellido ?? 'NA',
+        ],
+        'id_tipo_pago' => $orden->id_tipo_pago,
+        'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+        'total_pagar' => $orden->total_pagar,
+        'costo_adicional' => $orden->costo_adicional,
+        'estado' => $orden->estado,
+        'estado_pago' => $orden->estado_pago,
+        'tipo_documento' => $orden->tipo_documento,
+        'tipo_orden' => $orden->tipo_orden,
+        'id_direccion' => $orden->id_direccion,
+        'concepto' => $orden->concepto,
+        'numero_seguimiento' => $orden->numero_seguimiento,
+
+        // Dirección del emisor
+        'direccion_emisor' => $direccion ? [
+            'id_direccion' => $direccion->id,
+            'direccion' => $direccion->direccion,
+            'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
+            'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
+            'nombre_contacto' => $direccion->nombre_contacto,
+            'telefono' => $direccion->telefono,
+            'id_departamento' => $direccion->id_departamento,
+            'departamento' => $direccion->departamento->nombre ?? 'NA',
+            'id_municipio' => $direccion->id_municipio,
+            'municipio' => $direccion->municipio->nombre ?? 'NA',
+            'referencia' => $direccion->referencia,
+        ] : null,
+
+        // Detalles de la orden
+        'detalles' => $orden->detalles->map(function ($detalle) {
+            return [
+                'id' => $detalle->id,
+                'id_orden' => $detalle->id_orden,
+                'id_paquete' => $detalle->id_paquete,
+                'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
+                'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                'validacion_entrega' => $detalle->validacion_entrega,
+                'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                'descripcion' => $detalle->descripcion,
+                'precio' => $detalle->precio,
+                'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
+                'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
+                'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
+                'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
+                'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
+                'fecha_ingreso' => $detalle->fecha_ingreso,
+                'fecha_entrega' => $detalle->fecha_entrega,
+                
+                // Información del paquete
+                'paquete' => [
+                    'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
+                    'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete ?? 'NA',
+                    'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
+                    'peso' => $detalle->paquete->peso ?? 'NA',
+                    'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
+                    'fecha_envio' => $detalle->paquete->fecha_envio,
+                    'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
+                    'descripcion_contenido' => $detalle->paquete->descripcion_contenido
+                ]
+            ];
+        }),
+
+        'created_at' => $orden->created_at,
+        'updated_at' => $orden->updated_at,
+    ];
+}
 
     public function procesarPago(Request $request, $id)
     {

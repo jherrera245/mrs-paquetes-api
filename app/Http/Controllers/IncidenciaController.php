@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Incidencia;
+use App\Models\EstadoIncidencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class IncidenciaController extends Controller
 {
+    private $estadosIncidencia;
+
+    public function __construct()
+    {
+        // Cargar los estados de incidencia al inicializar el controlador
+        $this->estadosIncidencia = EstadoIncidencia::pluck('estado', 'id')->toArray();
+    }
+
     public function index(Request $request)
     {
         // Definir el número de elementos por página con un valor predeterminado de 10
@@ -151,7 +160,7 @@ class IncidenciaController extends Controller
             'fecha_hora' => $incidencia->fecha_hora,
             'tipo_incidencia' => $incidencia->tipoIncidencia ? $incidencia->tipoIncidencia->nombre : null,
             'descripcion' => $incidencia->descripcion,
-            'estado' => $incidencia->estado == 1 ? 'Activo' : 'Inactivo',
+            'estado' => $this->estadosIncidencia[$incidencia->estado] ?? 'Desconocido',
             'fecha_resolucion' => $incidencia->fecha_resolucion,
             'usuario_reporta' => $incidencia->usuarioReporta ? $incidencia->usuarioReporta->email : null,
             'usuario_asignado' => $incidencia->usuarioAsignado ? $incidencia->usuarioAsignado->email : null,
