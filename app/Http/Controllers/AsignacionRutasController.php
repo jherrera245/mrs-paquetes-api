@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AsignacionRutas;
+use App\Models\DetalleOrden;
+use App\Models\Kardex;
+use App\Models\Orden;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Paquete;
 use Doctrine\DBAL\Query\QueryException;
@@ -231,10 +235,10 @@ class AsignacionRutasController extends Controller
     {
         // Validar la solicitud
         $validated = $request->validate([
-            'id_ruta' => 'required|integer',
-            'id_vehiculo' => 'required|integer',
+            'id_ruta' => 'required|integer|exists:rutas,id',
+            'id_vehiculo' => 'required|integer|exists:vehiculos,id',
             'id_paquete' => 'required|array|min:1',
-            'id_paquete.*' => 'integer'
+            'id_paquete.*' => 'integer|exists:paquetes,id'
         ]);
 
         $idRuta = $validated['id_ruta'];
@@ -243,49 +247,125 @@ class AsignacionRutasController extends Controller
         $fechaActual = now();
 
         // Inicia una transacción para garantizar la integridad de los datos
-        $asignaciones = DB::transaction(function () use ($idRuta, $idVehiculo, $paquetesIds, $fechaActual) {
-        $asignaciones = [];
-        $codigoBase = 'AR-';
+        try {
+            $asignaciones = DB::transaction(function () use ($idRuta, $idVehiculo, $paquetesIds, $fechaActual) {
+                $asignaciones = [];
+                $codigoBase = 'AR-';
 
-        // Encuentra el último código generado
-        $ultimoCodigo = AsignacionRutas::latest('id')
-            ->first()
-            ->codigo_unico_asignacion;
+                // Encuentra el último código generado
+                $ultimoCodigo = AsignacionRutas::latest('id')->first()->codigo_unico_asignacion ?? 'AR-000000000000';
 
-        // Extrae el número del último código (si existe) y calcula el siguiente número
-        $ultimoNumero = $ultimoCodigo ? (int) substr($ultimoCodigo, 3) : 0;
-        $siguienteNumero = $ultimoNumero + 1;
-        $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+                // Extrae el número del último código (si existe) y calcula el siguiente número
+                $ultimoNumero = (int) substr($ultimoCodigo, 3);
+                $siguienteNumero = $ultimoNumero + 1;
+                $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
 
-        foreach ($paquetesIds as $idPaquete) {
-            $codigoUnico = $codigoBase . $formatoNumero;
+                foreach ($paquetesIds as $idPaquete) {
+                    // Verificar si el paquete existe
+                    $detalleOrden = DetalleOrden::where('id_paquete', $idPaquete)->firstOrFail();
 
-            $asignacion = AsignacionRutas::create([
-                'codigo_unico_asignacion' => $codigoUnico,
-                'id_ruta' => $idRuta,
-                'id_vehiculo' => $idVehiculo,
-                'id_paquete' => $idPaquete,
-                'fecha' => $fechaActual,
-                'id_estado' => 1, 
-                'created_at' => $fechaActual,
-                'updated_at' => $fechaActual
-            ]);
+                    // Generar el código único
+                    $codigoUnico = $codigoBase . $formatoNumero;
 
-            // Agregar la asignación a la lista
-            $asignaciones[] = $asignacion;
+                    // Crear la asignación de ruta
+                    $asignacion = AsignacionRutas::create([
+                        'codigo_unico_asignacion' => $codigoUnico,
+                        'id_ruta' => $idRuta,
+                        'id_vehiculo' => $idVehiculo,
+                        'id_paquete' => $idPaquete,
+                        'fecha' => $fechaActual,
+                        'id_estado' => 1, 
+                        'created_at' => $fechaActual,
+                        'updated_at' => $fechaActual
+                    ]);
 
-            // Incrementa el número para el próximo código
-            $siguienteNumero++;
-            $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+                    // Agregar la asignación a la lista
+                    $asignaciones[] = $asignacion;
+
+                    // Obtener el número de seguimiento de la orden
+                    $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
+
+                    // Validar si el número de seguimiento está presente
+                    if (!$numeroSeguimiento) {
+                        throw new \Exception('Número de seguimiento no encontrado para la orden.');
+                    }
+
+                    // Crear el objeto Kardex para SALIDA de ALMACENADO
+                    $kardexSalida = new Kardex();
+                    $kardexSalida->id_paquete = $idPaquete;
+                    $kardexSalida->id_orden = $detalleOrden->id_orden;
+                    $kardexSalida->cantidad = 1;
+                    $kardexSalida->numero_ingreso = $numeroSeguimiento;
+                    $kardexSalida->tipo_movimiento = 'SALIDA';
+                    $kardexSalida->tipo_transaccion = 'ALMACENADO';
+                    $kardexSalida->fecha = now();
+                    $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
+
+                    // Crear el objeto Kardex para ENTRADA en ASIGNADO_RUTA
+                    $kardexEntrada = new Kardex();
+                    $kardexEntrada->id_paquete = $idPaquete;
+                    $kardexEntrada->id_orden = $detalleOrden->id_orden;
+                    $kardexEntrada->cantidad = 1;
+                    $kardexEntrada->numero_ingreso = $numeroSeguimiento;
+                    $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                    $kardexEntrada->tipo_transaccion = 'ASIGNADO_RUTA';
+                    $kardexEntrada->fecha = now();
+                    $kardexEntrada->save(); // Guardar el registro de ENTRADA en kardex
+
+                    // Incrementar el número para el próximo código
+                    $siguienteNumero++;
+                    $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+                }
+
+                return $asignaciones;
+            });
+
+            return response()->json([
+                'message' => 'Paquetes asignados exitosamente y Kardex actualizado',
+                'data' => $asignaciones
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error en la asignación de rutas y actualización de Kardex: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Ocurrió un error al asignar los paquetes a la ruta.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-            return $asignaciones;
-        });
-
-        return response()->json([
-            'message' => 'Paquetes asignados exitosamente',
-            'data' => $asignaciones
-        ], 200);
     }
+
+
+
+    /**
+     * Registra una entrada en el kardex.
+     */
+    private function registrarEntradaKardex($idPaquete, $idOrden, $numeroSeguimiento, $tipoTransaccion)
+    {
+        Kardex::create([
+            'id_paquete' => $idPaquete,
+            'id_orden' => $idOrden,  
+            'cantidad' => 1,
+            'numero_ingreso' => $numeroSeguimiento, // Utilizar el numero_seguimiento de la orden
+            'tipo_movimiento' => 'ENTRADA',
+            'tipo_transaccion' => $tipoTransaccion,
+            'fecha' => now(),
+        ]);
+    }
+
+    /**
+     * Registra una salida en el kardex.
+     */
+    private function registrarSalidaKardex($idPaquete, $idOrden, $numeroSeguimiento, $tipoTransaccion)
+    {
+        Kardex::create([
+            'id_paquete' => $idPaquete,
+            'id_orden' => $idOrden,  
+            'cantidad' => 1,
+            'numero_ingreso' => $numeroSeguimiento, // Utilizar el numero_seguimiento de la orden
+            'tipo_movimiento' => 'SALIDA',
+            'tipo_transaccion' => $tipoTransaccion,
+            'fecha' => now(),
+        ]);
+    }
+
 
 }
