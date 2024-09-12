@@ -155,7 +155,7 @@ class IncidenciaController extends Controller
     {
         return [
             'id' => $incidencia->id,
-            'paquete_uuid' => $incidencia->paquete ? $incidencia->paquete->uuid : null,
+            'id_paquete' => $incidencia->paquete ? $incidencia->paquete->id : null,
             'paquete_descripcion' => $incidencia->paquete ? $incidencia->paquete->descripcion_contenido : null,
             'fecha_hora' => $incidencia->fecha_hora,
             'tipo_incidencia' => $incidencia->tipoIncidencia ? $incidencia->tipoIncidencia->nombre : null,
