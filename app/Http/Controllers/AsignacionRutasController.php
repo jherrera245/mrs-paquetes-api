@@ -183,7 +183,7 @@ class AsignacionRutasController extends Controller
 
         if (!$asignacionRuta) {
             $data = [
-                'message' => 'asignaciond Ruta no encontrada',
+                'message' => 'asignacion Ruta no encontrada',
                 'status' => 404
             ];
             return response()->json($data, 404);

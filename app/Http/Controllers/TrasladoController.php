@@ -24,211 +24,180 @@ class TrasladoController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            // Iniciar la consulta con las relaciones necesarias
-            $query = Traslado::with(['bodega', 'ubicacionPaquete', 'asignacionRuta', 'orden'])
-                ->where('estado', 'Activo');
+        $traslados = Traslado::with(['bodegaOrigen', 'bodegaDestino', 'paquete', 'user'])
+            ->paginate($request->input('per_page', 10));
 
-            // Filtros opcionales
-            if ($request->has('id_bodega')) {
-                $query->where('id_bodega', $request->id_bodega);
-            }
+        $trasladosFormatted = $traslados->getCollection()->map->getFormattedData();
+        $traslados->setCollection($trasladosFormatted);
 
-            if ($request->has('fecha_traslado')) {
-                $query->whereDate('fecha_traslado', $request->fecha_traslado);
-            }
-
-            if ($request->has('codigo_qr')) {
-                $query->where('codigo_qr', 'like', '%' . $request->codigo_qr . '%');
-            }
-
-            if ($request->has('id_ubicacion_paquete')) {
-                $query->where('id_ubicacion_paquete', $request->id_ubicacion_paquete);
-            }
-
-            if ($request->has('id_asignacion_ruta')) {
-                $query->where('id_asignacion_ruta', $request->id_asignacion_ruta);
-            }
-
-            if ($request->has('id_orden')) {
-                $query->where('id_orden', $request->id_orden);
-            }
-
-            // Filtro por rango de fechas de traslado
-            if ($request->has('fecha_traslado_from') && $request->has('fecha_traslado_to')) {
-                $query->whereBetween('fecha_traslado', [$request->fecha_traslado_from, $request->fecha_traslado_to]);
-            }
-
-            // Paginación
-            $traslados = $query->paginate(10);
-
-            // Formatear la respuesta utilizando el método `getFormattedData()` del modelo
-            $formattedData = $traslados->map(function ($traslado) {
-                return $traslado->getFormattedData();
-            });
-
-            return response()->json($formattedData, Response::HTTP_OK);
-        } catch (Exception $e) {
-            Log::error('Error al listar traslados: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al listar traslados'], 500);
-        }
+        return response()->json($traslados, 200);
     }
+
 
     public function show($id)
     {
-        try {
-            $traslado = Traslado::with(['bodega', 'ubicacionPaquete', 'asignacionRuta', 'orden'])->find($id);
+        $traslado = Traslado::with(['bodegaOrigen', 'bodegaDestino', 'paquete', 'user'])->find($id);
 
-            if (!$traslado) {
-                return response()->json(['message' => 'Traslado no encontrado'], Response::HTTP_NOT_FOUND);
-            }
-
-            // Formatear la respuesta utilizando el método `getFormattedData()` del modelo
-            return response()->json($traslado->getFormattedData(), Response::HTTP_OK);
-        } catch (Exception $e) {
-            Log::error('Error al mostrar traslado: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al mostrar traslado'], 500);
+        if (!$traslado) {
+            return response()->json(['message' => 'Traslado no encontrado'], 404);
         }
+
+        return response()->json($traslado->getFormattedData(), 200);
     }
+
 
 
     public function store(Request $request)
     {
-        try {
-            // Validar los datos de entrada con reglas personalizadas para relaciones
-            $validatedData = $request->validate([
-                'id_bodega' => 'required|exists:bodegas,id',
-                'codigo_qr' => 'required|string|max:255|unique:traslados,codigo_qr', // Validación de unicidad del QR
-                'id_ubicacion_paquete' => 'required|exists:ubicaciones_paquetes,id',
-                'id_asignacion_ruta' => 'required|exists:asignacion_rutas,id',
-                'id_orden' => 'required|exists:ordenes,id',
-                'numero_ingreso' => 'required|string|max:100|unique:traslados,numero_ingreso', // Validación de unicidad del número de ingreso
-                'fecha_traslado' => 'required|date',
-                'estado' => ['required', Rule::in(['Activo', 'Inactivo'])],
-            ], [
-                'id_bodega.exists' => 'La bodega especificada no existe.',
-                'id_ubicacion_paquete.exists' => 'La ubicación del paquete especificada no existe.',
-                'id_asignacion_ruta.exists' => 'La asignación de ruta especificada no existe.',
-                'id_orden.exists' => 'La orden especificada no existe.',
-                'estado.in' => 'El estado debe ser Activo o Inactivo.',
-            ]);
+        // Validar los datos de entrada
+        $validator = Validator::make($request->all(), [
+            'bodega_origen' => 'required|exists:bodegas,id',
+            'bodega_destino' => 'required|exists:bodegas,id',
+            'paquetes' => 'required|array|min:1',
+            'paquetes.*' => 'exists:paquetes,id',
+            'fecha_traslado' => 'required|date',
+            'user_id' => 'required|exists:users,id'
+        ], [
+            'bodega_origen.required' => 'La bodega de origen es obligatoria.',
+            'bodega_destino.required' => 'La bodega de destino es obligatoria.',
+            'paquetes.required' => 'Debes seleccionar al menos un paquete.',
+            'paquetes.*.exists' => 'Uno o más paquetes seleccionados no son válidos.',
+            'fecha_traslado.required' => 'La fecha de traslado es obligatoria.',
+            'user_id.exists' => 'El usuario que realiza el traslado no es válido.'
+        ]);
 
-            // Crear el traslado
-            $traslado = Traslado::create($validatedData);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Generar el número de traslado único para todos los paquetes
+        $numeroTraslado = 'TR-' . str_pad(Traslado::max('id') + 1, 8, '0', STR_PAD_LEFT);
+
+        DB::beginTransaction();
+
+        try {
+            // Obtener los datos generales que compartirán todos los paquetes
+            $bodegaOrigen = $request->input('bodega_origen');
+            $bodegaDestino = $request->input('bodega_destino');
+            $fechaTraslado = $request->input('fecha_traslado');
+            $userId = $request->input('user_id');
+
+            // Recorrer el array de paquetes para registrar cada traslado
+            foreach ($request->input('paquetes') as $idPaquete) {
+                // Registrar el traslado de cada paquete
+                $traslado = Traslado::create([
+                    'bodega_origen' => $bodegaOrigen,
+                    'bodega_destino' => $bodegaDestino,
+                    'id_paquete' => $idPaquete,
+                    'numero_traslado' => $numeroTraslado,
+                    'fecha_traslado' => $fechaTraslado,
+                    'estado' => 'Activo',
+                    'user_id' => $userId
+                ]);
+
+                // Crear la entrada y salida en Kardex para cada paquete
+                $detalleOrden = DetalleOrden::where('id_paquete', $idPaquete)->first();
+                $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
+
+                // Salida de almacén
+                $kardexSalida = new Kardex();
+                $kardexSalida->id_paquete = $idPaquete;
+                $kardexSalida->id_orden = $detalleOrden->id_orden;
+                $kardexSalida->cantidad = 1;
+                $kardexSalida->numero_ingreso = $numeroSeguimiento;
+                $kardexSalida->tipo_movimiento = 'SALIDA';
+                $kardexSalida->tipo_transaccion = 'ASIGNADO_RUTA';
+                $kardexSalida->fecha = now();
+                $kardexSalida->save();
+
+                // Entrada a traslado
+                $kardexEntrada = new Kardex();
+                $kardexEntrada->id_paquete = $idPaquete;
+                $kardexEntrada->id_orden = $detalleOrden->id_orden;
+                $kardexEntrada->cantidad = 1;
+                $kardexEntrada->numero_ingreso = $numeroSeguimiento;
+                $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                $kardexEntrada->tipo_transaccion = 'TRASLADO';
+                $kardexEntrada->fecha = now();
+                $kardexEntrada->save();
+            }
+
+            DB::commit();
 
             return response()->json([
-                'message' => 'Traslado creado con éxito',
-                'data' => $traslado->getFormattedData()
-            ], Response::HTTP_CREATED);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Capturar y devolver errores de validación con detalles específicos
-            return response()->json(['error' => 'Error al crear traslado.', 'details' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            // Capturar cualquier otra excepción y registrar el error
-            Log::error('Error al crear traslado: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al crear traslado. ' . $e->getMessage()], 500);
+                'message' => 'Traslado finalizado con éxito para los paquetes seleccionados.',
+                'numero_traslado' => $numeroTraslado
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error al finalizar el traslado: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al finalizar el traslado.', 'details' => $e->getMessage()], 500);
         }
     }
+
+
 
     /**
      * Actualizar un traslado existente.
      */
     public function update(Request $request, $id)
     {
+        $traslado = Traslado::find($id);
+
+        if (!$traslado) {
+            return response()->json(['message' => 'Traslado no encontrado'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'bodega_origen' => 'sometimes|required|exists:bodegas,id',
+            'bodega_destino' => 'sometimes|required|exists:bodegas,id',
+            'id_paquete' => 'sometimes|required|exists:paquetes,id',
+            'numero_traslado' => 'sometimes|required|string|max:255|unique:traslados,numero_traslado,'.$id,
+            'fecha_traslado' => 'sometimes|required|date',
+            'estado' => 'sometimes|required|in:Activo,Inactivo',
+            'user_id' => 'sometimes|required|exists:users,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         try {
-            // Buscar el traslado por ID
-            $traslado = Traslado::find($id);
-
-            if (!$traslado) {
-                return response()->json(['error' => 'Traslado no encontrado'], Response::HTTP_NOT_FOUND);
-            }
-
-            // Validar los datos de entrada con reglas personalizadas
-            $validatedData = $request->validate([
-                'id_bodega' => 'nullable|exists:bodegas,id',
-                'codigo_qr' => [
-                    'nullable',
-                    'string',
-                    'max:255',
-                    Rule::unique('traslados')->ignore($traslado->id),
-                ],
-                'id_ubicacion_paquete' => 'nullable|exists:ubicaciones_paquetes,id',
-                'id_asignacion_ruta' => 'nullable|exists:asignacion_rutas,id',
-                'id_orden' => 'nullable|exists:ordenes,id',
-                'numero_ingreso' => [
-                    'nullable',
-                    'string',
-                    'max:100',
-                    Rule::unique('traslados')->ignore($traslado->id),
-                ],
-                'fecha_traslado' => 'nullable|date',
-                'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],
-            ], [
-                'id_bodega.exists' => 'La bodega seleccionada no es válida.',
-                'codigo_qr.unique' => 'El código QR ya está en uso.',
-                'id_ubicacion_paquete.exists' => 'La ubicación del paquete seleccionada no es válida.',
-                'id_asignacion_ruta.exists' => 'La asignación de ruta seleccionada no es válida.',
-                'id_orden.exists' => 'La orden seleccionada no es válida.',
-                'numero_ingreso.unique' => 'El número de ingreso ya está en uso.',
-                'estado.in' => 'El estado debe ser Activo o Inactivo.',
-            ]);
-
-            // Validación de unicidad adicional para `codigo_qr` y `numero_ingreso`
-            if ($request->has('codigo_qr') && $request->codigo_qr != $traslado->codigo_qr) {
-                $codigoQRExists = Traslado::where('codigo_qr', $request->codigo_qr)->exists();
-                if ($codigoQRExists) {
-                    return response()->json(['error' => 'El código QR ya está en uso.'], 400);
-                }
-            }
-
-            if ($request->has('numero_ingreso') && $request->numero_ingreso != $traslado->numero_ingreso) {
-                $numeroIngresoExists = Traslado::where('numero_ingreso', $request->numero_ingreso)->exists();
-                if ($numeroIngresoExists) {
-                    return response()->json(['error' => 'El número de ingreso ya está en uso.'], 400);
-                }
-            }
-
-            // Actualizar solo los valores proporcionados en la solicitud
-            $traslado->fill($validatedData);
-
-            // Guardar los cambios
-            $traslado->save();
+            $traslado->update($request->all());
 
             return response()->json([
-                'message' => 'Traslado actualizado con éxito',
+                'message' => 'Traslado actualizado con éxito.',
                 'data' => $traslado->getFormattedData()
-            ], Response::HTTP_OK);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Captura de errores de validación
-            return response()->json(['error' => 'Datos inválidos', 'detalles' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            // Captura de otros errores no esperados
+            ], 200);
+        } catch (Exception $e) {
             Log::error('Error al actualizar traslado: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al actualizar traslado'], 500);
+            return response()->json(['error' => 'Error al actualizar traslado.'], 500);
         }
     }
+
 
     /**
      * Eliminar (marcar como inactivo) un traslado.
      */
     public function destroy($id)
     {
+        $traslado = Traslado::find($id);
+
+        if (!$traslado) {
+            return response()->json(['message' => 'Traslado no encontrado'], 404);
+        }
+
         try {
-            $traslado = Traslado::find($id);
-
-            if (!$traslado) {
-                return response()->json(['message' => 'Traslado no encontrado'], Response::HTTP_NOT_FOUND);
-            }
-
             $traslado->estado = 'Inactivo';
             $traslado->save();
 
-            return response()->json(['message' => 'Traslado eliminado (marcado como inactivo) con éxito'], Response::HTTP_OK);
+            return response()->json(['message' => 'Traslado marcado como inactivo.'], 200);
         } catch (Exception $e) {
-            Log::error('Error al eliminar traslado: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al eliminar traslado'], 500);
+            Log::error('Error al marcar traslado como inactivo: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al marcar traslado como inactivo.'], 500);
         }
     }
+
 
     public function trasladoPdf($id = null)
 {
