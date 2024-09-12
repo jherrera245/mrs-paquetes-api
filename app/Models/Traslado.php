@@ -12,35 +12,40 @@ class Traslado extends Model
     protected $table = 'traslados';
 
     protected $fillable = [
-        'id_bodega',
-        'codigo_qr',
-        'id_ubicacion_paquete',
-        'id_asignacion_ruta',
-        'id_orden',
-        'numero_ingreso',
+        'bodega_origen',
+        'bodega_destino',
+        'id_paquete',
+        'numero_traslado',
         'fecha_traslado',
         'estado',
+        'user_id'
     ];
 
-    public function bodega()
+    
+    public function bodegaOrigen()
     {
-        return $this->belongsTo(Bodegas::class, 'id_bodega');
+        return $this->belongsTo(Bodegas::class, 'bodega_origen');
     }
 
-    public function ubicacionPaquete()
+    
+    public function bodegaDestino()
     {
-        return $this->belongsTo(UbicacionPaquete::class, 'id_ubicacion_paquete')->with('ubicacion');
+        return $this->belongsTo(Bodegas::class, 'bodega_destino');
     }
 
-    public function asignacionRuta()
+    
+    public function paquete()
     {
-        return $this->belongsTo(AsignacionRutas::class, 'id_asignacion_ruta');
+        return $this->belongsTo(Paquete::class, 'id_paquete');
     }
 
-    public function orden()
+    
+    public function user()
     {
-        return $this->belongsTo(Orden::class, 'id_orden');
+        return $this->belongsTo(User::class, 'user_id');
     }
+
+    
 
     public function getFormattedData()
     {
