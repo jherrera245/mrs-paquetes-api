@@ -254,12 +254,16 @@ class AsignacionRutasController extends Controller
                 $codigoBase = 'AR-';
 
                 // Encuentra el último código generado
-                $ultimoCodigo = AsignacionRutas::latest('id')->first()->codigo_unico_asignacion ?? 'AR-000000000000';
+                $ultimoAsignacion = AsignacionRutas::latest('id')->first();
+                 $ultimoCodigo = $ultimoAsignacion ? $ultimoAsignacion->codigo_unico_asignacion : $codigoBase . str_pad(0, 12, '0', STR_PAD_LEFT);
 
                 // Extrae el número del último código (si existe) y calcula el siguiente número
                 $ultimoNumero = (int) substr($ultimoCodigo, 3);
                 $siguienteNumero = $ultimoNumero + 1;
+                
+                // Calcula el nuevo código único para la asignación
                 $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
+                $codigoUnico = $codigoBase . $formatoNumero;
 
                 foreach ($paquetesIds as $idPaquete) {
                     // Verificar si el paquete existe
@@ -313,9 +317,6 @@ class AsignacionRutasController extends Controller
                     $kardexEntrada->fecha = now();
                     $kardexEntrada->save(); // Guardar el registro de ENTRADA en kardex
 
-                    // Incrementar el número para el próximo código
-                    $siguienteNumero++;
-                    $formatoNumero = str_pad($siguienteNumero, 12, '0', STR_PAD_LEFT);
                 }
 
                 return $asignaciones;
