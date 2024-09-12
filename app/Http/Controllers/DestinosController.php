@@ -11,19 +11,29 @@ class DestinosController extends Controller
 {
     public function index(Request $request)
     {
-        
         $filters = $request->only(['id_departamento', 'id_municipio']);
 
-        
-        $destinos = Destinos::filter($filters)->get();
+        $perPage = $request->input('per_page', 10);
+
+        // Filtrar y paginar los destinos
+        $destinos = Destinos::filter($filters)->paginate($perPage);
 
         $data = [
-            'destinos' => $destinos,
+            'destinos' => $destinos->items(),
+            'pagination' => [
+                'total' => $destinos->total(),
+                'current_page' => $destinos->currentPage(),
+                'per_page' => $destinos->perPage(),
+                'last_page' => $destinos->lastPage(),
+                'from' => $destinos->firstItem(),
+                'to' => $destinos->lastItem(), 
+            ],
             'status' => 200
         ];
 
         return response()->json($data, 200);
     }
+
 
     /**
      * Store a newly created resource in storage.
