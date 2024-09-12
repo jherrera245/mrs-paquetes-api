@@ -166,6 +166,7 @@ class UbicacionPaqueteController extends Controller
             // Actualizar el campo id_ubicacion en el paquete
             $paquete = Paquete::find($ubicacionPaquete->id_paquete);
             $paquete->id_ubicacion = $ubicacionPaquete->id_ubicacion;
+            $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
             $paquete->save();
 
             // **Agregar los movimientos en el Kardex**

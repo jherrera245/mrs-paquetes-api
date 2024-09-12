@@ -349,19 +349,16 @@ class OrdenController extends Controller
             // Si hay paquetes relacionados, también cambiar su estado a "Cancelado"
             $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
             foreach ($paquetes as $paquete) {
-                // Asegúrate de que la columna correcta existe en la tabla detalle_orden
-                $detallePaquete = DetalleOrden::find($paquete->id);
-                if (isset($detallePaquete->id_estado_paquetes)) {
-                    $detallePaquete->id_estado_paquetes = 13; // Usar el ID 13 para estado 'Cancelado'
+                // Encontrar el paquete relacionado y actualizar su estado
+                $detallePaquete = Paquete::find($paquete->id_paquete);
+                if ($detallePaquete) {
+                    $detallePaquete->id_estado_paquete = 13; // Usar el ID 13 para estado 'Cancelado'
                     $detallePaquete->save();
-                } else {
-                    // Manejar el caso donde la columna no existe
-                    throw new \Exception('La columna id_estado_paquete no existe en la tabla detalle_orden');
                 }
 
                 // Registrar la salida en el Kardex
                 $kardex = new Kardex();
-                $kardex->id_paquete = $detallePaquete->id_paquete;
+                $kardex->id_paquete = $detallePaquete->id;
                 $kardex->id_orden = $orden->id;
                 $kardex->cantidad = 1;
                 $kardex->numero_ingreso = $orden->numero_seguimiento;
@@ -384,6 +381,7 @@ class OrdenController extends Controller
             );
         }
     }
+
 
     public function destroyDetalleOrden($id)
     {
@@ -464,7 +462,7 @@ class OrdenController extends Controller
             'id_tipo_pago' => $orden->id_tipo_pago,
             'total_pagar' => $orden->total_pagar,
             'costo_adicional' => $orden->costo_adicional,
-            'estado' => $orden->estado,  
+            'estado' => $orden->estado,
             'estado_pago' => $orden->estado_pago,
             'tipo_documento' => $orden->tipo_documento,
             'tipo_orden' => $orden->tipo_orden,
@@ -615,84 +613,84 @@ class OrdenController extends Controller
 
 
     private function transformOrden($orden)
-{
-    $direccion = $orden->direccion;
+    {
+        $direccion = $orden->direccion;
 
-    return [
-        // Datos principales de la orden
-        'id' => $orden->id,
-        'id_cliente' => $orden->id_cliente,
-        'cliente' => [
-            'nombre' => $orden->cliente->nombre ?? 'NA',
-            'apellido' => $orden->cliente->apellido ?? 'NA',
-        ],
-        'id_tipo_pago' => $orden->id_tipo_pago,
-        'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
-        'total_pagar' => $orden->total_pagar,
-        'costo_adicional' => $orden->costo_adicional,
-        'estado' => $orden->estado,
-        'estado_pago' => $orden->estado_pago,
-        'tipo_documento' => $orden->tipo_documento,
-        'tipo_orden' => $orden->tipo_orden,
-        'id_direccion' => $orden->id_direccion,
-        'concepto' => $orden->concepto,
-        'numero_seguimiento' => $orden->numero_seguimiento,
+        return [
+            // Datos principales de la orden
+            'id' => $orden->id,
+            'id_cliente' => $orden->id_cliente,
+            'cliente' => [
+                'nombre' => $orden->cliente->nombre ?? 'NA',
+                'apellido' => $orden->cliente->apellido ?? 'NA',
+            ],
+            'id_tipo_pago' => $orden->id_tipo_pago,
+            'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+            'total_pagar' => $orden->total_pagar,
+            'costo_adicional' => $orden->costo_adicional,
+            'estado' => $orden->estado,
+            'estado_pago' => $orden->estado_pago,
+            'tipo_documento' => $orden->tipo_documento,
+            'tipo_orden' => $orden->tipo_orden,
+            'id_direccion' => $orden->id_direccion,
+            'concepto' => $orden->concepto,
+            'numero_seguimiento' => $orden->numero_seguimiento,
 
-        // Dirección del emisor
-        'direccion_emisor' => $direccion ? [
-            'id_direccion' => $direccion->id,
-            'direccion' => $direccion->direccion,
-            'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
-            'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
-            'nombre_contacto' => $direccion->nombre_contacto,
-            'telefono' => $direccion->telefono,
-            'id_departamento' => $direccion->id_departamento,
-            'departamento' => $direccion->departamento->nombre ?? 'NA',
-            'id_municipio' => $direccion->id_municipio,
-            'municipio' => $direccion->municipio->nombre ?? 'NA',
-            'referencia' => $direccion->referencia,
-        ] : null,
+            // Dirección del emisor
+            'direccion_emisor' => $direccion ? [
+                'id_direccion' => $direccion->id,
+                'direccion' => $direccion->direccion,
+                'nombre_cliente' => $direccion->cliente->nombre ?? 'NA',
+                'apellido_cliente' => $direccion->cliente->apellido ?? 'NA',
+                'nombre_contacto' => $direccion->nombre_contacto,
+                'telefono' => $direccion->telefono,
+                'id_departamento' => $direccion->id_departamento,
+                'departamento' => $direccion->departamento->nombre ?? 'NA',
+                'id_municipio' => $direccion->id_municipio,
+                'municipio' => $direccion->municipio->nombre ?? 'NA',
+                'referencia' => $direccion->referencia,
+            ] : null,
 
-        // Detalles de la orden
-        'detalles' => $orden->detalles->map(function ($detalle) {
-            return [
-                'id' => $detalle->id,
-                'id_orden' => $detalle->id_orden,
-                'id_paquete' => $detalle->id_paquete,
-                'id_tipo_entrega' => $detalle->id_tipo_entrega,
-                'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
-                'id_estado_paquetes' => $detalle->id_estado_paquetes,
-                'id_direccion_entrega' => $detalle->id_direccion_entrega,
-                'validacion_entrega' => $detalle->validacion_entrega,
-                'instrucciones_entrega' => $detalle->instrucciones_entrega,
-                'descripcion' => $detalle->descripcion,
-                'precio' => $detalle->precio,
-                'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
-                'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
-                'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
-                'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
-                'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
-                'fecha_ingreso' => $detalle->fecha_ingreso,
-                'fecha_entrega' => $detalle->fecha_entrega,
-                
-                // Información del paquete
-                'paquete' => [
-                    'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
-                    'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete ?? 'NA',
-                    'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
-                    'peso' => $detalle->paquete->peso ?? 'NA',
-                    'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
-                    'fecha_envio' => $detalle->paquete->fecha_envio,
-                    'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
-                    'descripcion_contenido' => $detalle->paquete->descripcion_contenido
-                ]
-            ];
-        }),
+            // Detalles de la orden
+            'detalles' => $orden->detalles->map(function ($detalle) {
+                return [
+                    'id' => $detalle->id,
+                    'id_orden' => $detalle->id_orden,
+                    'id_paquete' => $detalle->id_paquete,
+                    'id_tipo_entrega' => $detalle->id_tipo_entrega,
+                    'tipo_entrega' => $detalle->tipoEntrega->entrega ?? 'NA',
+                    'id_estado_paquetes' => $detalle->id_estado_paquetes,
+                    'id_direccion_entrega' => $detalle->id_direccion_entrega,
+                    'validacion_entrega' => $detalle->validacion_entrega,
+                    'instrucciones_entrega' => $detalle->instrucciones_entrega,
+                    'descripcion' => $detalle->descripcion,
+                    'precio' => $detalle->precio,
+                    'recibe' => $detalle->direccionEntrega->nombre_contacto ?? 'NA',
+                    'telefono' => $detalle->direccionEntrega->telefono ?? 'NA',
+                    'departamento' => $detalle->direccionEntrega->departamento->nombre ?? 'NA',
+                    'municipio' => $detalle->direccionEntrega->municipio->nombre ?? 'NA',
+                    'direccion' => $detalle->direccionEntrega->direccion ?? 'NA',
+                    'fecha_ingreso' => $detalle->fecha_ingreso,
+                    'fecha_entrega' => $detalle->fecha_entrega,
 
-        'created_at' => $orden->created_at,
-        'updated_at' => $orden->updated_at,
-    ];
-}
+                    // Información del paquete
+                    'paquete' => [
+                        'id_tipo_paquete' => $detalle->paquete->id_tipo_paquete ?? 'NA',
+                        'id_tamano_paquete' => $detalle->paquete->id_tamano_paquete ?? 'NA',
+                        'tipo_caja' => $detalle->paquete->empaquetado->id ?? 'NA',
+                        'peso' => $detalle->paquete->peso ?? 'NA',
+                        'id_estado_paquete' => $detalle->paquete->id_estado_paquete ?? 'NA',
+                        'fecha_envio' => $detalle->paquete->fecha_envio,
+                        'fecha_entrega_estimada' => $detalle->paquete->fecha_entrega_estimada,
+                        'descripcion_contenido' => $detalle->paquete->descripcion_contenido
+                    ]
+                ];
+            }),
+
+            'created_at' => $orden->created_at,
+            'updated_at' => $orden->updated_at,
+        ];
+    }
 
     public function procesarPago(Request $request, $id)
     {
@@ -701,6 +699,12 @@ class OrdenController extends Controller
         if ($orden->estado_pago === 'pagado') {
             return response()->json(['message' => 'Esta orden ya ha sido pagada'], 400);
         }
+
+        // Verificar si la orden ya está cancelada
+        if ($orden->estado === 'Cancelada') {
+            return response()->json(['message' => 'No se puede hacer el pago porque la orden está cancelada.'], Response::HTTP_CONFLICT);
+        }
+
 
         // Actualizar el estado de la orden
         $orden->estado_pago = 'pagado';
