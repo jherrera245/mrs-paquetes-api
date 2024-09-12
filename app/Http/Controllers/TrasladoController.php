@@ -91,7 +91,7 @@ class TrasladoController extends Controller
                     'id_paquete' => $idPaquete,
                     'numero_traslado' => $numeroTraslado,
                     'fecha_traslado' => $fechaTraslado,
-                    'estado' => 'Activo',
+                    'estado' => 'Pendiente',
                     'user_id' => $userId
                 ]);
 
@@ -188,7 +188,7 @@ class TrasladoController extends Controller
         }
 
         try {
-            $traslado->estado = 'Inactivo';
+            $traslado->estado = 'Cancelado';
             $traslado->save();
 
             return response()->json(['message' => 'Traslado marcado como inactivo.'], 200);
