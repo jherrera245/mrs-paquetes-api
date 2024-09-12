@@ -12,7 +12,6 @@ class Destinos extends Model
 	protected $casts = [
 		'id_departamento' => 'int',
 		'id_municipio' => 'int',
-		'id_estado' => 'int'
 	];
 
 	protected $fillable = [
@@ -20,17 +19,12 @@ class Destinos extends Model
 		'descripcion',
 		'id_departamento',
 		'id_municipio',
-		'id_estado'
+		'estado'
 	];
 
 	public function departamento()
 	{
 		return $this->belongsTo(Departamento::class, 'id_departamento');
-	}
-
-	public function estado_ruta()
-	{
-		return $this->belongsTo(EstadoRuta::class, 'id_estado');
 	}
 
 	public function municipio()
@@ -53,10 +47,6 @@ class Destinos extends Model
 
         if (isset($filters['id_municipio'])) {
             $query->where('id_municipio', $filters['id_municipio']);
-        }
-
-        if (isset($filters['id_estado'])) {
-            $query->where('id_estado', $filters['id_estado']);
         }
 
         return $query;

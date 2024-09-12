@@ -12,7 +12,7 @@ class DestinosController extends Controller
     public function index(Request $request)
     {
         
-        $filters = $request->only(['id_departamento', 'id_municipio', 'id_estado']);
+        $filters = $request->only(['id_departamento', 'id_municipio']);
 
         
         $destinos = Destinos::filter($filters)->get();
@@ -38,7 +38,6 @@ class DestinosController extends Controller
             'descripcion' => 'required|max:255',
             'id_departamento' => 'required',
             'id_municipio' => 'required',
-            'id_estado' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +54,7 @@ class DestinosController extends Controller
             'descripcion' => $request->descripcion,
             'id_departamento' => $request->id_departamento,
             'id_municipio' => $request->id_municipio,
-            'id_estado' => $request->id_estado
+            'estado' => 1
         ]);
 
         if (!$destino) {
@@ -118,46 +117,44 @@ class DestinosController extends Controller
     {
         $destino = Destinos::find($id);
 
-    if (!$destino) {
+        if (!$destino) {
+            $data = [
+                'message' => 'destino no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|max:255',
+            'descripcion' => 'required|max:255',
+            'id_departamento' => 'required',
+            'id_municipio' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+
+        $destino->nombre = $request->nombre;
+        $destino->descripcion = $request->descripcion;
+        $destino->id_departamento = $request->id_departamento;
+        $destino->id_municipio = $request->id_municipio;
+
+        $destino->save();
+
         $data = [
-            'message' => 'destino no encontrado',
-            'status' => 404
+            'message' => 'destino actualizado',
+            'destino' => $destino,
+            'status' => 200
         ];
-        return response()->json($data, 404);
-    }
 
-    $validator = Validator::make($request->all(), [
-        'nombre' => 'required|max:255',
-        'descripcion' => 'required|max:255',
-        'id_departamento' => 'required',
-        'id_municipio' => 'required',
-        'id_estado' => 'required'
-    ]);
-
-    if ($validator->fails()) {
-        $data = [
-            'message' => 'Error en la validación de los datos',
-            'errors' => $validator->errors(),
-            'status' => 400
-        ];
-        return response()->json($data, 400);
-    }
-
-    $destino->nombre = $request->nombre;
-    $destino->descripcion = $request->descripcion;
-    $destino->id_departamento = $request->id_departamento;
-    $destino->id_municipio = $request->id_municipio;
-    $destino->id_estado = $request->id_estado;
-
-    $destino->save();
-
-    $data = [
-        'message' => 'destino actualizado',
-        'destino' => $destino,
-        'status' => 200
-    ];
-
-    return response()->json($data, 200);
+        return response()->json($data, 200);
     }
 
     /**
@@ -170,21 +167,23 @@ class DestinosController extends Controller
     {
         $destino = Destinos::find($id);
 
-    if (!$destino) {
+        if (!$destino) {
+            $data = [
+                'message' => 'destino no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        // en lugar de eliminar el registro, se cambia el estado a inactivo o sea a 0.
+        $destino->estado = 0;
+        $destino->save();
+
         $data = [
-            'message' => 'destino no encontrado',
-            'status' => 404
+            'message' => 'destino eliminado',
+            'status' => 200
         ];
-        return response()->json($data, 404);
-    }
 
-    $destino->delete();
-
-    $data = [
-        'message' => 'destino eliminado',
-        'status' => 200
-    ];
-
-    return response()->json($data, 200);
+        return response()->json($data, 200);
     }
 }
