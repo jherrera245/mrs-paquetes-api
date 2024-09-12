@@ -282,37 +282,34 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'update'])->middleware('permission:rutarecoleccion-update');
   Route::delete('rutas-recolecciones/{id}', [RutaRecoleccionController::class, 'destroy'])->middleware('permission:rutarecoleccion-destroy');
 
-  //Ubicaciones
-
-  Route::get('ubicaciones', [UbicacionController::class, 'index']);
-  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show']);
-  Route::post('ubicaciones', [UbicacionController::class, 'store']);
-  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update']);
-  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy']);
-
-
+  // Ubicaciones
+  Route::get('ubicaciones', [UbicacionController::class, 'index'])->middleware('permission:ubicaciones-view');
+  Route::get('ubicaciones/{id}', [UbicacionController::class, 'show'])->middleware('permission:ubicaciones-show');
+  Route::post('ubicaciones', [UbicacionController::class, 'store'])->middleware('permission:ubicaciones-create');
+  Route::put('ubicaciones/{id}', [UbicacionController::class, 'update'])->middleware('permission:ubicaciones-update');
+  Route::delete('ubicaciones/{id}', [UbicacionController::class, 'destroy'])->middleware('permission:ubicaciones-destroy');
 
   // Rutas para el controlador UbicacionPaquete
-  Route::get('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'index']);
-  Route::get('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'show']);
-  Route::post('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'store']);
-  Route::put('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'update']);
-  Route::delete('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'destroy']);
+  Route::get('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'index'])->middleware('permission:ubicacionespaquetes-view');
+  Route::get('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'show'])->middleware('permission:ubicacionespaquetes-show');
+  Route::post('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'store'])->middleware('permission:ubicacionespaquetes-create');
+  Route::put('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'update'])->middleware('permission:ubicacionespaquetes-update');
+  Route::delete('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'destroy'])->middleware('permission:ubicacionespaquetes-destroy');
 
-  //Pasillos
-  Route::get('/pasillos', [PasilloController::class, 'index']);
-  Route::get('/pasillos/{id}', [PasilloController::class, 'show']);
-  Route::post('/pasillos', [PasilloController::class, 'store']);
-  Route::put('/pasillos/{id}', [PasilloController::class, 'update']);
-  Route::delete('/pasillos/{id}', [PasilloController::class, 'destroy']);
+  // Pasillos
+  Route::get('/pasillos', [PasilloController::class, 'index'])->middleware('permission:pasillos-view');
+  Route::get('/pasillos/{id}', [PasilloController::class, 'show'])->middleware('permission:pasillos-show');
+  Route::post('/pasillos', [PasilloController::class, 'store'])->middleware('permission:pasillos-create');
+  Route::put('/pasillos/{id}', [PasilloController::class, 'update'])->middleware('permission:pasillos-update');
+  Route::delete('/pasillos/{id}', [PasilloController::class, 'destroy'])->middleware('permission:pasillos-destroy');
 
-  //Traslado
-  Route::get('traslados', [TrasladoController::class, 'index']);
-  Route::post('traslados', [TrasladoController::class, 'store']);
-  Route::get('traslados/{id}', [TrasladoController::class, 'show']);
-  Route::put('traslados/{id}', [TrasladoController::class, 'update']);
-  Route::delete('traslados/{id}', [TrasladoController::class, 'destroy']);
-  Route::get('traslado-pdf/{id?}', [TrasladoController::class, 'trasladoPdf']);
+  // Traslados
+  Route::get('traslados', [TrasladoController::class, 'index'])->middleware('permission:traslados-view');
+  Route::post('traslados', [TrasladoController::class, 'store'])->middleware('permission:traslados-create');
+  Route::get('traslados/{id}', [TrasladoController::class, 'show'])->middleware('permission:traslados-show');
+  Route::put('traslados/{id}', [TrasladoController::class, 'update'])->middleware('permission:traslados-update');
+  Route::delete('traslados/{id}', [TrasladoController::class, 'destroy'])->middleware('permission:traslados-destroy');
+  Route::get('traslado-pdf/{id?}', [TrasladoController::class, 'trasladoPdf'])->middleware('permission:traslados-pdf');
 
   // orden recoleccion.
   Route::get('orden-recoleccion', [OrdenRecoleccionController::class, 'index'])->middleware('permission:ordenrecoleccion-view');

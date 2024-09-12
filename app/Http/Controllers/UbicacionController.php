@@ -29,15 +29,17 @@ class UbicacionController extends Controller
                 $query->where('id_pasillo', $request->input('id_pasillo'));
             }
 
-            // Paginación de resultados
-            $ubicaciones = $query->paginate(10); // Cambia el número de elementos por página según sea necesario
+            // Paginación de resultados, utilizando el parámetro 'per_page' de la solicitud
+            $ubicaciones = $query->paginate($request->input('per_page', 10)); // Número de elementos por página por defecto es 10
 
-            // Formatear resultados usando API Resource o un método de formateo
-            $formattedData = $ubicaciones->map(function ($ubicacion) {
+            // Formatear resultados usando un método de formateo
+            $ubicacionesFormatted = $ubicaciones->getCollection()->map(function ($ubicacion) {
                 return $ubicacion->getFormattedData(); // Usar el método del modelo para formatear los datos
             });
 
-            return response()->json($formattedData, 200);
+            $ubicaciones->setCollection($ubicacionesFormatted);
+
+            return response()->json($ubicaciones, 200);
         } catch (Exception $e) {
             Log::error('Error en la lista de ubicaciones: ' . $e->getMessage());
             return response()->json(['error' => 'Error al obtener las ubicaciones'], 500);

@@ -28,11 +28,12 @@ class UbicacionPaqueteController extends Controller
     public function index(Request $request)
     {
         try {
-            // Filtrar los resultados
+            // Obtener filtros de la solicitud
             $filters = $request->only(['id_paquete', 'id_ubicacion', 'estado']);
 
             $query = UbicacionPaquete::with(['ubicacion', 'paquete']);
 
+            // Aplicar filtros si están presentes
             if (!empty($filters['id_paquete'])) {
                 $query->where('id_paquete', $filters['id_paquete']);
             }
@@ -45,16 +46,12 @@ class UbicacionPaqueteController extends Controller
                 $query->where('estado', $filters['estado']);
             }
 
-            // Paginar los resultados
-            $perPage = $request->input('per_page', 10); // Tamaño de página por defecto 10
+            // Paginación de resultados utilizando el parámetro 'per_page'
+            $perPage = $request->input('per_page', 10); // Número de elementos por página por defecto es 10
             $ubicacionPaquetes = $query->paginate($perPage);
 
-            if ($ubicacionPaquetes->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron ubicaciones de paquetes.'], 404);
-            }
-
-            // Formatear los datos manualmente en el controlador
-            $formattedData = $ubicacionPaquetes->getCollection()->map(function ($ubicacionPaquete) {
+            // Formatear los datos manualmente
+            $ubicacionPaquetesFormatted = $ubicacionPaquetes->getCollection()->map(function ($ubicacionPaquete) {
                 return [
                     'id' => $ubicacionPaquete->id,
                     'paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->descripcion_contenido : 'N/A',
@@ -65,24 +62,15 @@ class UbicacionPaqueteController extends Controller
                 ];
             });
 
+            $ubicacionPaquetes->setCollection($ubicacionPaquetesFormatted);
+
             // Devolver la respuesta paginada
-            return response()->json([
-                'data' => $formattedData, // Datos formateados
-                'pagination' => [
-                    'current_page' => $ubicacionPaquetes->currentPage(),
-                    'per_page' => $ubicacionPaquetes->perPage(),
-                    'total' => $ubicacionPaquetes->total(),
-                    'last_page' => $ubicacionPaquetes->lastPage(),
-                    'from' => $ubicacionPaquetes->firstItem(),
-                    'to' => $ubicacionPaquetes->lastItem(),
-                ]
-            ], 200);
+            return response()->json($ubicacionPaquetes, 200);
         } catch (\Exception $e) {
             Log::error('Error al listar ubicaciones de paquetes: ' . $e->getMessage());
             return response()->json(['error' => 'Error al listar ubicaciones de paquetes', 'details' => $e->getMessage()], 500);
         }
     }
-
 
     /**
      * Mostrar una relación específica de ubicación con paquete.
@@ -212,8 +200,6 @@ class UbicacionPaqueteController extends Controller
         }
     }
 
-
-
     public function update(Request $request, $id)
     {
         DB::beginTransaction(); // Iniciar una transacción
@@ -226,86 +212,41 @@ class UbicacionPaqueteController extends Controller
                 return response()->json(['error' => 'Relación no encontrada'], 404);
             }
 
-            // Verificar si ya existe una ubicación asignada al paquete nuevo
-            if (
-                $request->has('id_paquete') &&
-                $request->has('id_ubicacion') &&
-                UbicacionPaquete::where('id_paquete', $request->id_paquete)
-                ->where('id_ubicacion', $request->id_ubicacion)
+            // Verificar si la nueva ubicación ya está ocupada por otro paquete
+            if (UbicacionPaquete::where('id_ubicacion', $request->id_ubicacion)
                 ->where('id', '!=', $id)
+                ->where('estado', 0)  // Asegúrate de que 'estado' esté correcto
                 ->exists()
             ) {
-                return response()->json(['error' => 'Este paquete ya tiene asignada esa ubicación.'], 400);
+                return response()->json(['error' => 'Esta ubicación se encuentra ocupada por otro paquete.'], 400);
             }
 
-            // Set the old location to 'Desocupado'
-            $oldUbicacion = $ubicacionPaquete->ubicacion;
-            if ($oldUbicacion) {
-                $oldUbicacion->ocupado = 0; // Set to '0' or any value that indicates unoccupied
-                $oldUbicacion->save();
+            // Verificar si el paquete ya tiene una ubicación asignada en ubicaciones_paquetes
+            $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $request->id_paquete)
+                ->where('id', '!=', $id)
+                ->first();
+
+            if ($existingUbicacionPaquete) {
+                // Actualizar la ubicación del paquete existente
+                $existingUbicacionPaquete->id_ubicacion = $request->id_ubicacion;
+                $existingUbicacionPaquete->estado = $request->estado;
+                $existingUbicacionPaquete->save();
+            } else {
+                // Si no existe, crear una nueva relación de ubicación con paquete
+                $ubicacionPaquete->id_ubicacion = $request->id_ubicacion;
+                $ubicacionPaquete->id_paquete = $request->id_paquete;
+                $ubicacionPaquete->estado = $request->estado;
+                $ubicacionPaquete->save();
             }
 
-            // Obtener el detalle de la orden del paquete que se está quitando
-            $detalleOrdenRemovido = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
-            $ordenRemovido = Orden::find($detalleOrdenRemovido->id_orden);
-
-            // Registrar la SALIDA del paquete removido (desde ALMACENADO)
-            $kardexSalidaRemovido = new Kardex();
-            $kardexSalidaRemovido->id_paquete = $ubicacionPaquete->id_paquete;
-            $kardexSalidaRemovido->id_orden = $detalleOrdenRemovido->id_orden;
-            $kardexSalidaRemovido->cantidad = 1;
-            $kardexSalidaRemovido->numero_ingreso = $ordenRemovido->numero_seguimiento;
-            $kardexSalidaRemovido->tipo_movimiento = 'SALIDA';
-            $kardexSalidaRemovido->tipo_transaccion = 'ALMACENADO';
-            $kardexSalidaRemovido->fecha = now();
-            $kardexSalidaRemovido->save();
-
-            // Registrar la ENTRADA del paquete removido a su nueva ubicación (DEVOLUCION_RECOLECCION)
-            $kardexEntradaRemovido = new Kardex();
-            $kardexEntradaRemovido->id_paquete = $ubicacionPaquete->id_paquete;
-            $kardexEntradaRemovido->id_orden = $detalleOrdenRemovido->id_orden;
-            $kardexEntradaRemovido->cantidad = 1;
-            $kardexEntradaRemovido->numero_ingreso = $ordenRemovido->numero_seguimiento;
-            $kardexEntradaRemovido->tipo_movimiento = 'ENTRADA';
-            $kardexEntradaRemovido->tipo_transaccion = 'DEVOLUCION_RECOLECCION';
-            $kardexEntradaRemovido->fecha = now();
-            $kardexEntradaRemovido->save();
-
-            // Obtener el detalle de la orden del paquete nuevo que ocupará la ubicación
-            $detalleOrdenNuevo = DetalleOrden::where('id_paquete', $request->id_paquete)->first();
-            $ordenNuevo = Orden::find($detalleOrdenNuevo->id_orden);
-
-            // Registrar la SALIDA del nuevo paquete desde su ubicación anterior, debería ser RECOLECTADO.
-            $kardexSalidaNuevo = new Kardex();
-            $kardexSalidaNuevo->id_paquete = $detalleOrdenNuevo->id_paquete;
-            $kardexSalidaNuevo->id_orden = $detalleOrdenNuevo->id_orden;
-            $kardexSalidaNuevo->cantidad = 1;
-            $kardexSalidaNuevo->numero_ingreso = $ordenNuevo->numero_seguimiento;
-            $kardexSalidaNuevo->tipo_movimiento = 'SALIDA';
-            $kardexSalidaNuevo->tipo_transaccion = 'RECOLECTADO'; // Ajustar según aplique
-            $kardexSalidaNuevo->fecha = now();
-            $kardexSalidaNuevo->save();
-
-            // Registrar la ENTRADA del nuevo paquete a la ubicación actual (ALMACENADO)
-            $kardexEntradaNuevo = new Kardex();
-            $kardexEntradaNuevo->id_paquete = $detalleOrdenNuevo->id_paquete;
-            $kardexEntradaNuevo->id_orden = $detalleOrdenNuevo->id_orden;
-            $kardexEntradaNuevo->cantidad = 1;
-            $kardexEntradaNuevo->numero_ingreso = $ordenNuevo->numero_seguimiento;
-            $kardexEntradaNuevo->tipo_movimiento = 'ENTRADA';
-            $kardexEntradaNuevo->tipo_transaccion = 'ALMACENADO';
-            $kardexEntradaNuevo->fecha = now();
-            $kardexEntradaNuevo->save();
-
-            // Update the new location to 'Ocupado'
-            $newUbicacion = Ubicacion::find($request->id_ubicacion);
-            if ($newUbicacion) {
-                $newUbicacion->ocupado = 1; // Set to '1' or any value that indicates occupied
-                $newUbicacion->save();
+            // Actualizar el paquete en la tabla 'paquetes'
+            $paquete = Paquete::find($request->id_paquete);
+            if ($paquete) {
+                $paquete->id_ubicacion = $request->id_ubicacion; // Actualizar la ubicación del paquete
+                $paquete->save();
+            } else {
+                throw new Exception('Paquete no encontrado para actualizar la ubicación.');
             }
-
-            // Actualizar la relación de ubicación
-            $ubicacionPaquete->update($request->all());
 
             DB::commit(); // Confirmar la transacción
 
@@ -313,7 +254,7 @@ class UbicacionPaqueteController extends Controller
         } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción en caso de error
             Log::error('Error al actualizar la ubicación: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al actualizar la ubicación'], 500);
+            return response()->json(['error' => 'Error al actualizar la ubicación', 'details' => $e->getMessage()], 500);
         }
     }
 
