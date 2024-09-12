@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('id_empleado_apoyo');
             $table->string('placa', 10)->unique('placa');
             $table->decimal('capacidad_carga', 10);
-            $table->foreignId('id_bodega')->constrained("bodegas");
+            $table->foreignId('id_bodega')->constrained("bodegas")->nullable();
             $table->foreignId('id_estado');
             $table->foreignId('id_marca');
             $table->foreignId('id_modelo');
