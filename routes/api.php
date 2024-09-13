@@ -14,7 +14,6 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\RutasController;
 use App\Http\Controllers\BodegasController;
-use App\Http\Controllers\DestinosController;
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\AsignacionRutasController;
 use App\Http\Controllers\PaqueteController;
@@ -175,13 +174,6 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::post('direcciones', [DireccionesController::class, 'store'])->middleware('permission:direcciones-create');
   Route::put('direcciones/{direccione}', [DireccionesController::class, 'update'])->middleware('permission:direcciones-update');
   Route::delete('direcciones/{direccione}', [DireccionesController::class, 'destroy'])->middleware('permission:direcciones-destroy');
-
-  // Destinos
-  Route::get('destinos', [DestinosController::class, 'index'])->middleware('permission:destinos-view');
-  Route::get('destinos/{destino}', [DestinosController::class, 'show'])->middleware('permission:destinos-show');
-  Route::post('destinos', [DestinosController::class, 'store'])->middleware('permission:destinos-create');
-  Route::put('destinos/{destino}', [DestinosController::class, 'update'])->middleware('permission:destinos-update');
-  Route::delete('destinos/{destino}', [DestinosController::class, 'destroy'])->middleware('permission:destinos-destroy');
 
   // Bodegas
   Route::get('bodegas', [BodegasController::class, 'index'])->middleware('permission:bodegas-view');

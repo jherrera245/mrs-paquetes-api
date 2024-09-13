@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreign(['id_estado'], 'asignacion_rutas_fk_id_estado_ruta')->references(['id'])->on('estado_rutas');
             $table->foreign(['id_ruta'], 'asignacion_rutas_fk_id_ruta')->references(['id'])->on('rutas');
             $table->foreign(['id_paquete'], 'asignacion_rutas_id_paquete')->references(['id'])->on('paquetes');
+            $table->foreign(['id_deparatamento'], 'asignacion_rutas_id_deparatamento')->references(['id'])->on('departamento');
+            $table->foreign(['id_municipio'], 'asignacion_rutas_id_municipio')->references(['id'])->on('municipios');
+            $table->foreign(['id_direccion'], 'asignacion_rutas_id_direccion')->references(['id'])->on('direcciones');
         });
     }
 
@@ -33,6 +36,9 @@ return new class extends Migration
             $table->dropForeign('asignacion_rutas_fk_id_estado_ruta');
             $table->dropForeign('asignacion_rutas_fk_id_ruta');
             $table->dropForeign('asignacion_rutas_id_paquete');
+            $table->dropForeign('asignacion_rutas_id_deparatamento');
+            $table->dropForeign('asignacion_rutas_id_municipio');
+            $table->dropForeign('asignacion_rutas_id_direccion');
         });
     }
 };

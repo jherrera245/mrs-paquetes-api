@@ -40,18 +40,14 @@ class DatabaseSeeder extends Seeder
             EmpleadoSeeder::class,
             UsersSeeder::class,
             ClienteSeeder::class,
-            DestinoSeeder::class,
             BodegaSeeder::class,
             PasilloSeeder::class,
             UbicacionSeeder::class,
-            UbicacionPaqueteSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
             VehicleSeeder::class,
             VehiculosSeeder::class,
-            RutasSeeder::class,
             DireccionesSeeder::class,
-            AsignacionRutasSeeder::class,
             TarifaDestinoSeeder::class,
         ]);
     }

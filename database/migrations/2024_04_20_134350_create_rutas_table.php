@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('rutas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_destino');
-            $table->string('nombre');
+            $table->string('nombre')->nullable();
+            $table->enum('tipo', ['entregas', 'recoleccion'])->default('entregas');
             $table->foreignId('id_bodega');
             $table->tinyInteger('estado');
             $table->date('fecha_programada');

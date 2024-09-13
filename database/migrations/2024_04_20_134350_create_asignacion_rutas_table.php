@@ -19,8 +19,14 @@ return new class extends Migration
             $table->foreignId('id_ruta');
             $table->foreignId('id_vehiculo');
             $table->foreignId('id_paquete');
+            $table->integer('prioridad');
+            $table->foreignId('id_deparatamento');
+            $table->foreignId('id_municipio');
+            $table->foreignId('id_direccion');
+            $table->string('destino');
             $table->dateTime('fecha');
             $table->foreignId('id_estado');
+            $table->boolean('status')->nullable()->default(1);
             $table->timestamps();
         });
     }

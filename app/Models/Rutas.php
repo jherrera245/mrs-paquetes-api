@@ -12,28 +12,18 @@ class Rutas extends Model
 	protected $table = 'rutas';
 
 	protected $casts = [
-		'id_destino' => 'int',
 		'id_bodega' => 'int',
 		'estado' => 'int',
-		'distancia_km' => 'float',
-		'duracion_aproximada' => 'float',
 		'fecha_programada' => 'datetime'
 	];
 
 	protected $fillable = [
-		'id_destino',
 		'nombre',
+		'tipo',
 		'id_bodega',
 		'estado',
-		'distancia_km',
-		'duracion_aproximada',
 		'fecha_programada'
 	];
-
-	public function destino()
-	{
-		return $this->belongsTo(Destinos::class, 'id_destino');
-	}
 
 	public function bodega()
 	{
@@ -62,11 +52,11 @@ class Rutas extends Model
 
 		foreach ($filters as $key => $value) {
 			if (!empty($value)) {
-				if ($key === 'id_destino' || $key === 'id_bodega' || $key === 'estado') {
+				if ($key === 'id_bodega' || $key === 'estado') {
 					$query->where($key, $value);
 				} elseif ($key === 'nombre') {
 					$query->where('nombre', 'like', '%' . $value . '%');
-				} elseif ($key === 'distancia_km' || $key === 'duracion_aproximada') {
+				} elseif ($key === 'tipo') {
 					$query->where($key, $value);
 				} elseif ($key === 'fecha_programada') {
 					$query->whereDate('fecha_programada', $value);
@@ -74,6 +64,6 @@ class Rutas extends Model
 			}
 		}
 
-		return $query->with(['destino', 'bodega', 'estado_ruta']);
+		return $query->with(['bodega', 'estado_ruta']);
 	}
 }

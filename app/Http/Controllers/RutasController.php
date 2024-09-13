@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Models\Kardex;
+use Illuminate\Support\Facades\DB;
 
 class RutasController extends Controller
 {
@@ -20,8 +22,8 @@ class RutasController extends Controller
     {
         // Obtener los filtros del request
         $filters = $request->only([
-            'id_destino',
             'nombre',
+            'tipo',
             'id_bodega',
             'estado',
             'fecha_programada',
@@ -51,10 +53,8 @@ class RutasController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_destino' => 'required|exists:destinos,id',
             'nombre' => 'required|max:255',
             'id_bodega' => 'required|exists:bodegas,id',
-            'estado' => 'required|boolean',
             'fecha_programada' => 'required|date'
         ]);
 
@@ -68,7 +68,12 @@ class RutasController extends Controller
         }
 
         try {
-            $ruta = Rutas::create($request->all());
+            $ruta = Rutas::create([
+                'nombre' => $request->input('nombre'),
+                'id_bodega' => $request->input('id_bodega'),
+                'estado' => 1,
+                'fecha_programada' => $request->input('fecha_programada'),
+            ]);
         } catch (\Exception $e) {
             Log::error('Error al crear la ruta:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Error al crear la ruta', 'status' => 500], 500);
@@ -110,10 +115,8 @@ class RutasController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'id_destino' => 'required|exists:destinos,id',
             'nombre' => 'required|max:255',
             'id_bodega' => 'required|exists:bodegas,id',
-            'estado' => 'required|boolean',
             'fecha_programada' => 'required|date'
         ]);
 
@@ -127,7 +130,11 @@ class RutasController extends Controller
         }
 
         try {
-            $ruta->update($request->all());
+            $ruta->update([
+                'nombre' => $request->input('nombre'),
+                'id_bodega' => $request->input('id_bodega'),
+                'fecha_programada' => $request->input('fecha_programada'),
+            ]);
         } catch (\Exception $e) {
             Log::error('Error al actualizar la ruta:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Error al actualizar la ruta', 'status' => 500], 500);
@@ -150,14 +157,52 @@ class RutasController extends Controller
             return response()->json(['message' => 'Ruta no encontrada', 'status' => 404], 404);
         }
 
+        DB::beginTransaction();
         try {
-            $ruta->delete();
+            $ruta->estado = 0;
+            $ruta->save();
+
+            $asignaciones = DB::table('asignacion_rutas')->where('id_ruta', $id)->get();
+
+            if ($asignaciones) {
+                foreach($asignaciones as $asignacion)
+                {
+                    $detalle =  DB::table('detalle_orden')
+                    ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                    ->select('detalle_orden.id_paquete', 'detalle_orden.id_orden', 'ordenes.numero_seguimiento')
+                    ->where('detalle_orden.id_paquete', $asignacion->id_paquete)->first();
+
+                   if ($detalle) {
+                        $kardexSalida = new Kardex();
+                        $kardexSalida->id_paquete = $detalle->id_paquete;
+                        $kardexSalida->id_orden = $detalle->id_orden;
+                        $kardexSalida->cantidad = 1;
+                        $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
+                        $kardexSalida->tipo_movimiento = 'SALIDA';
+                        $kardexSalida->tipo_transaccion = 'DESASIGNADO_RUTA'; //Consultar
+                        $kardexSalida->fecha = now();
+                        $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
+
+                        $kardexSalida->id_paquete = $detalle->id_paquete;
+                        $kardexSalida->id_orden = $detalle->id_orden;
+                        $kardexSalida->cantidad = 1;
+                        $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
+                        $kardexSalida->tipo_movimiento = 'ENTRADA';
+                        $kardexSalida->tipo_transaccion = 'ALMACENADO'; //Consultar
+                        $kardexSalida->fecha = now();
+                        $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
+                   }
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Ruta eliminada', 'status' => 200], 200);
+
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error al eliminar la ruta:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Error al eliminar la ruta', 'status' => 500], 500);
         }
-
-        return response()->json(['message' => 'Ruta eliminada', 'status' => 200], 200);
     }
 
     /**
@@ -170,8 +215,8 @@ class RutasController extends Controller
     {
         return [
             'id' => $ruta->id,
-            'destino' => $ruta->destino->nombre, // Obtener el nombre del destino
             'nombre' => $ruta->nombre,
+            'tipo' => $ruta->tipo,
             'bodega' => $ruta->bodega->nombre, // Obtener el nombre de la bodega
             'estado' => $ruta->estado ? 'Activo' : 'Inactivo', // Mostrar estado como texto
             'fecha_programada' => $ruta->fecha_programada,
