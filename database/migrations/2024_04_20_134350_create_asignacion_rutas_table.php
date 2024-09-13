@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('id_vehiculo');
             $table->foreignId('id_paquete');
             $table->integer('prioridad');
-            $table->foreignId('id_deparatamento');
+            $table->foreignId('id_departamento');
             $table->foreignId('id_municipio');
             $table->foreignId('id_direccion');
             $table->string('destino');

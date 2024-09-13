@@ -13,10 +13,10 @@ class AsignacionRutas extends Model
 		'id_ruta' => 'int',
 		'id_vehiculo' => 'int',
 		'id_paquete' => 'int',
-		'id_deparatamento' => 'int',
+		'id_departamento' => 'int',
 		'id_municipio' => 'int',
 		'id_direccion' => 'int',
-		'prioridad' => 'int'
+		'prioridad' => 'int',
 		'fecha' => 'datetime',
 		'id_estado' => 'int'
 	];
@@ -26,8 +26,8 @@ class AsignacionRutas extends Model
 		'id_ruta',
 		'id_vehiculo',
 		'id_paquete',
-		'prioridad'
-		'id_deparatamento',
+		'prioridad',
+		'id_departamento',
 		'id_municipio',
 		'id_direccion',
 		'destino',
@@ -127,6 +127,6 @@ class AsignacionRutas extends Model
 
 		$query->where('status', 1);
 
-        return $query->get();
+        return $query;
     }
 }

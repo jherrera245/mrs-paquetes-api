@@ -167,31 +167,33 @@ class RutasController extends Controller
             if ($asignaciones) {
                 foreach($asignaciones as $asignacion)
                 {
-                    $detalle =  DB::table('detalle_orden')
-                    ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
-                    ->select('detalle_orden.id_paquete', 'detalle_orden.id_orden', 'ordenes.numero_seguimiento')
-                    ->where('detalle_orden.id_paquete', $asignacion->id_paquete)->first();
+                   if ($asignacion->id_estado != 4) {
+                        $detalle =  DB::table('detalle_orden')
+                        ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                        ->select('detalle_orden.id_paquete', 'detalle_orden.id_orden', 'ordenes.numero_seguimiento')
+                        ->where('detalle_orden.id_paquete', $asignacion->id_paquete)->first();
 
-                   if ($detalle) {
-                        $kardexSalida = new Kardex();
-                        $kardexSalida->id_paquete = $detalle->id_paquete;
-                        $kardexSalida->id_orden = $detalle->id_orden;
-                        $kardexSalida->cantidad = 1;
-                        $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
-                        $kardexSalida->tipo_movimiento = 'SALIDA';
-                        $kardexSalida->tipo_transaccion = 'DESASIGNADO_RUTA'; //Consultar
-                        $kardexSalida->fecha = now();
-                        $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
+                        if ($detalle) {
+                            $kardexSalida = new Kardex();
+                            $kardexSalida->id_paquete = $detalle->id_paquete;
+                            $kardexSalida->id_orden = $detalle->id_orden;
+                            $kardexSalida->cantidad = 1;
+                            $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
+                            $kardexSalida->tipo_movimiento = 'SALIDA';
+                            $kardexSalida->tipo_transaccion = 'DESASIGNADO_RUTA'; //Consultar
+                            $kardexSalida->fecha = now();
+                            $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
 
-                        $kardexSalida->id_paquete = $detalle->id_paquete;
-                        $kardexSalida->id_orden = $detalle->id_orden;
-                        $kardexSalida->cantidad = 1;
-                        $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
-                        $kardexSalida->tipo_movimiento = 'ENTRADA';
-                        $kardexSalida->tipo_transaccion = 'ALMACENADO'; //Consultar
-                        $kardexSalida->fecha = now();
-                        $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
-                   }
+                            $kardexSalida->id_paquete = $detalle->id_paquete;
+                            $kardexSalida->id_orden = $detalle->id_orden;
+                            $kardexSalida->cantidad = 1;
+                            $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
+                            $kardexSalida->tipo_movimiento = 'ENTRADA';
+                            $kardexSalida->tipo_transaccion = 'ALMACENADO'; //Consultar
+                            $kardexSalida->fecha = now();
+                            $kardexSalida->save(); // Guardar el registro de SALIDA en kardex
+                        }
+                    }
                 }
             }
 
