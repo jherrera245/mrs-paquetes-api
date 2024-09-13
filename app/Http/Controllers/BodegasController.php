@@ -16,23 +16,27 @@ class BodegasController extends Controller
     
     public function index(Request $request)
     {
-        
         $nombre = $request->query('nombre');
         $tipo_bodega = $request->query('tipo_bodega');
         $id_departamento = $request->query('id_departamento');
         $id_municipio = $request->query('id_municipio');
-
-        
+        $perPage = $request->query('per_page', 10); // Número de resultados por página, por defecto 10
+    
+        // Consulta con filtros personalizados
         $query = Bodegas::buscarConFiltros($nombre, $id_departamento, $id_municipio);
-
-        
-        $bodegas = $query->get();
-
+    
+        // Aplicar paginación a la consulta
+        $bodegas = $query->paginate($perPage);
+    
         $data = [
-            'bodegas' => $bodegas,
+            'bodegas' => $bodegas->items(),  // Obtener los elementos actuales de la página
+            'current_page' => $bodegas->currentPage(),
+            'last_page' => $bodegas->lastPage(),
+            'total' => $bodegas->total(),
+            'per_page' => $bodegas->perPage(),
             'status' => 200
         ];
-
+    
         return response()->json($data, 200);
     }
 

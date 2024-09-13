@@ -11,18 +11,34 @@ class DireccionesController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['id_cliente','nombre_contacto','telefono', 'id_departamento', 
-        'id_municipio','referencia']);
-
+        // Obtener los filtros que se aplicarán a la consulta
+        $filters = $request->only([
+            'id_cliente', 
+            'nombre_contacto', 
+            'telefono', 
+            'id_departamento', 
+            'id_municipio', 
+            'referencia'
+        ]);
+    
+        // Aplicar los filtros usando un método de modelo que los maneje
         $query = Direcciones::filtrarDirecciones($filters);
-
-        $direcciones = $query->get();
-
+    
+        // Agregar paginación (ej. 10 registros por página)
+        $direcciones = $query->paginate(10); // Cambia 10 por el número de registros que prefieras
+    
+        // Respuesta con los datos paginados y los detalles de la paginación
         $data = [
-            'direcciones' => $direcciones,
-            'status' => 200
+            'direcciones' => $direcciones->items(), // Datos de la página actual
+            'status' => 200,
+            'paginacion' => [
+                'total' => $direcciones->total(),
+                'pagina_actual' => $direcciones->currentPage(),
+                'ultima_pagina' => $direcciones->lastPage(),
+                'por_pagina' => $direcciones->perPage(),
+            ]
         ];
-
+    
         return response()->json($data, 200);
     }
 

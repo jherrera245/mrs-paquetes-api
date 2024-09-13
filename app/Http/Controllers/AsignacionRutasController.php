@@ -29,7 +29,10 @@ class AsignacionRutasController extends Controller
             'id_estado',
         ]);
 
-        $asignacionrutas = AsignacionRutas::filtrar($filtros);
+    $perPage = $request->input('per_page', 10); 
+
+    
+    $asignacionrutas = AsignacionRutas::filtrar($filtros)->paginate($perPage);
 
         $data = [
             'asignacionrutas' => $asignacionrutas,
