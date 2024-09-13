@@ -116,16 +116,13 @@ class UbicacionPaqueteController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_paquete' => 'required|exists:paquetes,id',
-            'id_ubicacion' => 'required|exists:ubicaciones,id',
-            'estado' => 'required|boolean',
+            'codigo_qr_paquete' => 'required|string|exists:paquetes,uuid', 
+            'codigo_nomenclatura_ubicacion' => 'required|string|exists:ubicaciones,nomenclatura', 
         ], [
-            'id_paquete.required' => 'El campo de paquete es obligatorio.',
-            'id_paquete.exists' => 'El paquete seleccionado no es válido.',
-            'id_ubicacion.required' => 'El campo de ubicación es obligatorio.',
-            'id_ubicacion.exists' => 'La ubicación seleccionada no es válida.',
-            'estado.required' => 'El campo de estado es obligatorio.',
-            'estado.boolean' => 'El campo de estado debe ser verdadero o falso.',
+            'codigo_qr_paquete.required' => 'El campo de código del paquete es obligatorio.',
+            'codigo_qr_paquete.exists' => 'El paquete con ese código no es válido.',
+            'codigo_nomenclatura_ubicacion.required' => 'El campo de ubicación es obligatorio.',
+            'codigo_nomenclatura_ubicacion.exists' => 'La ubicación seleccionada no es válida.',
         ]);
 
         if ($validator->fails()) {
@@ -135,9 +132,15 @@ class UbicacionPaqueteController extends Controller
         DB::beginTransaction(); // Iniciar transacción
 
         try {
+            // Buscar el paquete por el UUID escaneado (el código QR del paquete)
+            $paquete = Paquete::where('uuid', $request->codigo_qr_paquete)->firstOrFail();
+            
+            // Buscar la ubicación por la nomenclatura escaneada (el código de la ubicación)
+            $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->firstOrFail();
+
             // Verificar si ya existe una relación de ubicación para el paquete con la misma ubicación
-            $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $request->id_paquete)
-                ->where('id_ubicacion', $request->id_ubicacion)
+            $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $paquete->id)
+                ->where('id_ubicacion', $ubicacion->id)
                 ->first();
 
             if ($existingUbicacionPaquete) {
@@ -146,19 +149,18 @@ class UbicacionPaqueteController extends Controller
 
             // Crear la nueva relación de ubicación con paquete
             $ubicacionPaquete = new UbicacionPaquete();
-            $ubicacionPaquete->id_paquete = $request->id_paquete;
-            $ubicacionPaquete->id_ubicacion = $request->id_ubicacion;
-            $ubicacionPaquete->estado = $request->estado;
+            $ubicacionPaquete->id_paquete = $paquete->id; // Guardar el ID del paquete encontrado por su UUID
+            $ubicacionPaquete->id_ubicacion = $ubicacion->id; // Guardar el ID de la ubicación encontrada por su nomenclatura
+            $ubicacionPaquete->estado = 1;
             $ubicacionPaquete->save();
 
             // Actualizar el campo id_ubicacion en el paquete
-            $paquete = Paquete::find($ubicacionPaquete->id_paquete);
-            $paquete->id_ubicacion = $ubicacionPaquete->id_ubicacion;
+            $paquete->id_ubicacion = $ubicacion->id;
             $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
             $paquete->save();
 
             // **Agregar los movimientos en el Kardex**
-            $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
+            $detalleOrden = DetalleOrden::where('id_paquete', $paquete->id)->first();
             if (!$detalleOrden) {
                 throw new Exception('Detalle de orden no encontrado para el paquete.');
             }
@@ -170,7 +172,7 @@ class UbicacionPaqueteController extends Controller
 
             // 1. **SALIDA de RECOLECTADO**
             $kardexSalida = new Kardex();
-            $kardexSalida->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexSalida->id_paquete = $paquete->id;
             $kardexSalida->id_orden = $detalleOrden->id_orden;
             $kardexSalida->cantidad = 1;
             $kardexSalida->numero_ingreso = $numeroSeguimiento;
@@ -181,7 +183,7 @@ class UbicacionPaqueteController extends Controller
 
             // 2. **ENTRADA a ALMACENADO**
             $kardexEntrada = new Kardex();
-            $kardexEntrada->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexEntrada->id_paquete = $paquete->id;
             $kardexEntrada->id_orden = $detalleOrden->id_orden;
             $kardexEntrada->cantidad = 1;
             $kardexEntrada->numero_ingreso = $numeroSeguimiento;
@@ -199,6 +201,7 @@ class UbicacionPaqueteController extends Controller
             return response()->json(['error' => 'Error al crear la relación', 'details' => $e->getMessage()], 500);
         }
     }
+
 
     public function update(Request $request, $id)
     {
