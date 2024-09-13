@@ -31,7 +31,7 @@ use App\Http\Controllers\RutaRecoleccionController;
 use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\UbicacionController;
 use App\Http\Controllers\UbicacionPaqueteController;
-use App\Http\Controllers\KardexController;
+use App\Http\Controllers\PaqueteReporteController;
 use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\PasilloController;
 use App\Http\Controllers\DashboardController;
@@ -202,6 +202,13 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('paquete/{paquete}', [PaqueteController::class, 'update'])->middleware('permission:paquete-update');
   Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy'])->middleware('permission:paquete-destroy');
   Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore'])->middleware('permission:paquete-restore');
+
+  //paquete_reporte
+  Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']); // Listar todos los reportes
+  Route::get('reporte-paquete{id}', [PaqueteReporteController::class, 'show']); // Mostrar un reporte específico
+  Route::post('reporte-paquete', [PaqueteReporteController::class, 'store']); // Crear un nuevo reporte
+  Route::put('reporte-paquete/{id}', [PaqueteReporteController::class, 'update']); // Actualizar un reporte existente
+  Route::delete('reporte-paquete{id}', [PaqueteReporteController::class, 'destroy']); // Eliminar un reporte
 
   // Historial Paquetes
   Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');
