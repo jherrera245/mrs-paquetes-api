@@ -170,105 +170,105 @@ class AsignacionRutasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-{
-    $validated = $request->validate([
-        'id_bodega' => 'required|exists:bodegas,id',
-        'fecha_programada' => 'required|date',
-        'id_vehiculo' => 'required|integer|exists:vehiculos,id',
-        'paquetes' => 'required|array|min:1',
-    ]);
+    {
+        $validated = $request->validate([
+            'id_bodega' => 'required|exists:bodegas,id',
+            'fecha_programada' => 'required|date',
+            'id_vehiculo' => 'required|integer|exists:vehiculos,id',
+            'paquetes' => 'required|array|min:1',
+        ]);
 
-    DB::beginTransaction();
+        DB::beginTransaction();
 
-    try {
-        // Buscar la ruta existente
-        $ruta = Rutas::find($id);
-        $ruta->id_bodega = $request->input('id_bodega');
-        $ruta->fecha_programada = $request->input('fecha_programada');
-        $ruta->save();
+        try {
+            // Buscar la ruta existente
+            $ruta = Rutas::find($id);
+            $ruta->id_bodega = $request->input('id_bodega');
+            $ruta->fecha_programada = $request->input('fecha_programada');
+            $ruta->save();
 
-        // Actualizar o crear asignaciones para los paquetes
-        $paquetes = $request->input('paquetes');
-        $fecha = now();
+            // Actualizar o crear asignaciones para los paquetes
+            $paquetes = $request->input('paquetes');
+            $fecha = now();
 
-        foreach ($paquetes as $paquete) {
-            // Obtener el detalle del paquete
-            $detalle = DB::table('detalle_orden')
-                ->select(
-                    'detalle_orden.id_paquete', 
-                    'detalle_orden.id_orden', 
-                    'ordenes.numero_seguimiento', 
-                    'detalle_orden.id_direccion_entrega', 
-                    'direcciones.id_departamento', 
-                    'direcciones.id_municipio', 
-                    'direcciones.direccion'
-                )
-                ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
-                ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
-                ->where('detalle_orden.id_paquete', $paquete["id"])
-                ->first();
+            foreach ($paquetes as $paquete) {
+                // Obtener el detalle del paquete
+                $detalle = DB::table('detalle_orden')
+                    ->select(
+                        'detalle_orden.id_paquete', 
+                        'detalle_orden.id_orden', 
+                        'ordenes.numero_seguimiento', 
+                        'detalle_orden.id_direccion_entrega', 
+                        'direcciones.id_departamento', 
+                        'direcciones.id_municipio', 
+                        'direcciones.direccion'
+                    )
+                    ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                    ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
+                    ->where('detalle_orden.id_paquete', $paquete["id"])
+                    ->first();
 
-            // Verificar si ya existe una asignación para el paquete
-            $asignaciones = AsignacionRutas::where('id_paquete', $paquete['id'])
-                                            ->where('id_ruta', $ruta->id)
-                                            ->first();
+                // Verificar si ya existe una asignación para el paquete
+                $asignaciones = AsignacionRutas::where('id_paquete', $paquete['id'])
+                                                ->where('id_ruta', $ruta->id)
+                                                ->first();
 
-            if ($asignaciones) {
-                // Actualizar asignación existente
-                $asignaciones->id_vehiculo = $request->input('id_vehiculo');
-                $asignaciones->prioridad = $paquete['prioridad'];
-                $asignaciones->id_departamento = $detalle->id_departamento;
-                $asignaciones->id_municipio = $detalle->id_municipio;
-                $asignaciones->id_direccion = $detalle->id_direccion_entrega;
-                $asignaciones->destino = $detalle->direccion;
-                $asignaciones->save();
-            } else {
-                // Crear una nueva asignación si no existe
-                $asignaciones = new AsignacionRutas();
-                $asignaciones->codigo_unico_asignacion = $ruta->nombre;
-                $asignaciones->fecha = $fecha;
-                $asignaciones->id_ruta = $ruta->id;
-                $asignaciones->id_vehiculo = $request->input('id_vehiculo');
-                $asignaciones->id_paquete = $paquete['id'];
-                $asignaciones->prioridad = $paquete['prioridad'];
-                $asignaciones->id_departamento = $detalle->id_departamento;
-                $asignaciones->id_municipio = $detalle->id_municipio;
-                $asignaciones->id_direccion = $detalle->id_direccion_entrega;
-                $asignaciones->id_estado = 1;
-                $asignaciones->destino = $detalle->direccion;
-                $asignaciones->save();
+                if ($asignaciones) {
+                    // Actualizar asignación existente
+                    $asignaciones->id_vehiculo = $request->input('id_vehiculo');
+                    $asignaciones->prioridad = $paquete['prioridad'];
+                    $asignaciones->id_departamento = $detalle->id_departamento;
+                    $asignaciones->id_municipio = $detalle->id_municipio;
+                    $asignaciones->id_direccion = $detalle->id_direccion_entrega;
+                    $asignaciones->destino = $detalle->direccion;
+                    $asignaciones->save();
+                } else {
+                    // Crear una nueva asignación si no existe
+                    $asignaciones = new AsignacionRutas();
+                    $asignaciones->codigo_unico_asignacion = $ruta->nombre;
+                    $asignaciones->fecha = $fecha;
+                    $asignaciones->id_ruta = $ruta->id;
+                    $asignaciones->id_vehiculo = $request->input('id_vehiculo');
+                    $asignaciones->id_paquete = $paquete['id'];
+                    $asignaciones->prioridad = $paquete['prioridad'];
+                    $asignaciones->id_departamento = $detalle->id_departamento;
+                    $asignaciones->id_municipio = $detalle->id_municipio;
+                    $asignaciones->id_direccion = $detalle->id_direccion_entrega;
+                    $asignaciones->id_estado = 1;
+                    $asignaciones->destino = $detalle->direccion;
+                    $asignaciones->save();
 
-                // Actualizar Kardex de SALIDA
-                $kardexSalida = new Kardex();
-                $kardexSalida->id_paquete = $detalle->id_paquete;
-                $kardexSalida->id_orden = $detalle->id_orden;
-                $kardexSalida->cantidad = 1;
-                $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
-                $kardexSalida->tipo_movimiento = 'SALIDA';
-                $kardexSalida->tipo_transaccion = 'ALMACENADO';
-                $kardexSalida->fecha = now();
-                $kardexSalida->save();
+                    // Actualizar Kardex de SALIDA
+                    $kardexSalida = new Kardex();
+                    $kardexSalida->id_paquete = $detalle->id_paquete;
+                    $kardexSalida->id_orden = $detalle->id_orden;
+                    $kardexSalida->cantidad = 1;
+                    $kardexSalida->numero_ingreso = $detalle->numero_seguimiento;
+                    $kardexSalida->tipo_movimiento = 'SALIDA';
+                    $kardexSalida->tipo_transaccion = 'ALMACENADO';
+                    $kardexSalida->fecha = now();
+                    $kardexSalida->save();
 
-                // Actualizar Kardex de ENTRADA
-                $kardexEntrada = new Kardex();
-                $kardexEntrada->id_paquete = $detalle->id_paquete;
-                $kardexEntrada->id_orden = $detalle->id_orden;
-                $kardexEntrada->cantidad = 1;
-                $kardexEntrada->numero_ingreso = $detalle->numero_seguimiento;
-                $kardexEntrada->tipo_movimiento = 'ENTRADA';
-                $kardexEntrada->tipo_transaccion = 'ASIGNADO_RUTA';
-                $kardexEntrada->fecha = now();
-                $kardexEntrada->save();
+                    // Actualizar Kardex de ENTRADA
+                    $kardexEntrada = new Kardex();
+                    $kardexEntrada->id_paquete = $detalle->id_paquete;
+                    $kardexEntrada->id_orden = $detalle->id_orden;
+                    $kardexEntrada->cantidad = 1;
+                    $kardexEntrada->numero_ingreso = $detalle->numero_seguimiento;
+                    $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                    $kardexEntrada->tipo_transaccion = 'ASIGNADO_RUTA';
+                    $kardexEntrada->fecha = now();
+                    $kardexEntrada->save();
+                }
             }
-        }
 
-        DB::commit();
-        return response()->json(['message' => 'Ruta actualizada y asignaciones guardadas correctamente'], 200);
-    } catch (\Throwable $th) {
-        DB::rollBack();
-        return response()->json(['message' => 'Error al actualizar la ruta'], 500);
+            DB::commit();
+            return response()->json(['message' => 'Ruta actualizada y asignaciones guardadas correctamente'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al actualizar la ruta'], 500);
+        }
     }
-}
 
 
     /**
