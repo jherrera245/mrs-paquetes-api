@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TrasladoController extends Controller
@@ -198,80 +199,95 @@ class TrasladoController extends Controller
         }
     }
 
+    public function trasladoPdf($id = null){
 
-    public function trasladoPdf($id = null)
-{
-    if ($id) {
+    if ($id){
         // Generar PDF para un solo traslado
         $traslado = Traslado::findOrFail($id);
 
-        // Obtener el destino y departamento
-        $destino = Destinos::find($traslado->id_asignacion_ruta);
-        $departamento = $destino ? Departamento::find($destino->id_departamento) : null;
+        // Obtener la bodega de origen y destino
+        $bodegaOrigen = Bodegas::find($traslado->bodega_origen);
+        $bodegaDestino = Bodegas::find($traslado->bodega_destino);
 
-        // Obtener el nombre de la bodega
-        $bodega = Bodegas::find($traslado->id_bodega);
-        $bodegaNombre = $bodega ? $bodega->nombre : 'Bodega no disponible';
+        $bodegaOrigenNombre = $bodegaOrigen ? $bodegaOrigen->nombre : 'Bodega de origen no disponible';
+        $bodegaDestinoNombre = $bodegaDestino ? $bodegaDestino->nombre : 'Bodega de destino no disponible';
 
-        // Obtener la orden y paquetes asociados
-        $orden = Orden::find($traslado->id_orden);
-        $numeroSeguimiento = $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible';
-
-        $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
+        // Obtener los detalles del traslado
+        $detalleOrdenes = DetalleOrden::where('id_paquete', $traslado->id_paquete)->get();
         $paquetes = $detalleOrdenes->map(function($detalle) {
             return Paquete::find($detalle->id_paquete);
-        })->filter(); // Filter to remove null values
+        })->filter();
+
+        // Obtener el número de seguimiento de la orden
+        $numeroSeguimiento = $detalleOrdenes->isNotEmpty() ? Orden::find($detalleOrdenes->first()->id_orden)->numero_seguimiento : 'Número de seguimiento no disponible';
+
+        // Convertir fechas a objetos Carbon
+        $fechaTraslado = $traslado->fecha_traslado ? Carbon::parse($traslado->fecha_traslado)->format('d/m/Y') : 'Fecha no disponible';
 
         // Preparar los datos para el PDF
         $data = [
-            'fecha' => now()->format('d/m/Y'),
-            'destino' => $destino ? $destino->nombre . ' ' . ($departamento ? $departamento->nombre : 'Departamento no disponible') : 'Destino no disponible',
-            'paquetes' => $paquetes,
-            'traslado' => $traslado,
-            'bodega' => $bodegaNombre,
-            'numero_seguimiento' => $numeroSeguimiento,
-            'single' => true
-        ];
-    } else {
-        // Generar PDF para múltiples traslados
-        $traslados = Traslado::all();
+                'fecha' => now()->format('d/m/Y'),
+                'bodega_origen' => $bodegaOrigenNombre,
+                'bodega_destino' => $bodegaDestinoNombre,
+                'numero_traslado'=> $traslado->numero_traslado,
+                'paquetes' => $paquetes,
+                'numero_seguimiento' => $numeroSeguimiento,
+                'fecha_traslado' => $fechaTraslado,
+                'estado' => $traslado->estado,
+                'single' => true
+                ];
 
-        // Reemplazar codigo_qr con uuid para cada traslado
-        $trasladosConPaquetes = $traslados->map(function($traslado) {
-            $detalleOrdenes = DetalleOrden::where('id_orden', $traslado->id_orden)->get();
-            $paquetes = $detalleOrdenes->map(function($detalle) {
-                return Paquete::find($detalle->id_paquete);
-            })->filter(); // Filter to remove null values
-            
-            $traslado->paquetes = $paquetes;
-            return $traslado;
-        });
+            // Generar el PDF para un solo traslado
+            $pdf = Pdf::loadView('pdf.traslado', $data);
+            $pdf->setPaper('A4', 'portrait');
+            $pdfContent = $pdf->output();
+            $base64Pdf = base64_encode($pdfContent);
 
-        // Obtener los nombres de las bodegas para cada traslado y el numero_seguimiento
-        $trasladosConBodegas = $trasladosConPaquetes->map(function($traslado) {
-            $bodega = Bodegas::find($traslado->id_bodega);
-            $traslado->bodega_nombre = $bodega ? $bodega->nombre : 'Bodega no disponible';
+            return response()->json([$base64Pdf]);
 
-            $orden = Orden::find($traslado->id_orden);
-            $traslado->numero_seguimiento = $orden ? $orden->numero_seguimiento : 'Número de seguimiento no disponible';
-            
-            return $traslado;
-        });
+        }
+        else {
+            $traslados = Traslado::all();
 
-        $data = [
-            'fecha' => now()->format('d/m/Y'),
-            'traslados' => $trasladosConBodegas,
-            'single' => false
-        ];
+            // Inicializa la colección de traslados
+            $trasladosConDatos = $traslados->map(function($traslado) 
+                {
+                // Obtener la bodega de destino
+                $bodegaDestino = Bodegas::find($traslado->bodega_destino);
+                $traslado->bodega_destino_nombre = $bodegaDestino ? $bodegaDestino->nombre : 'Bodega de destino no disponible';
+    
+                // Obtener los detalles del traslado
+                $detalleOrdenes = DetalleOrden::where('id_paquete', $traslado->id_paquete)->get();
+                $paquetes = $detalleOrdenes->map(function($detalle) {
+                    return Paquete::find($detalle->id_paquete);
+                })->filter(); 
+    
+                // Obtener el número de seguimiento de la orden
+                $numeroSeguimiento = $detalleOrdenes->isNotEmpty() ? Orden::find($detalleOrdenes->first()->id_orden)->numero_seguimiento : 'Número de seguimiento no disponible';
+    
+                // Convertir fechas a objetos Carbon
+                $fechaTraslado = $traslado->fecha_traslado ? Carbon::parse($traslado->fecha_traslado)->format('d/m/Y') : 'Fecha no disponible';
+                $traslado->fecha_traslado_formatted = $fechaTraslado;
+                $traslado->paquetes = $paquetes;
+                $traslado->numero_seguimiento = $numeroSeguimiento;
+                $traslado->numero_traslados = $traslado;
+    
+                return $traslado;
+            });
+    
+            $data = [
+                'fecha' => now()->format('d/m/Y'),
+                'traslados' => $trasladosConDatos,
+                'single' => false
+            ];
+    
+            // Generar el PDF para múltiples traslados
+            $pdf = Pdf::loadView('pdf.traslado', $data);
+            $pdf->setPaper('A4', 'portrait');
+            $pdfContent = $pdf->output();
+            $base64Pdf = base64_encode($pdfContent);
+
+            return response()->json([$base64Pdf]);
+        }
     }
-
-    // Generar el PDF
-    $pdf = Pdf::loadView('pdf.traslado', $data);
-    $pdf->setPaper('A4', 'portrait');
-    $pdfContent = $pdf->output();
-    $base64Pdf = base64_encode($pdfContent);
-
-    return response()->json([$base64Pdf]);
-}
-
 }
