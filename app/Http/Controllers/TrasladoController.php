@@ -59,7 +59,7 @@ class TrasladoController extends Controller
         $validator = Validator::make($request->all(), [
             'bodega_origen' => 'required|exists:bodegas,id',
             'bodega_destino' => 'required|exists:bodegas,id',
-            'paquetes' => 'required|array|min:1',
+            'paquetes' => 'nullable|array|min:1',
             'paquetes.*' => 'exists:paquetes,id',
             'codigos_qr' => 'nullable|array|min:1',
             'codigos_qr.*' => 'string|exists:paquetes,uuid',
@@ -67,7 +67,6 @@ class TrasladoController extends Controller
         ], [
             'bodega_origen.required' => 'La bodega de origen es obligatoria.',
             'bodega_destino.required' => 'La bodega de destino es obligatoria.',
-            'paquetes.required' => 'Debes seleccionar al menos un paquete.',
             'paquetes.*.exists' => 'Uno o más paquetes seleccionados no son válidos.',
             'codigos_qr.*.exists' => 'Uno o más códigos QR no son válidos.',
             'fecha_traslado.required' => 'La fecha de traslado es obligatoria.',
@@ -136,12 +135,18 @@ class TrasladoController extends Controller
                 // Salida de almacén
                 $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'AlMACENADO', $numeroSeguimiento);
 
+                // el estado del paquete cambia al 5.
+                Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 5]);
+
                 // Si la bodega de destino es la bodega principal (bodega_id = 1), registrar como ENTRADA
                 if ($bodegaDestino == 1) {
                     $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'EN_ESPERA_REUBICACION', $numeroSeguimiento);
                 } else {
                     // Entrada a traslado (cuando no es la bodega principal)
                     $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'TRASLADO', $numeroSeguimiento);
+
+                    // cambia la el id_ubicacion de la tabla paquetes.
+                    Paquete::where('id', $idPaquete)->update(['id_ubicacion' => $bodegaDestino]);
                 }
             }
 
