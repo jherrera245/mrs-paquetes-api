@@ -44,7 +44,6 @@ class DatabaseSeeder extends Seeder
             BodegaSeeder::class,
             PasilloSeeder::class,
             UbicacionSeeder::class,
-            PaqueteSeeder::class,
             UbicacionPaqueteSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
