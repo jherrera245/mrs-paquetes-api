@@ -12,7 +12,6 @@ class CreateTrasladosTable extends Migration
             $table->id(); 
             $table->foreignId('bodega_origen')->constrained('bodegas');
             $table->foreignId('bodega_destino')->constrained('bodegas');
-            $table->foreignId('id_paquete')->constrained('paquetes'); 
             $table->string('numero_traslado')->unique();
             $table->date('fecha_traslado'); 
             $table->enum('estado', ['Pendiente', 'Completado', 'Cancelado'])->default('Pendiente'); 

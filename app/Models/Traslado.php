@@ -14,7 +14,6 @@ class Traslado extends Model
     protected $fillable = [
         'bodega_origen',
         'bodega_destino',
-        'id_paquete',
         'numero_traslado',
         'fecha_traslado',
         'estado',
@@ -34,18 +33,16 @@ class Traslado extends Model
     }
 
     
-    public function paquete()
-    {
-        return $this->belongsTo(Paquete::class, 'id_paquete');
-    }
-
-    
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    
+    // relacion con detalle traslado.
+    public function detalleTraslado()
+    {
+        return $this->hasMany(DetalleTraslado::class, 'id_traslado');
+    }
 
     public function getFormattedData()
     {

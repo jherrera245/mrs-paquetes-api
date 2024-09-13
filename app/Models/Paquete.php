@@ -75,9 +75,9 @@ class Paquete extends Model
     }
 
     public function detalleOrden()
-{
-    return $this->hasOne(DetalleOrden::class, 'id_paquete');
-}
+    {
+        return $this->hasOne(DetalleOrden::class, 'id_paquete');
+    }
 
     public function cliente()
     {
@@ -87,6 +87,12 @@ class Paquete extends Model
     public function estado()
     {
         return $this->belongsTo(EstadoPaquete::class, 'id_estado_paquete');
+    }
+
+    // relacion con detalle de traslado
+    public function detalleTraslado()
+    {
+        return $this->hasOne(DetalleTraslado::class, 'id_paquete');
     }
 
     // Relación con Ubicación
