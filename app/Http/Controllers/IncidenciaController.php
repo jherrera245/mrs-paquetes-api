@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Incidencia;
 use App\Models\EstadoIncidencia;
+use App\Models\Paquete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class IncidenciaController extends Controller
 {
@@ -24,7 +26,13 @@ class IncidenciaController extends Controller
 
         // Obtener los filtros de búsqueda desde la solicitud
         $filters = $request->only([
-            'tipo_incidencia', 'paquete', 'usuario_reporta', 'usuario_asignado', 'estado', 'fecha_hora', 'palabra_clave'
+            'tipo_incidencia',
+            'paquete',
+            'usuario_reporta',
+            'usuario_asignado',
+            'estado',
+            'fecha_hora',
+            'palabra_clave'
         ]);
 
         // Filtrar las incidencias utilizando el método search del modelo Incidencia
@@ -37,11 +45,26 @@ class IncidenciaController extends Controller
 
         // Transformar los datos para incluir nombres en lugar de IDs y mejorar el UUID del paquete
         $incidencias->getCollection()->transform(function ($incidencia) {
-            return $this->transformIncidencia($incidencia); // Asegúrate de que $this esté vinculado correctamente aquí
+            return $this->transformIncidencia($incidencia);
         });
 
         // Devolver una respuesta JSON con las incidencias transformadas
         return response()->json($incidencias);
+    }
+
+    public function show($id)
+    {
+        try {
+            $incidencia = Incidencia::with(['tipoIncidencia', 'paquete', 'usuarioReporta.empleado', 'usuarioAsignado.empleado'])
+                ->findOrFail($id);
+
+            // Transformar los datos antes de devolver la respuesta
+            $incidenciaTransformed = $this->transformIncidencia($incidencia);
+
+            return response()->json($incidenciaTransformed);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Incidencia no encontrada', 'message' => $e->getMessage()], 404);
+        }
     }
 
     public function store(Request $request)
@@ -53,7 +76,6 @@ class IncidenciaController extends Controller
             'id_tipo_incidencia' => 'required|exists:tipo_incidencia,id',
             'descripcion' => 'required|string|max:1000',
             'estado' => 'required|exists:estado_incidencias,id',
-            'id_usuario_reporta' => 'required|exists:users,id',
             'id_usuario_asignado' => 'nullable|exists:users,id',
             'solucion' => 'nullable|string|max:1000',
             'fecha_resolucion' => 'nullable|date',
@@ -65,8 +87,27 @@ class IncidenciaController extends Controller
         }
 
         try {
+            // Obtener el usuario autenticado
+            $usuarioReporta = Auth::user();
+
             // Crear la incidencia con los datos validados
-            $incidencia = Incidencia::create($validator->validated());
+            $incidenciaData = $validator->validated();
+            $incidenciaData['id_usuario_reporta'] = $usuarioReporta->id; // Asignar el usuario autenticado como reportador
+
+            $incidencia = Incidencia::create($incidenciaData);
+
+            // Actualizar el estado del paquete según el tipo de incidencia
+            $paquete = $incidencia->paquete;
+
+            // Verificar el tipo de incidencia y actualizar el estado del paquete
+            if ($incidencia->id_tipo_incidencia == 2) { // 2 es "Daño" según la imagen de la tabla tipo_incidencia
+                $paquete->id_estado_paquete = 11; // 11 es "Dañado" según la imagen de la tabla estado_paquetes
+            } elseif ($incidencia->id_tipo_incidencia == 3) { // 3 es "Pérdida" según la imagen de la tabla tipo_incidencia
+                $paquete->id_estado_paquete = 12; // 12 es "Perdido" según la imagen de la tabla estado_paquetes
+            }
+
+            // Guardar el cambio de estado del paquete
+            $paquete->save();
 
             // Cargar las relaciones necesarias
             $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
@@ -82,21 +123,6 @@ class IncidenciaController extends Controller
         }
     }
 
-    public function show($id)
-    {
-        try {
-            $incidencia = Incidencia::with(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado'])
-                ->findOrFail($id);
-
-            // Transformar los datos antes de devolver la respuesta
-            $incidenciaTransformed = $this->transformIncidencia($incidencia);
-
-            return response()->json($incidenciaTransformed);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Incidencia no encontrada', 'message' => $e->getMessage()], 404);
-        }
-    }
-
     public function update(Request $request, $id)
     {
         // Validar los datos de entrada
@@ -106,7 +132,6 @@ class IncidenciaController extends Controller
             'id_tipo_incidencia' => 'sometimes|required|exists:tipo_incidencia,id',
             'descripcion' => 'sometimes|required|string|max:1000',
             'estado' => 'sometimes|required|exists:estado_incidencias,id',
-            'id_usuario_reporta' => 'sometimes|required|exists:users,id',
             'id_usuario_asignado' => 'nullable|exists:users,id',
             'solucion' => 'nullable|string|max:1000',
             'fecha_resolucion' => 'nullable|date',
@@ -123,6 +148,18 @@ class IncidenciaController extends Controller
 
             // Actualizar la incidencia con los datos validados
             $incidencia->update($validator->validated());
+
+            // Actualizar el estado del paquete según el tipo de incidencia
+            $paquete = $incidencia->paquete;
+
+            if ($request->id_tipo_incidencia == 2) { // Daño
+                $paquete->id_estado = 11; // Dañado
+            } elseif ($request->id_tipo_incidencia == 3) { // Perdido
+                $paquete->id_estado = 12; // Perdido
+            }
+
+            // Guardar el cambio de estado del paquete
+            $paquete->save();
 
             // Cargar las relaciones necesarias después de la actualización
             $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
@@ -153,6 +190,13 @@ class IncidenciaController extends Controller
     // Función de transformación de incidencia
     private function transformIncidencia($incidencia)
     {
+        $usuarioReporta = $incidencia->usuarioReporta;
+        $usuarioAsignado = $incidencia->usuarioAsignado;
+
+        // Obtener el empleado que reporta la incidencia
+        $empleadoReporta = $usuarioReporta ? $usuarioReporta->empleado : null;
+        $empleadoAsignado = $usuarioAsignado ? $usuarioAsignado->empleado : null;
+
         return [
             'id' => $incidencia->id,
             'id_paquete' => $incidencia->paquete ? $incidencia->paquete->id : null,
@@ -162,8 +206,10 @@ class IncidenciaController extends Controller
             'descripcion' => $incidencia->descripcion,
             'estado' => $this->estadosIncidencia[$incidencia->estado] ?? 'Desconocido',
             'fecha_resolucion' => $incidencia->fecha_resolucion,
-            'usuario_reporta' => $incidencia->usuarioReporta ? $incidencia->usuarioReporta->email : null,
-            'usuario_asignado' => $incidencia->usuarioAsignado ? $incidencia->usuarioAsignado->email : null,
+            'id_usuario_reporta' => $usuarioReporta ? $usuarioReporta->id_empleado : null, // Mostrar id_empleado del usuario que reporta
+            'usuario_reporta' => $empleadoReporta ? $empleadoReporta->nombres . ' ' . $empleadoReporta->apellidos : null, // Mostrar nombres y apellidos del empleado que reporta
+            'id_usuario_asignado' => $usuarioAsignado ? $usuarioAsignado->id_empleado : null, // Mostrar id_empleado del usuario asignado
+            'usuario_asignado' => $empleadoAsignado ? $empleadoAsignado->nombres . ' ' . $empleadoAsignado->apellidos : null, // Mostrar nombres y apellidos del empleado asignado
             'solucion' => $incidencia->solucion,
             'created_at' => $incidencia->created_at,
             'updated_at' => $incidencia->updated_at,
