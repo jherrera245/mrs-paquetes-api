@@ -31,7 +31,7 @@ class Incidencia extends Model
     // Relación con el paquete
     public function paquete()
     {
-        return $this->belongsTo(Paquete::class, 'id_paquete');
+        return $this->belongsTo(Paquete::class, 'id_paquete', 'id');
     }
 
     // Relación con el usuario que reporta la incidencia

@@ -130,6 +130,11 @@ class PermissionSeeder extends Seeder
             'traslados-update',
             'traslados-destroy',
             'traslados-pdf',
+            'ubicacion-paquetes-danados-index',
+            'ubicacion-paquetes-danados-store',
+            'ubicacion-paquetes-danados-show',
+            'ubicacion-paquetes-danados-update',
+            'ubicacion-paquetes-danados-destroy',
         ];
 
         foreach ($permissions as $permission) {
@@ -151,7 +156,6 @@ class PermissionSeeder extends Seeder
             $clienteRole->givePermissionTo([
                 'auth-actualizarClientePerfil',
                 'paquete-view',
-                'incidencias-create',
                 'incidencias-view',
                 'direcciones-view',
                 'direcciones-show',
@@ -165,6 +169,7 @@ class PermissionSeeder extends Seeder
 
         if ($conductorRole) {
             $conductorRole->givePermissionTo([
+                'auth-store',
                 'rutas-view',
                 'rutas-show',
                 'rutas-create',
@@ -180,7 +185,12 @@ class PermissionSeeder extends Seeder
                 'paquete-create',
                 'paquete-update',
                 'paquete-destroy',
-                'vehiculo-view', 
+                'vehiculo-view',
+                'incidencias-view',
+                'incidencias-create',
+                'incidencias-show',
+                'incidencias-update',
+                'incidencias-destroy',
             ]);
         }
 

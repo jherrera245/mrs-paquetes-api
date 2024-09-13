@@ -142,6 +142,26 @@ class UbicacionSeeder extends Seeder
             ['nomenclatura' => 'B1P3E2AN19US', 'id_bodega' => 1, 'id_pasillo' => 3],
             ['nomenclatura' => 'B1P3E2AN20US', 'id_bodega' => 1, 'id_pasillo' => 3],
 
+            ['nomenclatura' => 'B1P5E1AN1DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN2DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN3DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN4DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN5DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN6DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN7DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN8DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN9DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN10DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN11DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN12DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN13DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN14DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN15DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN16DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN17DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN18DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN19DA', 'id_bodega' => 1, 'id_pasillo' => 5],
+            ['nomenclatura' => 'B1P5E1AN20DA', 'id_bodega' => 1, 'id_pasillo' => 5],
 
         ];
 

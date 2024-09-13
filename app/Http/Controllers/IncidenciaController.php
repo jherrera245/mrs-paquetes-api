@@ -55,8 +55,12 @@ class IncidenciaController extends Controller
     public function show($id)
     {
         try {
-            $incidencia = Incidencia::with(['tipoIncidencia', 'paquete', 'usuarioReporta.empleado', 'usuarioAsignado.empleado'])
-                ->findOrFail($id);
+            $incidencia = Incidencia::with([
+                'tipoIncidencia',
+                'paquete',
+                'usuarioReporta.empleado',
+                'usuarioAsignado.empleado'
+            ])->findOrFail($id);
 
             // Transformar los datos antes de devolver la respuesta
             $incidenciaTransformed = $this->transformIncidencia($incidencia);

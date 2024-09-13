@@ -35,6 +35,7 @@ use App\Http\Controllers\PaqueteReporteController;
 use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\PasilloController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UbicacionPaqueteDaController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -221,6 +222,12 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('incidencias/{incidencia}', [IncidenciaController::class, 'update'])->middleware('permission:incidencias-update');
   Route::delete('incidencias/{incidencia}', [IncidenciaController::class, 'destroy'])->middleware('permission:incidencias-destroy');
 
+  // Rutas para manejar ubicaciones de paquetes dañados con permisos específicos
+  Route::get('ubicacion-paquetes-danados', [UbicacionPaqueteDaController::class, 'index'])->middleware('permission:ubicacion-paquetes-danados-index');
+  Route::post('ubicacion-paquetes-danados', [UbicacionPaqueteDaController::class, 'store'])->middleware('permission:ubicacion-paquetes-danados-store');
+  Route::get('ubicacion-paquetes-danados/{id}', [UbicacionPaqueteDaController::class, 'show'])->middleware('permission:ubicacion-paquetes-danados-show');
+  Route::put('ubicacion-paquetes-danados/{id}', [UbicacionPaqueteDaController::class, 'update'])->middleware('permission:ubicacion-paquetes-danados-update');
+  Route::delete('ubicacion-paquetes-danados/{id}', [UbicacionPaqueteDaController::class, 'destroy'])->middleware('permission:ubicacion-paquetes-danados-destroy');
 
   //Dropdown
   Route::get('dropdown/get_departamentos', [DropdownController::class, 'getDepartamentos']);
@@ -254,6 +261,9 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_pasillos/{bodegaId}', [DropdownController::class, 'getPasillosPorBodega']);
   Route::get('dropdown/get_Ubicaciones_SinPaquetes', [DropdownController::class, 'getUbicacionesSinPaquetes']);
   Route::get('dropdown/get_paquetes_sin_asignar', [DropdownController::class, 'getPaquetesSinAsignar']);
+  Route::get('dropdown/get_Ubicaciones_paquetes_da', [DropdownController::class, 'getUbicacionesSinPaquetesDa']);
+  Route::get('dropdown/get_paquetes_danio', [DropdownController::class, 'getPaquetesConDanio']);
+  Route::get('dropdown/get_paquetes_en_recepcion', [DropdownController::class, 'getPaquetesEnRecepcion']);
 
   // Detalle Orden
   Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);

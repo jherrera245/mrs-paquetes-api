@@ -133,6 +133,60 @@ class DropdownController extends Controller
         return response()->json(["incidencias" => $incidencias]);
     }
 
+    public function getPaquetesEnRecepcion()
+    {
+        try {
+            // Filtrar los paquetes cuyo estado sea "En Recepción" (id_estado_paquete = 1)
+            $paquetes = Paquete::select('id', 'uuid')
+                ->where('id_estado_paquete', 1) // Filtrar por estado de paquete con id 1
+                ->get();
+
+            if ($paquetes->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron paquetes en estado "En Recepción".'], 404);
+            }
+
+            return response()->json(['paquetes' => $paquetes], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los paquetes en estado "En Recepción".',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getPaquetesConDanio()
+    {
+        try {
+            // Obtener los paquetes cuyo tipo de incidencia es "Daño" (id_tipo_incidencia = 2)
+            $paquetes = Paquete::select('id', 'uuid') // Seleccionar el campo 'uuid'
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('incidencias')
+                        ->whereColumn('paquetes.id', 'incidencias.id_paquete')
+                        ->where('id_tipo_incidencia', 2); // Filtrar por tipo de incidencia "Daño"
+                })
+                ->whereNull('eliminado_at') // Excluir los eliminados
+                ->whereNotExists(function ($query) {
+                    // Verificar que el paquete no esté en la tabla 'ubicaciones_paquetes'
+                    $query->select(DB::raw(1))
+                        ->from('ubicaciones_paquetes')
+                        ->whereColumn('paquetes.id', 'ubicaciones_paquetes.id_paquete');
+                })
+                ->get();
+
+            if ($paquetes->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron paquetes con tipo de incidencia "Daño".'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json(['paquetes' => $paquetes], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los paquetes con tipo de incidencia "Daño".',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function getBodegas()
     {
         $bodegas = Bodegas::all();
@@ -255,15 +309,49 @@ class DropdownController extends Controller
         try {
             // Obtener todas las ubicaciones que no están vinculadas a ninguna entrada en ubicaciones_paquetes
             // o que están vinculadas pero con un estado de 0 en la tabla ubicaciones_paquetes
+            // Excluir aquellas ubicaciones cuya nomenclatura termine con "DA"
             $ubicaciones = Ubicacion::select('id', 'nomenclatura')
-                ->whereDoesntHave('paquetes') // Ubicaciones sin paquetes
-                ->orWhereHas('paquetes', function ($query) {
-                    $query->where('estado', 0); // Ubicaciones con paquetes en estado 0 en ubicaciones_paquetes
+                ->where(function ($query) {
+                    $query->whereDoesntHave('paquetes') // Ubicaciones sin paquetes
+                        ->orWhereHas('paquetes', function ($query) {
+                            $query->where('estado', 0); // Ubicaciones con paquetes en estado 0 en ubicaciones_paquetes
+                        });
                 })
+                ->whereRaw("RIGHT(nomenclatura, 2) != 'DA'") // Excluir las ubicaciones cuya nomenclatura termine en 'DA'
                 ->get();
 
             if ($ubicaciones->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron ubicaciones disponibles.'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json($ubicaciones, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener las ubicaciones.',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public function getUbicacionesSinPaquetesDa()
+    {
+        try {
+            // Obtener todas las ubicaciones que no están vinculadas a ninguna entrada en ubicaciones_paquetes
+            // o que están vinculadas pero con un estado de 0 en la tabla ubicaciones_paquetes
+            // Incluir solo aquellas ubicaciones cuya nomenclatura termine con "DA"
+            $ubicaciones = Ubicacion::select('id', 'nomenclatura')
+                ->where(function ($query) {
+                    $query->whereDoesntHave('paquetes') // Ubicaciones sin paquetes
+                        ->orWhereHas('paquetes', function ($query) {
+                            $query->where('estado', 0); // Ubicaciones con paquetes en estado 0 en ubicaciones_paquetes
+                        });
+                })
+                ->whereRaw("RIGHT(nomenclatura, 2) = 'DA'") // Incluir solo las ubicaciones cuya nomenclatura termine en 'DA'
+                ->get();
+
+            if ($ubicaciones->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron ubicaciones disponibles que terminen con "DA".'], Response::HTTP_NOT_FOUND);
             }
 
             return response()->json($ubicaciones, Response::HTTP_OK);

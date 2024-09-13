@@ -67,7 +67,11 @@ class Paquete extends Model
     {
         return $this->hasMany(Transaccion::class, 'id_paquete');
     }
-
+    
+    public function incidencias()
+    {
+        return $this->hasMany(Incidencia::class, 'id_paquete', 'id');
+    }
 
     public function empaquetado()
     {
