@@ -1081,7 +1081,7 @@ class OrdenController extends Controller
         }
     }
 
-    public function misOrdenesCliente($cliente_id)
+    public function misOrdenesCliente()
     {
         try {
             // Obtener el usuario autenticado
