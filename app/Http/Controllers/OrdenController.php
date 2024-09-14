@@ -161,7 +161,7 @@ class OrdenController extends Controller
         $paquete->peso = $detalle["peso"];
         $paquete->uuid = $uuid;
         $paquete->tag = $tag;
-        $paquete->id_estado_paquete = $detalle["id_estado_paquete"];
+        $paquete->id_estado_paquete = $orden->tipo_orden === 'preorden' ? 5 : 1;
         $paquete->fecha_envio = $detalle["fecha_envio"];
         $paquete->fecha_entrega_estimada = $detalle["fecha_entrega_estimada"];
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
@@ -171,7 +171,8 @@ class OrdenController extends Controller
             $detalleOrden = new DetalleOrden();
             $detalleOrden->id_orden = $orden->id;
             $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
-            $detalleOrden->id_estado_paquetes = $detalle["id_estado_paquete"];
+            // Hago una validacion ternaria para el estado, si la orden es preorden, el estado es 5, si no, es 1.
+            $detalleOrden->id_estado_paquetes = $orden->tipo_orden === 'preorden' ? 5 : 1;
             $detalleOrden->id_paquete = $paquete->id;
             $detalleOrden->validacion_entrega = 0;
             $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
@@ -186,17 +187,31 @@ class OrdenController extends Controller
             // Guardar el detalle de la orden para obtener su ID
             $detalleOrden->save();
 
-            // crear la transaccion en el kardex e inventario.
-            $kardex = new Kardex();
-            $kardex->id_paquete = $paquete->id;
-            $kardex->id_orden = $orden->id;
-            $kardex->cantidad = 1;
-            $kardex->numero_ingreso = $orden->numero_seguimiento;
-            $kardex->tipo_movimiento = 'ENTRADA';
-            $kardex->tipo_transaccion = 'ORDEN';
-            $kardex->fecha = now();
+            // si el tipo de orden es preorden, se marca el la entrada en el kardex como "EN_ESPERA_RECOLECCION"
+            if ($orden->tipo_orden === 'preorden') {
+                $kardex = new Kardex();
+                $kardex->id_paquete = $paquete->id;
+                $kardex->id_orden = $orden->id;
+                $kardex->cantidad = 1;
+                $kardex->numero_ingreso = $orden->numero_seguimiento;
+                $kardex->tipo_movimiento = 'ENTRADA';
+                $kardex->tipo_transaccion = 'RECEPCION';
+                $kardex->fecha = now();
 
-            $kardex->save();
+                $kardex->save();
+            }else{
+                // crear la transaccion en el kardex e inventario.
+                $kardex = new Kardex();
+                $kardex->id_paquete = $paquete->id;
+                $kardex->id_orden = $orden->id;
+                $kardex->cantidad = 1;
+                $kardex->numero_ingreso = $orden->numero_seguimiento;
+                $kardex->tipo_movimiento = 'ENTRADA';
+                $kardex->tipo_transaccion = 'PREORDEN';
+                $kardex->fecha = now();
+
+                $kardex->save();
+            }
 
             // entrada en inventario.
             $inventario = new Inventario();
@@ -254,7 +269,6 @@ class OrdenController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'validacion_entrega' => 'required|integer',
-            'id_estado_paquetes' => 'required|integer',
             'fecha_entrega' => 'required|date',
         ]);
 
@@ -1059,7 +1073,7 @@ class OrdenController extends Controller
         }
     }
 
-    public function misOrdenesCliente()
+    public function misOrdenesCliente($cliente_id)
     {
         try {
             // Obtener el usuario autenticado

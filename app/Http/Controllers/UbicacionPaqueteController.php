@@ -147,18 +147,6 @@ class UbicacionPaqueteController extends Controller
                 return response()->json(['error' => 'Esta ubicación ya está asignada a este paquete.'], 400);
             }
 
-            // Crear la nueva relación de ubicación con paquete
-            $ubicacionPaquete = new UbicacionPaquete();
-            $ubicacionPaquete->id_paquete = $paquete->id; // Guardar el ID del paquete encontrado por su UUID
-            $ubicacionPaquete->id_ubicacion = $ubicacion->id; // Guardar el ID de la ubicación encontrada por su nomenclatura
-            $ubicacionPaquete->estado = 1;
-            $ubicacionPaquete->save();
-
-            // Actualizar el campo id_ubicacion en el paquete
-            $paquete->id_ubicacion = $ubicacion->id;
-            $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
-            $paquete->save();
-
             // **Agregar los movimientos en el Kardex**
             $detalleOrden = DetalleOrden::where('id_paquete', $paquete->id)->first();
             if (!$detalleOrden) {
@@ -170,16 +158,31 @@ class UbicacionPaqueteController extends Controller
                 throw new Exception('Número de seguimiento no encontrado para la orden.');
             }
 
-            // 1. **SALIDA de RECOLECTADO**
-            $kardexSalida = new Kardex();
-            $kardexSalida->id_paquete = $paquete->id;
-            $kardexSalida->id_orden = $detalleOrden->id_orden;
-            $kardexSalida->cantidad = 1;
-            $kardexSalida->numero_ingreso = $numeroSeguimiento;
-            $kardexSalida->tipo_movimiento = 'SALIDA';
-            $kardexSalida->tipo_transaccion = 'RECOLECTADO';
-            $kardexSalida->fecha = now();
-            $kardexSalida->save();
+            // si el estado del paquete es 1 (Recibido de recepcion) se hace una salida de recepcion a almacenado.
+            if ($paquete->id_estado_paquete == 5) {
+                // 1. **SALIDA de RECEPCION**
+                $kardexSalida = new Kardex();
+                $kardexSalida->id_paquete = $paquete->id;
+                $kardexSalida->id_orden = $detalleOrden->id_orden;
+                $kardexSalida->cantidad = 1;
+                $kardexSalida->numero_ingreso = $numeroSeguimiento;
+                $kardexSalida->tipo_movimiento = 'SALIDA';
+                $kardexSalida->tipo_transaccion = 'RECEPCION';
+                $kardexSalida->fecha = now();
+                $kardexSalida->save();
+            }else{
+                // 1. **SALIDA de RECOLECTADO**
+                $kardexSalida = new Kardex();
+                $kardexSalida->id_paquete = $paquete->id;
+                $kardexSalida->id_orden = $detalleOrden->id_orden;
+                $kardexSalida->cantidad = 1;
+                $kardexSalida->numero_ingreso = $numeroSeguimiento;
+                $kardexSalida->tipo_movimiento = 'SALIDA';
+                $kardexSalida->tipo_transaccion = 'RECOLECTADO';
+                $kardexSalida->fecha = now();
+                $kardexSalida->save();
+            }
+            
 
             // 2. **ENTRADA a ALMACENADO**
             $kardexEntrada = new Kardex();
@@ -191,6 +194,18 @@ class UbicacionPaqueteController extends Controller
             $kardexEntrada->tipo_transaccion = 'ALMACENADO';
             $kardexEntrada->fecha = now();
             $kardexEntrada->save();
+
+            // Crear la nueva relación de ubicación con paquete
+            $ubicacionPaquete = new UbicacionPaquete();
+            $ubicacionPaquete->id_paquete = $paquete->id; // Guardar el ID del paquete encontrado por su UUID
+            $ubicacionPaquete->id_ubicacion = $ubicacion->id; // Guardar el ID de la ubicación encontrada por su nomenclatura
+            $ubicacionPaquete->estado = 1;
+            $ubicacionPaquete->save();
+
+            // Actualizar el campo id_ubicacion en el paquete
+            $paquete->id_ubicacion = $ubicacion->id;
+            $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
+            $paquete->save();
 
             DB::commit(); // Confirmar la transacción
 

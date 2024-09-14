@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Paquete;
 use App\Models\Clientes;
 use App\Models\HistorialPaquete;
+use App\Models\Kardex;
 use App\Models\Ubicacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -361,25 +362,65 @@ class PaqueteController extends Controller
 
 
     private function transformPaquete($paquete)
-{
-    return [
-        'id' => $paquete->id,
-        'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
-        'tamano_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
-        'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
-        'peso' => $paquete->peso,
-        'uuid' => $paquete->uuid,
-        'tag' => $paquete->tag,
-        'estado_paquete' => $paquete->estado ? $paquete->estado->nombre : null,
-        'fecha_envio' => $paquete->fecha_envio,
-        'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
-        'descripcion_contenido' => $paquete->descripcion_contenido,
-        'ubicacion' => $paquete->ubicacion ? $paquete->ubicacion->nomenclatura : null,
-        'created_at' => $paquete->created_at,
-        'updated_at' => $paquete->updated_at,
-    ];
+    {
+        return [
+            'id' => $paquete->id,
+            'tipo_paquete' => $paquete->tipoPaquete ? $paquete->tipoPaquete->nombre : null,
+            'tamano_paquete' => $paquete->tamanoPaquete ? $paquete->tamanoPaquete->nombre : null,
+            'empaque' => $paquete->empaquetado ? $paquete->empaquetado->empaquetado : null,
+            'peso' => $paquete->peso,
+            'uuid' => $paquete->uuid,
+            'tag' => $paquete->tag,
+            'estado_paquete' => $paquete->estado ? $paquete->estado->nombre : null,
+            'fecha_envio' => $paquete->fecha_envio,
+            'fecha_entrega_estimada' => $paquete->fecha_entrega_estimada,
+            'descripcion_contenido' => $paquete->descripcion_contenido,
+            'ubicacion' => $paquete->ubicacion ? $paquete->ubicacion->nomenclatura : null,
+            'created_at' => $paquete->created_at,
+            'updated_at' => $paquete->updated_at,
+        ];
     }
 
+    public function trackingPaquete($id_paquete)
+    {
+        // Obtener los movimientos del paquete del kardex
+        $movimientos = Kardex::where('id_paquete', $id_paquete)
+            ->orderBy('fecha', 'asc')
+            ->get();
+
+        // Formatear los resultados
+        $tracking = $movimientos->map(function($movimiento) {
+            return [
+                'id_paquete' => $movimiento->id_paquete,
+                'numero_ingreso' => $movimiento->numero_ingreso,
+                'estado' => $this->formatearEstado($movimiento->tipo_transaccion),
+                'fecha_movimiento' => $movimiento->fecha
+            ];
+        });
+
+        return response()->json($tracking);
+    }
+
+// Método para formatear el tipo de transacción
+    private function formatearEstado($tipoTransaccion)
+    {
+        switch ($tipoTransaccion) {
+            case 'RECEPCION':
+                return 'En Recepción';
+            case 'ALMACENADO':
+                return 'En Almacén';
+            case 'ASIGNADO_RUTA':
+                return 'Asignado a Ruta';
+            case 'TRASLADO':
+                return 'En Traslado';
+            case 'DEVUELTO_A_BODEGA':
+                return 'Devuelto a Bodega';
+            case 'RECOLECTADO':
+                return 'Recolectado';
+            default:
+                return 'Desconocido';
+        }
+    }
 
     public function ubicacion()
     {
