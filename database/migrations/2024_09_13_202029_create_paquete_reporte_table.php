@@ -21,7 +21,7 @@ class CreatePaqueteReporteTable extends Migration
             $table->foreignId('id_cliente'); 
             $table->foreignId('id_empleado_reporta'); 
             $table->text('descripcion_dano')->nullable(); 
-            $table->text('costo_reparacion')->nullable(); 
+            $table->decimal('costo_reparacion', 10)->nullable(); 
             $table->enum('estado', ['no reparado', 'en reparacion','reparado',  'devuelto']); 
 
             //llaves foraneas

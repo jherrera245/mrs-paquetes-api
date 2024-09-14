@@ -209,11 +209,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('paquete/tracking-paquete/{paquete}', [PaqueteController::class, 'trackingPaquete'])->middleware('permission:paquete-show');
 
   //paquete_reporte
-  Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']); // Listar todos los reportes
-  Route::get('reporte-paquete{id}', [PaqueteReporteController::class, 'show']); // Mostrar un reporte específico
-  Route::post('reporte-paquete', [PaqueteReporteController::class, 'store']); // Crear un nuevo reporte
-  Route::put('reporte-paquete/{id}', [PaqueteReporteController::class, 'update']); // Actualizar un reporte existente
-  Route::delete('reporte-paquete{id}', [PaqueteReporteController::class, 'destroy']); // Eliminar un reporte
+  Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']); 
+  Route::get('reporte-paquete/{id}', [PaqueteReporteController::class, 'show']); 
+  Route::post('reporte-paquete', [PaqueteReporteController::class, 'store']); 
+  Route::put('reporte-paquete/{id}', [PaqueteReporteController::class, 'update']); 
+  Route::delete('reporte-paquete{id}', [PaqueteReporteController::class, 'destroy']); 
 
   // Historial Paquetes
   Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');
