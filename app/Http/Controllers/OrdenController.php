@@ -201,7 +201,7 @@ class OrdenController extends Controller
                 $kardex->fecha = now();
 
                 $kardex->save();
-            }else{
+            } else {
                 // crear la transaccion en el kardex e inventario.
                 $kardex = new Kardex();
                 $kardex->id_paquete = $paquete->id;
@@ -1026,7 +1026,7 @@ class OrdenController extends Controller
             // Valida los datos de la solicitud
             $validator = Validator::make($request->all(), [
                 'id_direccion' => 'required|integer|exists:direcciones,id',
-                'direccion_recoleccion' =>'nullable|integer|exists:direcciones,id',
+                'direccion_recoleccion' => 'nullable|integer|exists:direcciones,id',
                 'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
                 'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
                 'total_pagar' => 'required|numeric',
@@ -1103,7 +1103,7 @@ class OrdenController extends Controller
             $end = Carbon::parse($hoy)->format('Y-m-d');
 
             // Recuperar las órdenes asociadas al cliente junto con sus detalles
-            $ordenes = Orden::where('id_cliente', $cliente_id)
+            $ordenes = Orden::where('id_cliente', $cliente->id)
                 ->where('estado', '!=', 'Cancelada') // Excluir órdenes canceladas
                 ->with(['detalles' => function ($query) {
                     $query->where('id_estado_paquetes', '!=', 13); // Excluir detalles cancelados
@@ -1163,7 +1163,7 @@ class OrdenController extends Controller
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
             'id_direccion' => 'required|integer|exists:direcciones,id',
-            'direccion_recoleccion' =>'nullable|integer|exists:direcciones,id',
+            'direccion_recoleccion' => 'nullable|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
             'total_pagar' => 'required|numeric',
