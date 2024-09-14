@@ -70,6 +70,7 @@ class OrdenController extends Controller
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
             'id_direccion' => 'required|integer|exists:direcciones,id',
+            'direccion_recoleccion' => 'nullable|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             // relacion con ubicacion paquete, puede ser nulo.
             'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
@@ -119,6 +120,7 @@ class OrdenController extends Controller
         $orden->id_cliente = $request->input('id_cliente');
         $orden->id_tipo_pago = $request->input('id_tipo_pago');
         $orden->id_direccion = $request->id_direccion;
+        $orden->direccion_recoleccion = $request->direccion_recoleccion;
         $orden->total_pagar = $request->input('total_pagar');
         $orden->costo_adicional = $request->input('costo_adicional');
         $orden->concepto = $request->input('concepto');
@@ -236,6 +238,7 @@ class OrdenController extends Controller
                 'id_cliente' => 'required|integer|exists:clientes,id',
                 'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
                 'id_direccion' => 'required|integer|exists:direcciones,id',
+                'direccion_recoleccion' => 'nullable|integer|exists:direcciones,id',
                 'total_pagar' => 'required|numeric',
                 'costo_adicional' => 'nullable|numeric',
                 'concepto' => 'required|string',
@@ -249,6 +252,7 @@ class OrdenController extends Controller
             $orden->id_cliente = $validatedData['id_cliente'] ?? $orden->id_cliente;
             $orden->id_tipo_pago = $validatedData['id_tipo_pago'] ?? $orden->id_tipo_pago;
             $orden->id_direccion = $validatedData['id_direccion'] ?? $orden->id_direccion;
+            $orden->direccion_recoleccion = $validatedData['direccion_recoleccion'] ?? $orden->direccion_recoleccion;
             $orden->total_pagar = $validatedData['total_pagar'] ?? $orden->total_pagar;
             $orden->costo_adicional = $validatedData['costo_adicional'] ?? $orden->costo_adicional; // Si no hay costo adicional, no se cambia
             $orden->concepto = $validatedData['concepto'] ?? $orden->concepto;
@@ -481,6 +485,7 @@ class OrdenController extends Controller
             'tipo_documento' => $orden->tipo_documento,
             'tipo_orden' => $orden->tipo_orden,
             'id_direccion' => $orden->id_direccion,
+            'direccion_recoleccion' => $orden->direccion_recoleccion,
             'concepto' => $orden->concepto,
             'numero_seguimiento' => $orden->numero_seguimiento,
             'direccion_emisor' => $direccion ? [
@@ -647,6 +652,7 @@ class OrdenController extends Controller
             'tipo_documento' => $orden->tipo_documento,
             'tipo_orden' => $orden->tipo_orden,
             'id_direccion' => $orden->id_direccion,
+            'direccion_recoleccion' => $orden->direccion_recoleccion,
             'concepto' => $orden->concepto,
             'numero_seguimiento' => $orden->numero_seguimiento,
 
@@ -1020,6 +1026,7 @@ class OrdenController extends Controller
             // Valida los datos de la solicitud
             $validator = Validator::make($request->all(), [
                 'id_direccion' => 'required|integer|exists:direcciones,id',
+                'direccion_recoleccion' =>'nullable|integer|exists:direcciones,id',
                 'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
                 'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
                 'total_pagar' => 'required|numeric',
@@ -1040,6 +1047,7 @@ class OrdenController extends Controller
                 $orden->id_cliente = $cliente->id; // Usa el ID del cliente asociado
                 $orden->id_tipo_pago = $request->input('id_tipo_pago');
                 $orden->id_direccion = $request->id_direccion;
+                $orden->direccion_recoleccion = $request->recoleccion_direccion;
                 $orden->total_pagar = $request->input('total_pagar');
                 $orden->costo_adicional = $request->input('costo_adicional');
                 $orden->concepto = $request->input('concepto');
@@ -1113,6 +1121,7 @@ class OrdenController extends Controller
                     'id' => $orden->id,
                     'id_cliente' => $orden->id_cliente,
                     'id_direccion' => $orden->id_direccion,
+                    'direccion_recoleccion' => $orden->direccion_recoleccion,
                     'id_tipo_pago' => $orden->id_tipo_pago,
                     'total_pagar' => $orden->total_pagar,
                     'costo_adicional' => $orden->costo_adicional,
@@ -1154,6 +1163,7 @@ class OrdenController extends Controller
         $validator = Validator::make($request->all(), [
             'id_cliente' => 'required|integer|exists:clientes,id',
             'id_direccion' => 'required|integer|exists:direcciones,id',
+            'direccion_recoleccion' =>'nullable|integer|exists:direcciones,id',
             'id_tipo_pago' => 'required|integer|exists:tipo_pago,id',
             'id_ubicacion_paquete' => 'nullable|integer|exists:ubicacion_paquete,id',
             'total_pagar' => 'required|numeric',
@@ -1189,6 +1199,7 @@ class OrdenController extends Controller
             $orden->id_cliente = $request->input('id_cliente');
             $orden->id_tipo_pago = $request->input('id_tipo_pago');
             $orden->id_direccion = $request->input('id_direccion');
+            $orden->direccion_recoleccion = $request->input('direccion_recoleccion');
             $orden->total_pagar = $request->input('total_pagar');
             $orden->costo_adicional = $request->input('costo_adicional');
             $orden->concepto = $request->input('concepto');
