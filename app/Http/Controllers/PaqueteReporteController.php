@@ -107,7 +107,7 @@ class PaqueteReporteController extends Controller
                 'success' => true,
                 'message' => 'Reporte de daño y registro en Kardex creados exitosamente.',
                 'data' => [
-                    'report' => $report,
+                    'paquete' => $report,
                     'kardex' => $kardex,
                     'input' => $validated, 
                 ],
@@ -187,7 +187,7 @@ class PaqueteReporteController extends Controller
                 'estado' => $validated['estado'],
             ]);
 
-            // Actualizar el campo id_ubicacion del paquete a "en reparación"
+            // Actualizar el campo id_ubicacion del paquete
             $paquete = Paquete::findOrFail($validated['id_paquete']);
             $paquete->id_ubicacion = 100;
             $paquete->save();
@@ -196,10 +196,10 @@ class PaqueteReporteController extends Controller
             $kardex = Kardex::updateOrCreate(
                 ['id_paquete' => $validated['id_paquete'], 'id_orden' => $id_orden],
                 [
-                    'cantidad' => 1, // Asumiendo que la cantidad siempre es 1
+                    'cantidad' => 1, 
                     'numero_ingreso' => $numero_seguimiento,
                     'tipo_movimiento' => 'ENTRADA',
-                    'tipo_transaccion' => 'PAQUETEREPORTADO',
+                    'tipo_transaccion' => 'PAQUETE_REPORTADO',
                     'fecha' => Carbon::now()
                 ]
             );
@@ -209,7 +209,7 @@ class PaqueteReporteController extends Controller
                 'success' => true,
                 'message' => 'Reporte de daño y actualización de ubicación actualizados exitosamente.',
                 'data' => [
-                    'report' => $report,
+                    'paquete' => $report,
                     'kardex' => $kardex,
                     'input' => $validated, // Datos validados y procesados
                 ],
