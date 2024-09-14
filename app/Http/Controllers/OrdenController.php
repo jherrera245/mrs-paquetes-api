@@ -189,8 +189,8 @@ class OrdenController extends Controller
             // Guardar el detalle de la orden para obtener su ID
             $detalleOrden->save();
 
-            // si el tipo de orden es preorden, se marca el la entrada en el kardex como "EN_ESPERA_RECOLECCION"
-            if ($orden->tipo_orden === 'preorden') {
+            // si el tipo de orden es orden, se marca el la entrada en el kardex como "EN_ESPERA_RECOLECCION"
+            if ($orden->tipo_orden === 'orden') {
                 $kardex = new Kardex();
                 $kardex->id_paquete = $paquete->id;
                 $kardex->id_orden = $orden->id;

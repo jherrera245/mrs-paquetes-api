@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetalleOrden;
 use App\Models\Incidencia;
 use App\Models\EstadoIncidencia;
+use App\Models\Kardex;
+use App\Models\Orden;
 use App\Models\Paquete;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -103,10 +107,78 @@ class IncidenciaController extends Controller
             // Actualizar el estado del paquete según el tipo de incidencia
             $paquete = $incidencia->paquete;
 
+            $detalleOrden = DetalleOrden::where('id_paquete', $incidenciaData['id_paquete'])->firstOrFail();
+            $id_orden = $detalleOrden->id_orden;
+
+            // Obtener el numero_seguimiento basado en id_orden
+            $numero_seguimiento = Orden::where('id', $id_orden)
+                                            ->value('numero_seguimiento');
+
+            $existeKardexSalida = Kardex::where('id_paquete', $incidenciaData['id_paquete'])
+            ->where('tipo_movimiento', 'SALIDA')
+            ->exists();
+
+            if ($existeKardexSalida) {
+                   // Si ya existe un movimiento de SALIDA, se omite la creación de nuevos registros en Kardex
+                return response()->json(['message' => 'Ya existe un registro de SALIDA para este paquete.'], 400);
+            }
+            $tipoTransaccion = Kardex::where('id_paquete', $incidenciaData)
+                                        ->value('tipo_transaccion');
+
+
             // Verificar el tipo de incidencia y actualizar el estado del paquete
             if ($incidencia->id_tipo_incidencia == 2) { // 2 es "Daño" según la imagen de la tabla tipo_incidencia
-                $paquete->id_estado_paquete = 11; // 11 es "Dañado" según la imagen de la tabla estado_paquetes
-            } elseif ($incidencia->id_tipo_incidencia == 3) { // 3 es "Pérdida" según la imagen de la tabla tipo_incidencia
+            $paquete->id_estado_paquete = 11; // 11 es "Dañado" según la imagen de la tabla estado_paquetes
+                // Actualizar el campo id_ubicacion del paquete 
+            $paquete->id_ubicacion = 100; 
+
+            // Crear registros en Kardex basados en el tipo de transacción
+            if ($tipoTransaccion == 'RECEPCION') {
+                Kardex::create([
+                    'id_paquete' => $incidenciaData['id_paquete'],
+                    'id_orden' => $id_orden,
+                    'cantidad' => 1,
+                    'numero_ingreso' => $numero_seguimiento,
+                    'tipo_movimiento' => 'SALIDA',
+                    'tipo_transaccion' => 'RECEPCION',
+                    'fecha' => Carbon::now(),
+                ]);
+
+                Kardex::create([
+                    'id_paquete' => $incidenciaData['id_paquete'],
+                    'id_orden' => $id_orden,
+                    'cantidad' => 1,
+                    'numero_ingreso' => $numero_seguimiento,
+                    'tipo_movimiento' => 'ENTRADA',
+                    'tipo_transaccion' => 'PAQUETE_DAÑADO',
+                    'fecha' => Carbon::now(),
+                ]);
+            } else if ($tipoTransaccion == 'ALMACENADO') {
+                Kardex::create([
+                    'id_paquete' => $incidenciaData['id_paquete'],
+                    'id_orden' => $id_orden,
+                    'cantidad' => 1,
+                    'numero_ingreso' => $numero_seguimiento,
+                    'tipo_movimiento' => 'SALIDA',
+                    'tipo_transaccion' => 'ALMACENADO',
+                    'fecha' => Carbon::now(),
+                ]);
+
+                Kardex::create([
+                    'id_paquete' => $incidenciaData['id_paquete'],
+                    'id_orden' => $id_orden,
+                    'cantidad' => 1,
+                    'numero_ingreso' => $numero_seguimiento,
+                    'tipo_movimiento' => 'ENTRADA',
+                    'tipo_transaccion' => 'PAQUETE_DAÑADO',
+                    'fecha' => Carbon::now(),
+                ]);
+            } else {
+                throw new \Exception('el paquete no se encuentra en la tipo de transaccion correcta para realizar este proceso.');
+            }
+
+
+            } else if ($incidencia->id_tipo_incidencia == 3) { // 3 es "Pérdida" según la imagen de la tabla tipo_incidencia
                 $paquete->id_estado_paquete = 12; // 12 es "Perdido" según la imagen de la tabla estado_paquetes
             }
 
@@ -180,16 +252,60 @@ class IncidenciaController extends Controller
     }
 
     public function destroy($id)
-    {
-        try {
-            $incidencia = Incidencia::findOrFail($id);
-            $incidencia->delete();
+{
+    try {
+        // Buscar la incidencia a eliminar
+        $incidencia = Incidencia::findOrFail($id);
+        $id_paquete = $incidencia->id_paquete;
+    
 
-            return response()->json(['message' => 'Incidencia eliminada correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al eliminar la incidencia', 'message' => $e->getMessage()], 500);
+        // Determinar el tipo_transaccion basado en el id_paquete
+        $kardexRecords = Kardex::where('id_paquete', $id_paquete)
+                            ->whereIn('tipo_transaccion', ['RECEPCION', 'ALMACENADO'])
+                            ->get();
+
+        if ($kardexRecords->isEmpty()) {
+            throw new \Exception('No se encontraron registros de Kardex para revertir.');
         }
+
+        // Revertir los registros en Kardex
+        foreach ($kardexRecords as $record) {
+            if ($record->tipo_transaccion == 'RECEPCION') {
+                // Revertir los registros de Kardex relacionados con RECEPCION
+                Kardex::where('id_paquete', $id_paquete)
+                    ->where('tipo_movimiento', 'SALIDA')
+                    ->where('tipo_transaccion', 'RECEPCION')
+                    ->delete();
+                
+                Kardex::where('id_paquete', $id_paquete)    
+                    ->where('tipo_movimiento', 'ENTRADA')
+                    ->where('tipo_transaccion', 'PAQUETE_DAÑADO')
+                    ->delete();
+            } else if ($record->tipo_transaccion == 'ALMACENADO') {
+                // Revertir los registros de Kardex relacionados con ALMACENADO
+                Kardex::where('id_paquete', $id_paquete)
+                    ->where('tipo_movimiento', 'SALIDA')
+                    ->where('tipo_transaccion', 'ALMACENADO')
+                    ->delete();
+                
+                Kardex::where('id_paquete', $id_paquete)
+                    ->where('tipo_movimiento', 'ENTRADA')
+                    ->where('tipo_transaccion', 'PAQUETE_DAÑADO')
+                    ->delete();
+            }
+        }
+
+        // Eliminar la incidencia
+        $incidencia->delete();
+
+        // Devolver una respuesta JSON con un mensaje de éxito
+        return response()->json(['message' => 'Incidencia eliminada y registros de Kardex revertidos'], 200);
+
+    } catch (\Exception $e) {
+        // Capturar cualquier excepción y devolver un mensaje de error
+        return response()->json(['error' => 'Error al eliminar la incidencia', 'message' => $e->getMessage()], 500);
     }
+}
 
     // Función de transformación de incidencia
     private function transformIncidencia($incidencia)
