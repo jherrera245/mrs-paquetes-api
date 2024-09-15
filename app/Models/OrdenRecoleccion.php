@@ -13,7 +13,13 @@ class OrdenRecoleccion extends Model
 
     protected $fillable = [
         'id_ruta_recoleccion',
+        'codigo_unico_recoleccion',
         'id_orden',
+        'prioridad',
+		'id_departamento',
+		'id_municipio',
+		'id_direccion',
+		'destino',
         'estado',
         'recoleccion_iniciada',
         'recoleccion_finalizada',
@@ -38,4 +44,20 @@ class OrdenRecoleccion extends Model
     {
         return $query->where('id_ruta_recoleccion', $id_ruta_recoleccion)->where('estado', 1);
     }
+
+    public function departamento()
+	{
+		return $this->belongsTo(Departamento::class, 'id_deparatamento');
+	}
+
+	public function municipio()
+	{
+		return $this->belongsTo(Municipio::class, 'id_municipio');
+	}
+
+	public function direccion()
+	{
+		return $this->belongsTo(Direcciones::class, 'id_direccion');
+	}
+
 }

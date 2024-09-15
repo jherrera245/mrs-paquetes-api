@@ -16,7 +16,7 @@ class CreateRutasRecoleccionesTable extends Migration
         Schema::create('rutas_recolecciones', function (Blueprint $table) {
             $table->id();
             // relacion con rutas
-            $table->foreignId('id_ruta')->constrained('rutas');
+            $table->string('nombre')->nullable();
             // relacion con vehiculo.
             $table->foreignId('id_vehiculo')->constrained('vehiculos');
             // fecha de asignacion de la ruta.

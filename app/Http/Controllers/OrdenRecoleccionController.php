@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OrdenRecoleccion;
+use App\Models\RutaRecoleccion;
 use App\Models\Kardex;
+use App\Models\Orden;
+use App\Models\Direcciones;
 use Illuminate\Support\Facades\DB;
 // usamos logs
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrdenRecoleccionController extends Controller
 {
@@ -49,23 +53,100 @@ class OrdenRecoleccionController extends Controller
      */
     public function store(Request $request)
     {
-        // Validaciones
-        $validatedData = $request->validate([
-            'id_ruta_recoleccion' => 'required|exists:rutas_recolecciones,id',
-            'id_orden' => 'required|exists:ordenes,id',
+        $validated = $request->validate([
+            'fecha_asignacion' => 'required|date',
+            'id_vehiculo' => 'required|integer|exists:vehiculos,id',
+            'ordenes' => 'required|array|min:1',
         ]);
-        // verificar si la orden ya existe 
-        $ordenRecoleccionExistente = OrdenRecoleccion::where('id_ruta_recoleccion', $validatedData['id_ruta_recoleccion'])
-            ->where('id_orden', $validatedData['id_orden'])
-            ->first();
 
-        if ($ordenRecoleccionExistente) {
-            return response()->json(['message' => 'La orden de recolección ya existe'], 400);
+        DB::beginTransaction();
+
+        try {
+
+            $ruta = new RutaRecoleccion();
+            $ruta->fecha_asignacion = $request->input('fecha_asignacion');
+            $ruta->id_vehiculo = $request->input('id_vehiculo');
+            $ruta->estado = 1;
+            $ruta->save();
+
+            //generar codigo de ruta
+            $ruta->nombre  =  'RR' . str_pad($ruta->id, 11, '0', STR_PAD_LEFT);
+            $ruta->save();
+
+            $ordenes = $request->input('ordenes');
+
+            foreach ($ordenes as $orden) {
+
+                //informacion de la orden
+                $detalle = DB::table('ordenes')
+                ->select(
+                    'ordenes.id', 
+                    'ordenes.tipo_orden',
+                    'ordenes.numero_seguimiento', 
+                    'ordenes.id_direccion', 
+                    'direcciones.id_departamento', 
+                    'direcciones.id_municipio', 
+                    'direcciones.direccion'
+                )
+                ->join('direcciones', 'direcciones.id', '=', 'ordenes.id_direccion')
+                ->where('ordenes.id', $orden['id'])
+                ->first();
+
+                //orden no existe o es una preorden
+                if (!$detalle || $detalle->tipo_orden !== 'preorden') {
+                    DB::rollBack();
+                    return response()->json(['error' => 'Orden no valida numero de seguimiento '. $$detalle->numero_seguimiento], Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                $recolecciones = new OrdenRecoleccion();
+                $recolecciones->codigo_unico_recoleccion = $ruta->nombre;
+                $recolecciones->id_ruta_recoleccion = $ruta->id;
+                $recolecciones->id_orden = $orden['id'];
+                $recolecciones->prioridad = $orden['prioridad'];
+                $recolecciones->id_departamento = $detalle->id_departamento;
+                $recolecciones->id_municipio = $detalle->id_municipio;
+                $recolecciones->id_direccion = $detalle->id_direccion;
+                $recolecciones->destino = $detalle->direccion;
+                $recolecciones->estado = 1;
+                $recolecciones->save();
+
+                //consultar los paquetes
+                $paquetes = DB::table('detalle_orden')
+                ->select(
+                    'detalle_orden.id_paquete', 
+                    'detalle_orden.id_orden', 
+                    'ordenes.numero_seguimiento', 
+                    'detalle_orden.id_direccion_entrega', 
+                    'direcciones.id_departamento', 
+                    'direcciones.id_municipio', 
+                    'direcciones.direccion'
+                )
+                ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
+                ->where('ordenes.id', $orden['id'])->get();
+
+
+                foreach($paquetes as $paquete)
+                {
+                    // Crear el objeto Kardex para ENTRADA en ASIGNADO_RUTA
+                    $kardexEntrada = new Kardex();
+                    $kardexEntrada->id_paquete = $paquete->id_paquete;
+                    $kardexEntrada->id_orden = $paquete->id_orden;
+                    $kardexEntrada->cantidad = 1;
+                    $kardexEntrada->numero_ingreso = $paquete->numero_seguimiento;
+                    $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                    $kardexEntrada->tipo_transaccion = 'EN_RECOLECCION';
+                    $kardexEntrada->fecha = now();
+                    $kardexEntrada->save(); // Guardar el registro de ENTRADA en kardex
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Ruta de recoleccion creada y orden de recolecion generada correctamente'], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al asignar rutas'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        // create orden recoleccion
-        $ordenRecoleccion = OrdenRecoleccion::create($validatedData);
-
-        return response()->json($ordenRecoleccion, 201);
     }
 
     /**
@@ -101,17 +182,105 @@ class OrdenRecoleccionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'id_ruta_recoleccion' => 'required|exists:rutas_recolecciones,id',
-            'id_orden' => 'required|exists:ordenes,id',
-            'estado' => 'required|integer',
+        $validated = $request->validate([
+            'fecha_asignacion' => 'required|date',
+            'id_vehiculo' => 'required|integer|exists:vehiculos,id',
+            'ordenes' => 'required|array|min:1',
         ]);
 
-        $ordenRecoleccion = OrdenRecoleccion::findOrFail($id);
+        DB::beginTransaction();
 
-        $ordenRecoleccion->update($validatedData);
+        try {
+            // Buscar la ruta de recolección existente
+            $ruta = RutaRecoleccion::find($id);
+            $ruta->fecha_asignacion = $request->input('fecha_asignacion');
+            $ruta->id_vehiculo = $request->input('id_vehiculo');
+            $ruta->estado = 1;
+            $ruta->save();
 
-        return response()->json($ordenRecoleccion);
+            $ordenes = $request->input('ordenes');
+
+            foreach ($ordenes as $orden) {
+                // Información de la orden
+                $detalle = DB::table('ordenes')
+                    ->select(
+                        'ordenes.id', 
+                        'ordenes.tipo_orden',
+                        'ordenes.numero_seguimiento', 
+                        'ordenes.id_direccion', 
+                        'direcciones.id_departamento', 
+                        'direcciones.id_municipio', 
+                        'direcciones.direccion'
+                    )
+                    ->join('direcciones', 'direcciones.id', '=', 'ordenes.id_direccion')
+                    ->where('ordenes.id', $orden['id'])
+                    ->first();
+
+                // Orden no existe o es una preorden
+                if (!$detalle || $detalle->tipo_orden !== 'preorden') {
+                    DB::rollBack();
+                    return response()->json(['error' => 'Orden no válida número de seguimiento ' . $detalle->numero_seguimiento], Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                // Buscar recolección existente para la orden
+                $recoleccionExistente = OrdenRecoleccion::where('id_ruta_recoleccion', $ruta->id)
+                    ->where('id_orden', $orden['id'])
+                    ->first();
+
+                if ($recoleccionExistente) {
+                    // Actualizar recolección existente
+                    $recoleccionExistente->prioridad = $orden['prioridad'];
+                    $recoleccionExistente->save();
+                } else {
+                    // Crear nueva recolección
+                    $recolecciones = new OrdenRecoleccion();
+                    $recolecciones->codigo_unico_recoleccion = $ruta->nombre;
+                    $recolecciones->id_ruta_recoleccion = $ruta->id;
+                    $recolecciones->id_orden = $orden['id'];
+                    $recolecciones->prioridad = $orden['prioridad'];
+                    $recolecciones->id_departamento = $detalle->id_departamento;
+                    $recolecciones->id_municipio = $detalle->id_municipio;
+                    $recolecciones->id_direccion = $detalle->id_direccion;
+                    $recolecciones->destino = $detalle->direccion;
+                    $recolecciones->estado = 1;
+                    $recolecciones->save();
+
+                    // Consultar los paquetes
+                    $paquetes = DB::table('detalle_orden')
+                        ->select(
+                            'detalle_orden.id_paquete', 
+                            'detalle_orden.id_orden', 
+                            'ordenes.numero_seguimiento', 
+                            'detalle_orden.id_direccion_entrega', 
+                            'direcciones.id_departamento', 
+                            'direcciones.id_municipio', 
+                            'direcciones.direccion'
+                        )
+                        ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                        ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
+                        ->where('ordenes.id', $orden['id'])->get();
+
+                    foreach ($paquetes as $paquete) {
+                        // Crear el objeto Kardex para ENTRADA en ASIGNADO_RUTA
+                        $kardexEntrada = new Kardex();
+                        $kardexEntrada->id_paquete = $paquete->id_paquete;
+                        $kardexEntrada->id_orden = $paquete->id_orden;
+                        $kardexEntrada->cantidad = 1;
+                        $kardexEntrada->numero_ingreso = $paquete->numero_seguimiento;
+                        $kardexEntrada->tipo_movimiento = 'ENTRADA';
+                        $kardexEntrada->tipo_transaccion = 'EN_RECOLECCION';
+                        $kardexEntrada->fecha = now();
+                        $kardexEntrada->save(); // Guardar el registro de ENTRADA en kardex
+                    }
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Ruta de recolección actualizada y órdenes de recolección gestionadas correctamente'], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al actualizar rutas'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function asignarRecoleccion($id_orden_recoleccion)
