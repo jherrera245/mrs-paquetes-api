@@ -14,6 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('vehiculos', function (Blueprint $table) {
+            $table->enum('tipo', ['camion', 'moto'])->default('camion');
+
+            // Actualizar columnas existentes para permitir valores null
+            $table->unsignedBigInteger('id_empleado_apoyo')->nullable()->change();
+            $table->unsignedBigInteger('id_bodega')->nullable()->change();
+
             $table->foreign(['id_estado'], 'vehiculos_ibfk_6')->references(['id'])->on('estado_vehiculos');
             $table->foreign(['id_modelo'], 'vehiculos_ibfk_2')->references(['id'])->on('modelos');
             $table->foreign(['id_empleado_apoyo'], 'vehiculos_ibfk_5')->references(['id'])->on('empleados');
@@ -30,6 +36,12 @@ return new class extends Migration
     public function down()
     {
         Schema::table('vehiculos', function (Blueprint $table) {
+            // Revertir los cambios, eliminando la columna 'tipo' y restaurando las restricciones de no nulidad
+            $table->dropColumn('tipo');
+
+            $table->unsignedBigInteger('id_empleado_apoyo')->nullable(false)->change();
+            $table->unsignedBigInteger('id_bodega')->nullable(false)->change();
+
             $table->dropForeign('vehiculos_ibfk_6');
             $table->dropForeign('vehiculos_ibfk_2');
             $table->dropForeign('vehiculos_ibfk_5');

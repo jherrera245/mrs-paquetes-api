@@ -21,6 +21,7 @@ class Vehiculo extends Model
         'id_marca',
         'id_modelo',
         'year_fabricacion',
+        'tipo',
     ];
 
     public function conductor()

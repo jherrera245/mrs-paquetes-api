@@ -209,11 +209,11 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('paquete/tracking-paquete/{paquete}', [PaqueteController::class, 'trackingPaquete'])->middleware('permission:paquete-show');
 
   //paquete_reporte
-  Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']); 
-  Route::get('reporte-paquete/{id}', [PaqueteReporteController::class, 'show']); 
-  Route::post('reporte-paquete', [PaqueteReporteController::class, 'store']); 
-  Route::put('reporte-paquete/{id}', [PaqueteReporteController::class, 'update']); 
-  Route::delete('reporte-paquete{id}', [PaqueteReporteController::class, 'destroy']); 
+  Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']);
+  Route::get('reporte-paquete/{id}', [PaqueteReporteController::class, 'show']);
+  Route::post('reporte-paquete', [PaqueteReporteController::class, 'store']);
+  Route::put('reporte-paquete/{id}', [PaqueteReporteController::class, 'update']);
+  Route::delete('reporte-paquete{id}', [PaqueteReporteController::class, 'destroy']);
 
   // Historial Paquetes
   Route::get('historialpaquetes', [HistorialPaqueteController::class, 'index'])->middleware('permission:historialpaquetes-view');
@@ -268,25 +268,20 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_Ubicaciones_paquetes_da', [DropdownController::class, 'getUbicacionesSinPaquetesDa']);
   Route::get('dropdown/get_paquetes_danio', [DropdownController::class, 'getPaquetesConDanio']);
   Route::get('dropdown/get_paquetes_en_recepcion', [DropdownController::class, 'getPaquetesEnRecepcion']);
+  Route::get('dropdown/get_bodegas_moviles', [DropdownController::class, 'get_Bodegas_Moviles']);
 
   // Detalle Orden
-  Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden']);
-  Route::get('detalle-orden/{id}', [DetalleOrdenController::class, 'detalles_orden_id']);
-  Route::delete('detalle-orden/{id}', [OrdenController::class, 'destroyDetalleOrden']);
-  Route::put('detalle-orden/{id}', [DetalleOrdenController::class, 'update']);
-  Route::put('ordenes/{id}/cancelar', [OrdenController::class, 'cancelOrder']);
+  Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden'])->middleware('permission:orden-view');
+  Route::get('detalle-orden/{id}', [DetalleOrdenController::class, 'detalles_orden_id'])->middleware('permission:orden-show');
+  Route::delete('detalle-orden/{id}', [OrdenController::class, 'destroyDetalleOrden'])->middleware('permission:orden-destroy');
+  Route::put('detalle-orden/{id}', [DetalleOrdenController::class, 'update'])->middleware('permission:orden-update');
+  Route::put('ordenes/{id}/cancelar', [OrdenController::class, 'cancelOrder'])->middleware('permission:orden-update');
+  Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('permission:orden-view');
+  Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('permission:mis-ordenes-cliente');
 
-  // Requerimiento 2: Generar PDF de la orden
-  Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF']);
-
-  // Requerimiento 8: Mostrar órdenes del cliente autenticado
-  Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes']);
-
-
-
-  // Historial ordenes
-  Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index']);
-  Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial']);
+  // Historial Ordenes
+  Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index'])->middleware('permission:historialpaquetes-view');
+  Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial'])->middleware('permission:historialpaquete-show');
 
   // rutas recolecciones.
   Route::get('rutas-recolecciones', [RutaRecoleccionController::class, 'index'])->middleware('permission:rutarecoleccion-view');

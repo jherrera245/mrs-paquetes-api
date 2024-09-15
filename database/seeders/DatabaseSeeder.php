@@ -46,7 +46,6 @@ class DatabaseSeeder extends Seeder
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
             VehicleSeeder::class,
-            VehiculosSeeder::class,
             DireccionesSeeder::class,
             TarifaDestinoSeeder::class,
         ]);

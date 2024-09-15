@@ -147,6 +147,16 @@ class PermissionSeeder extends Seeder
         $conductorRole = Role::where('name', 'conductor')->first();
         $basicoRole = Role::where('name', 'basico')->first();
 
+        $acompananteRole = Role::firstOrCreate(['name' => 'acompanante']);
+        $supervisorDeEntregasRole = Role::firstOrCreate(['name' => 'supervisor_de_entregas']);
+        $coordinadorDeRutasRole = Role::firstOrCreate(['name' => 'coordinador_de_rutas']);
+        $operadorDeAlmacenRole = Role::firstOrCreate(['name' => 'operador_de_almacen']);
+        $atencionAlClienteRole = Role::firstOrCreate(['name' => 'atencion_al_cliente']);
+        $analistaDeLogisticaRole = Role::firstOrCreate(['name' => 'analista_de_logistica']);
+        $gerenteDeOperacionesRole = Role::firstOrCreate(['name' => 'gerente_de_operaciones']);
+        $tecnicoDeMantenimientoDeVehiculosRole = Role::firstOrCreate(['name' => 'tecnico_de_mantenimiento_de_vehiculos']);
+        $recursosHumanosRole = Role::firstOrCreate(['name' => 'recursos_humanos']);
+
         // Asignar permisos a los roles existentes
         if ($adminRole) {
             $adminRole->givePermissionTo(Permission::all());
@@ -198,6 +208,93 @@ class PermissionSeeder extends Seeder
             $basicoRole->givePermissionTo([
                 'paquete-view',
                 'clientes-view',
+            ]);
+        }
+
+        if ($acompananteRole) {
+            $acompananteRole->givePermissionTo([
+                'rutas-view',
+                'paquete-view',
+                'incidencias-create',
+                'incidencias-view'
+            ]);
+        }
+
+        if ($supervisorDeEntregasRole) {
+            $supervisorDeEntregasRole->givePermissionTo([
+                'empleados-view',
+                'rutas-view',
+                'paquete-view',
+                'paquete-update',
+                'incidencias-view',
+                'incidencias-update',
+                'orden-view'
+            ]);
+        }
+
+        if ($coordinadorDeRutasRole) {
+            $coordinadorDeRutasRole->givePermissionTo([
+                'rutas-create',
+                'rutas-update',
+                'rutas-destroy',
+                'ordenrecoleccion-create'
+            ]);
+        }
+
+        if ($operadorDeAlmacenRole) {
+            $operadorDeAlmacenRole->givePermissionTo([
+                'bodegas-view',
+                'bodegas-create',
+                'bodegas-update',
+                'bodegas-destroy',
+                'traslados-view',
+                'traslados-create'
+            ]);
+        }
+
+        if ($atencionAlClienteRole) {
+            $atencionAlClienteRole->givePermissionTo([
+                'clientes-view',
+                'orden-view',
+                'orden-show',
+                'incidencias-view'
+            ]);
+        }
+
+        if ($analistaDeLogisticaRole) {
+            $analistaDeLogisticaRole->givePermissionTo([
+                'rutas-view',
+                'orden-view',
+                'traslados-view',
+                'ubicaciones-view'
+            ]);
+        }
+
+        if ($gerenteDeOperacionesRole) {
+            $gerenteDeOperacionesRole->givePermissionTo([
+                'roles-view',
+                'roles-create',
+                'roles-update',
+                'empleados-view',
+                'empleados-create',
+                'empleados-update'
+            ]);
+        }
+
+        if ($tecnicoDeMantenimientoDeVehiculosRole) {
+            $tecnicoDeMantenimientoDeVehiculosRole->givePermissionTo([
+                'vehiculo-view',
+                'vehiculo-update',
+                'vehiculo-destroy'
+            ]);
+        }
+
+        if ($recursosHumanosRole) {
+            $recursosHumanosRole->givePermissionTo([
+                'empleados-view',
+                'empleados-create',
+                'empleados-update',
+                'empleados-destroy'
             ]);
         }
     }

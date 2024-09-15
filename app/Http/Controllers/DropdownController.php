@@ -193,6 +193,27 @@ class DropdownController extends Controller
         return response()->json(["bodegas" => $bodegas]);
     }
 
+    public function get_Bodegas_Moviles()
+    {
+        try {
+            // Obtener bodegas de tipo 'movil' que no estén asignadas a ningún camión en la tabla 'vehiculos'
+            $bodegas = \DB::table('bodegas')
+                ->leftJoin('vehiculos', function ($join) {
+                    $join->on('bodegas.id', '=', 'vehiculos.id_bodega')
+                        ->where('vehiculos.id_empleado_conductor', '!=', null); // Verificar si está asignada a un conductor (camión)
+                })
+                ->where('bodegas.tipo_bodega', 'movil') // Filtrar solo las bodegas de tipo 'movil'
+                ->whereNull('vehiculos.id_bodega') // Asegura que la bodega no esté asignada a ningún camión
+                ->select('bodegas.*')
+                ->get();
+
+            return response()->json(["bodegas" => $bodegas], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener las bodegas móviles no asignadas.'], 500);
+        }
+    }
+
+
     public function getEstadoVehiculos()
     {
         $estado_vehiculos = DB::table('estado_vehiculos')->select('id', 'estado')->get();

@@ -14,65 +14,42 @@ class PasilloSeeder extends Seeder
      */
     public function run()
     {
-        // Datos de prueba para tres bodegas, cada una con tres pasillos
+        // Datos de prueba para pasillos en la Bodega 1 
         $data = [
-            // Pasillos para Bodega 1
             [
                 'id_bodega' => 1,
-                'nombre' => 'Pasillo 1',
-                'capacidad' => 50, 
-                'estado' => 1,     
-            ],
-            [
-                'id_bodega' => 1,
-                'nombre' => 'Pasillo 2',
-                'capacidad' => 50,
+                'nombre' => 'P1__SANMIGUEL',  // Pasillo 1 para San Miguel
+                'capacidad' => 150,
                 'estado' => 1,
             ],
             [
                 'id_bodega' => 1,
-                'nombre' => 'Pasillo 3',
-                'capacidad' => 50,
-                'estado' => 1,
-            ],
-
-            // Pasillos para Bodega 2
-            [
-                'id_bodega' => 2,
-                'nombre' => 'Pasillo 1',
-                'capacidad' => 50,
+                'nombre' => 'P2__SANTAROSA',  // Pasillo 2 para Santa Rosa
+                'capacidad' => 150,
                 'estado' => 1,
             ],
             [
-                'id_bodega' => 2,
-                'nombre' => 'Pasillo 2',
-                'capacidad' => 50,
+                'id_bodega' => 1,
+                'nombre' => 'P3__MORAZAN',  // Pasillo 3 para Morazán
+                'capacidad' => 150,
                 'estado' => 1,
             ],
             [
-                'id_bodega' => 2,
-                'nombre' => 'Pasillo 3',
-                'capacidad' => 50,
-                'estado' => 1,
-            ],
-
-            // Pasillos para Bodega 3
-            [
-                'id_bodega' => 3,
-                'nombre' => 'Pasillo 1',
-                'capacidad' => 50,
+                'id_bodega' => 1,
+                'nombre' => 'P4__USULUTLAN',  // Pasillo 4 para Usulután
+                'capacidad' => 150,
                 'estado' => 1,
             ],
             [
-                'id_bodega' => 3,
-                'nombre' => 'Pasillo 2',
-                'capacidad' => 50,
+                'id_bodega' => 1,
+                'nombre' => 'P5__LAUNION',  // Pasillo 5 para La Unión
+                'capacidad' => 150,
                 'estado' => 1,
             ],
             [
-                'id_bodega' => 3,
-                'nombre' => 'Pasillo 3',
-                'capacidad' => 50,
+                'id_bodega' => 1,
+                'nombre' => 'P6__DA',  // Pasillo  6 para La Unión
+                'capacidad' => 100,
                 'estado' => 1,
             ],
         ];

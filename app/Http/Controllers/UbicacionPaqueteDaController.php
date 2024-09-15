@@ -128,7 +128,7 @@ class UbicacionPaqueteDaController extends Controller
 
             // Actualizar el campo id_ubicacion en el paquete y cambiar el estado a "Dañado"
             $paquete->id_ubicacion = $ubicacion->id;
-            $paquete->id_estado_paquete = 11; // ID 11 para "Dañado"
+            $paquete->id_estado_paquete = 2; // ID 2 para "Bodega nuevamente"
             $paquete->save();
 
             // **Agregar los movimientos en el Kardex**
