@@ -174,7 +174,7 @@ class OrdenController extends Controller
             $detalleOrden->id_orden = $orden->id;
             $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
             // Hago una validacion ternaria para el estado, si la orden es preorden, el estado es 5, si no, es 1.
-            $detalleOrden->id_estado_paquetes = $orden->tipo_orden === 'preorden' ? 5 : 1;
+            $detalleOrden->id_estado_paquetes = $orden->tipo_orden === 'preorden' ? 3 : 1;
             $detalleOrden->id_paquete = $paquete->id;
             $detalleOrden->validacion_entrega = 0;
             $detalleOrden->instrucciones_entrega = $detalle['instrucciones_entrega'];
