@@ -429,6 +429,10 @@ class PaqueteController extends Controller
         switch ($tipoTransaccion) {
             case 'RECEPCION':
                 return 'En Recepción';
+            case 'PREORDEN':
+                return 'Pre-orden';
+            case 'EN_RECOLECCION':
+                return 'En recolección';
             case 'ALMACENADO':
                 return 'En Almacén';
             case 'ASIGNADO_RUTA':
@@ -439,6 +443,10 @@ class PaqueteController extends Controller
                 return 'Devuelto a Bodega';
             case 'RECOLECTADO':
                 return 'Recolectado';
+            case 'PAQUETE_DAÑADO':
+                return 'Paquete dañado';
+            case 'ENTREGADO':
+                return 'Entreado';
             default:
                 return 'Desconocido';
         }
