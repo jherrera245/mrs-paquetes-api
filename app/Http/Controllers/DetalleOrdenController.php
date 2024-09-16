@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Models\DetalleOrden;
+use App\Models\Inventario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-
-use Illuminate\Support\Facades\Validator;
+use App\Services\KardexService;
+use App\Models\Paquete;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class DetalleOrdenController extends Controller
 {
@@ -228,33 +230,69 @@ class DetalleOrdenController extends Controller
 
     public function validacionEntrega(Request $request)
     {
-        //id de la orden e imagen a enviar
-    $request->validate([
-        'id' => 'required|exists:detalle_orden,id',
-        'validacion_entrega' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480' 
-    ]);
+        // Validar la imagen y el ID de la orden
+        $request->validate([
+            'id' => 'required|exists:detalle_orden,id',
+            'validacion_entrega' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480'
+        ]);
 
-        //datos de entrada para el endpoint
-    $id = $request->input('id');
-    $imageFile = $request->file('validacion_entrega');
+        // Capturar los datos de la solicitud
+        $id = $request->input('id');
+        $imageFile = $request->file('validacion_entrega');
+
+        DB::beginTransaction();
 
         try {
-            $filename = time() . '.' . $imageFile->getClientOriginalExtension();
-
-            // guardar la imagen en s3
+            // Guardar la imagen en S3
+            $filename = 'entrega_' . $id . '_' . time() . '.' . $imageFile->getClientOriginalExtension();
             $path = $imageFile->storeAs('validacion_entregas', $filename, 's3');
             $bucketName = env('AWS_BUCKET');
             $region = env('AWS_DEFAULT_REGION');
             $imageUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
 
-            // actualiza el campo de la base de datos con el id de la orden para agregar el url a validacion_entrega
+            // Actualizar el campo validacion_entrega en el detalle de la orden
             $detalleOrden = DetalleOrden::findOrFail($id);
             $detalleOrden->validacion_entrega = $imageUrl;
+            // actualizar el estado del detalle de la orden.
+            $detalleOrden->id_estado_paquetes = 8;
             $detalleOrden->save();
-            
+
+            // en PAQUETES actualizamos el estado tambien.
+            $paquete = Paquete::findOrFail($detalleOrden->id_paquete);
+            $paquete->id_estado_paquetes = 8;
+            $paquete->save();
+
+            // Obtener el número de seguimiento y la info de la orden
+            $kardexService = new KardexService();
+            $detalleOrdenInfo = $kardexService->getOrdenInfo($detalleOrden->id_paquete);
+
+            if (!$detalleOrdenInfo) {
+                throw new Exception("No se encontró información de la orden para el paquete ID: {$detalleOrden->id_paquete}");
+            }
+
+            $idOrden = $detalleOrdenInfo->id_orden;
+            $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
+
+            // Registrar en Kardex (SALIDA por TRASLADO)
+            $kardexService->registrarMovimientoKardex($detalleOrden->id_paquete, $idOrden, 'SALIDA', 'TRASLADO', $numeroSeguimiento);
+
+            // **Registrar en Kardex (ENTRADA por ENTREGADO)**
+            $kardexService->registrarMovimientoKardex($detalleOrden->id_paquete, $idOrden, 'ENTRADA', 'ENTREGADO', $numeroSeguimiento);
+
+            // Actualizar Inventario
+            $inventario = Inventario::where('id_paquete', $detalleOrden->id_paquete)->first();
+            if ($inventario) {
+                $inventario->cantidad = 0;  // Marcar como sin stock
+                $inventario->save();
+            }
+
+            DB::commit();
+
             return response()->json(['message' => 'Validación de entrega enviada con éxito', 'data' => $detalleOrden], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error uploading image: ' . $e->getMessage()], 500);
+            DB::rollBack();
+            return response()->json(['error' => 'Error en el proceso: ' . $e->getMessage()], 500);
         }
     }
+
 }
