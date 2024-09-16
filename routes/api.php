@@ -207,7 +207,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('paquete/{paquete}', [PaqueteController::class, 'update'])->middleware('permission:paquete-update');
   Route::delete('paquete/{paquete}', [PaqueteController::class, 'destroy'])->middleware('permission:paquete-destroy');
   Route::patch('paquete/{id}/restore', [PaqueteController::class, 'restore'])->middleware('permission:paquete-restore');
-  Route::get('paquete/tracking-paquete/{paquete}', [PaqueteController::class, 'trackingPaquete'])->middleware('permission:paquete-show');
+  Route::get('paquete/tracking-paquete/{paquete}', [PaqueteController::class, 'trackingPaquete']);
 
   //paquete_reporte
   Route::get('reporte-paquete', [PaqueteReporteController::class, 'index']);
