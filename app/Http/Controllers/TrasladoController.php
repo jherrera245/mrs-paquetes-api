@@ -135,16 +135,18 @@ class TrasladoController extends Controller
                 // Salida de almacén
                 $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'AlMACENADO', $numeroSeguimiento);
 
-                // el estado del paquete cambia al 5.
-                Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 5]);
-
                 // Si la bodega de destino es la bodega principal (bodega_id = 1), registrar como ENTRADA
                 if ($bodegaDestino == 1) {
-                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'EN_ESPERA_REUBICACION', $numeroSeguimiento);
+                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'EN_ESPERA_UBICACION', $numeroSeguimiento);
+
+                    // el estado del paquete cambia al 14 => EN ESPERA DE UBICACION.
+                    Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 14]);
                 } else {
                     // Entrada a traslado (cuando no es la bodega principal)
                     $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'TRASLADO', $numeroSeguimiento);
 
+                    // el estado del paquete cambia al 5 => EN RUTA DE ENTREGA.
+                    Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 5]);
                     // cambia la el id_ubicacion de la tabla paquetes.
                     Paquete::where('id', $idPaquete)->update(['id_ubicacion' => $bodegaDestino]);
                 }

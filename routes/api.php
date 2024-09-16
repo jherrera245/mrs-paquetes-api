@@ -199,6 +199,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   // Paquete
   Route::get('paquete/filter-by-location', [PaqueteController::class, 'filterByLocation']);
   Route::get('paquete/get_paquetes_by_user', [PaqueteController::class, 'getPaquetesByUser']);
+  Route::get('paquete/paquetes-asignables', [PaqueteController::class, 'paquetesAsignables'])->middleware('permission:paquete-view');
   Route::get('paquete', [PaqueteController::class, 'index'])->middleware('permission:paquete-view');
   Route::get('paquete/{paquete}', [PaqueteController::class, 'show'])->middleware('permission:paquete-show');
   Route::post('paquete', [PaqueteController::class, 'store'])->middleware('permission:paquete-create');

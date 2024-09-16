@@ -23,7 +23,8 @@ class EstadoPaquetesSeeder extends Seeder
             ['nombre' => 'Dañado', 'descripcion' => 'El paquete ha sido reportado como dañado'],
             ['nombre' => 'Perdido', 'descripcion' => 'El paquete está perdido'],
             ['nombre' => 'Cancelado', 'descripcion' => 'El envío del paquete ha sido cancelado'],
-            ['nombre' => 'En espera de reubicacion', 'descripcion' => 'Actualmente en espera de reubicación en la bodega'],
+            ['nombre' => 'En espera de ubicacion', 'descripcion' => 'Actualmente en espera la ubicación en bodega'],
+            ['nombre' => 'Recolectado', 'descripcion' => 'El paquete se encuentra recolectado'],
         ]);
     }
 }

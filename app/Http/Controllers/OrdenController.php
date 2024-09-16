@@ -163,7 +163,7 @@ class OrdenController extends Controller
         $paquete->peso = $detalle["peso"];
         $paquete->uuid = $uuid;
         $paquete->tag = $tag;
-        $paquete->id_estado_paquete = $orden->tipo_orden === 'preorden' ? 5 : 1;
+        $paquete->id_estado_paquete = $orden->tipo_orden === 'preorden' ? 3 : 1;
         $paquete->fecha_envio = $detalle["fecha_envio"];
         $paquete->fecha_entrega_estimada = $detalle["fecha_entrega_estimada"];
         $paquete->descripcion_contenido = $detalle["descripcion_contenido"];
@@ -173,7 +173,7 @@ class OrdenController extends Controller
             $detalleOrden = new DetalleOrden();
             $detalleOrden->id_orden = $orden->id;
             $detalleOrden->id_tipo_entrega = $detalle["id_tipo_entrega"];
-            // Hago una validacion ternaria para el estado, si la orden es preorden, el estado es 5, si no, es 1.
+            // Hago una validacion ternaria para el estado, si la orden es preorden, el estado es 3, si no, es 1.
             $detalleOrden->id_estado_paquetes = $orden->tipo_orden === 'preorden' ? 3 : 1;
             $detalleOrden->id_paquete = $paquete->id;
             $detalleOrden->validacion_entrega = 0;
@@ -724,7 +724,30 @@ class OrdenController extends Controller
         if ($orden->estado === 'Cancelada') {
             return response()->json(['message' => 'No se puede hacer el pago porque la orden está cancelada.'], Response::HTTP_CONFLICT);
         }
+        // verifica el tipo de orden para cambiar el estado del paquete.
+        if ($orden->tipo_orden === 'orden') {
+            $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
+            foreach ($paquetes as $paquete) {
+                $paquete->id_estado_paquetes = 14;
+                $paquete->save();
 
+                // cambia estado de paquete tambien en la tabla de paquetes.
+                $paquete = Paquete::find($paquete->id_paquete);
+                $paquete->id_estado_paquete = 14;
+                $paquete->save();
+            }
+        }else{
+            $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
+            foreach ($paquetes as $paquete) {
+                $paquete->id_estado_paquetes = 15;
+                $paquete->save();
+
+                // cambia estado de paquete tambien en la tabla de paquetes.
+                $paquete = Paquete::find($paquete->id_paquete);
+                $paquete->id_estado_paquete = 15;
+                $paquete->save();
+            }
+        }
 
         // Actualizar el estado de la orden
         $orden->estado_pago = 'pagado';

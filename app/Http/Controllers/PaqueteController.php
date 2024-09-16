@@ -401,7 +401,29 @@ class PaqueteController extends Controller
         return response()->json($tracking);
     }
 
-// Método para formatear el tipo de transacción
+    // metodo para otener los paquetes que pueden ser asignados a una ubicacion.
+    public function paquetesAsignables()
+    {
+        // Seleccionamos todos los paquetes donde el id_estado_paquete sea 1 o 14
+        $paquetes = Paquete::where('id_estado_paquete', 14)
+            ->paginate(10);  // Usamos paginate() para paginación
+
+        // Si no se encuentran paquetes, se retorna un mensaje de error
+        if ($paquetes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron paquetes para asignar.'], 404);
+        }
+
+        // Transformamos cada paquete utilizando una función personalizada
+        $paquetes->getCollection()->transform(function ($paquete) {
+            return $this->transformPaquete($paquete);
+        });
+
+        // Retornamos los paquetes encontrados con paginación
+        return response()->json($paquetes, 200);
+    }
+
+
+    // Método para formatear el tipo de transacción
     private function formatearEstado($tipoTransaccion)
     {
         switch ($tipoTransaccion) {
