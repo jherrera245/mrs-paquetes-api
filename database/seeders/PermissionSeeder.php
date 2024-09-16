@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -158,11 +157,11 @@ class PermissionSeeder extends Seeder
 
         // Asignar permisos a los roles existentes
         if ($adminRole) {
-            $adminRole->givePermissionTo(Permission::all());
+            $adminRole->syncPermissions(Permission::all());
         }
 
         if ($clienteRole) {
-            $clienteRole->givePermissionTo([
+            $clienteRole->syncPermissions([
                 'auth-actualizarClientePerfil',
                 'paquete-view',
                 'incidencias-view',
@@ -177,41 +176,29 @@ class PermissionSeeder extends Seeder
         }
 
         if ($conductorRole) {
-            $conductorRole->givePermissionTo([
+            $conductorRole->syncPermissions([
                 'auth-store',
                 'rutas-view',
                 'rutas-show',
-                'rutas-create',
-                'rutas-update',
-                'rutas-destroy',
                 'direcciones-view',
                 'direcciones-show',
-                'direcciones-create',
-                'direcciones-update',
-                'direcciones-destroy',
                 'paquete-view',
-                'paquete-show',
-                'paquete-create',
-                'paquete-update',
-                'paquete-destroy',
                 'vehiculo-view',
                 'incidencias-view',
                 'incidencias-create',
                 'incidencias-show',
-                'incidencias-update',
-                'incidencias-destroy',
             ]);
         }
 
         if ($basicoRole) {
-            $basicoRole->givePermissionTo([
+            $basicoRole->syncPermissions([
                 'paquete-view',
                 'clientes-view',
             ]);
         }
 
         if ($acompananteRole) {
-            $acompananteRole->givePermissionTo([
+            $acompananteRole->syncPermissions([
                 'rutas-view',
                 'paquete-view',
                 'incidencias-create',
@@ -220,7 +207,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($supervisorDeEntregasRole) {
-            $supervisorDeEntregasRole->givePermissionTo([
+            $supervisorDeEntregasRole->syncPermissions([
                 'empleados-view',
                 'rutas-view',
                 'paquete-view',
@@ -232,7 +219,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($coordinadorDeRutasRole) {
-            $coordinadorDeRutasRole->givePermissionTo([
+            $coordinadorDeRutasRole->syncPermissions([
                 'rutas-create',
                 'rutas-update',
                 'rutas-destroy',
@@ -241,7 +228,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($operadorDeAlmacenRole) {
-            $operadorDeAlmacenRole->givePermissionTo([
+            $operadorDeAlmacenRole->syncPermissions([
                 'bodegas-view',
                 'bodegas-create',
                 'bodegas-update',
@@ -252,7 +239,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($atencionAlClienteRole) {
-            $atencionAlClienteRole->givePermissionTo([
+            $atencionAlClienteRole->syncPermissions([
                 'clientes-view',
                 'orden-view',
                 'orden-show',
@@ -261,7 +248,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($analistaDeLogisticaRole) {
-            $analistaDeLogisticaRole->givePermissionTo([
+            $analistaDeLogisticaRole->syncPermissions([
                 'rutas-view',
                 'orden-view',
                 'traslados-view',
@@ -270,7 +257,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($gerenteDeOperacionesRole) {
-            $gerenteDeOperacionesRole->givePermissionTo([
+            $gerenteDeOperacionesRole->syncPermissions([
                 'roles-view',
                 'roles-create',
                 'roles-update',
@@ -281,7 +268,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($tecnicoDeMantenimientoDeVehiculosRole) {
-            $tecnicoDeMantenimientoDeVehiculosRole->givePermissionTo([
+            $tecnicoDeMantenimientoDeVehiculosRole->syncPermissions([
                 'vehiculo-view',
                 'vehiculo-update',
                 'vehiculo-destroy'
@@ -289,7 +276,7 @@ class PermissionSeeder extends Seeder
         }
 
         if ($recursosHumanosRole) {
-            $recursosHumanosRole->givePermissionTo([
+            $recursosHumanosRole->syncPermissions([
                 'empleados-view',
                 'empleados-create',
                 'empleados-update',
