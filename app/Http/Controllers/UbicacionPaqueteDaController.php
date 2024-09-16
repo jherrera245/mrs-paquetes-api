@@ -42,9 +42,7 @@ class UbicacionPaqueteDaController extends Controller
             $filters = $request->only(['id_paquete', 'id_ubicacion', 'estado']);
 
             $query = UbicacionPaquete::with(['ubicacion', 'paquete'])
-                ->whereHas('paquete', function ($q) {
-                    $q->where('id_estado_paquete', 11); // Filtrar solo paquetes dañados (ID 11)
-                });
+                ->whereHas('paquete.incidencias'); // Filtrar solo paquetes que tengan incidencias
 
             // Aplicar filtros si están presentes
             if (!empty($filters['id_paquete'])) {
@@ -80,10 +78,11 @@ class UbicacionPaqueteDaController extends Controller
             // Devolver la respuesta paginada
             return response()->json($ubicacionPaquetes, 200);
         } catch (\Exception $e) {
-            Log::error('Error al listar ubicaciones de paquetes dañados: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al listar ubicaciones de paquetes dañados', 'details' => $e->getMessage()], 500);
+            Log::error('Error al listar ubicaciones de paquetes: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al listar ubicaciones de paquetes', 'details' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Crear una nueva relación de ubicación con paquete dañado.
