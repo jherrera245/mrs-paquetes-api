@@ -54,6 +54,21 @@ class VehiculoController extends Controller
         }
     }
 
+
+    public function show($id)
+    {
+        try {
+            $vehiculo = Vehiculo::find($id);
+
+            if (!$vehiculo) {
+                return response()->json(['error' => 'Camión o moto no encontrado.'], 404);
+            }
+
+            return response()->json($this->transformVehiculo($vehiculo), 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener el vehículo.'], 500);
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -85,55 +100,55 @@ class VehiculoController extends Controller
             'id_modelo' => 'required|exists:modelos,id|integer|min:1',
             'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errores' => $validator->errors()->all()], 400);
         }
-    
+
         try {
             // Verificar que el modelo pertenece a la marca seleccionada
             $modelo = ModeloVehiculo::find($request->id_modelo);
             if ($modelo->id_marca != $request->id_marca) {
                 return response()->json(['error' => 'El modelo seleccionado no pertenece a la marca elegida.'], 400);
             }
-    
+
             // Si es 'moto', ajustar los valores específicos
             if ($request->tipo === 'moto') {
                 \Log::info('Tipo es moto, ajustando valores...');
                 $request->merge([
-                    'capacidad_carga' => 0.2, 
-                    'id_empleado_apoyo' => null, 
+                    'capacidad_carga' => 0.2,
+                    'id_empleado_apoyo' => null,
                     'id_bodega' => null
                 ]);
             }
-    
+
             // Verificar datos antes de la creación
             \Log::info('Datos de vehículo antes de crear:', $request->all());
-    
+
             // Crear el vehículo usando solo los campos válidos
             $vehiculo = Vehiculo::create($request->only([
-                'id_empleado_conductor', 
-                'id_empleado_apoyo', 
-                'placa', 
-                'capacidad_carga', 
-                'id_bodega', 
-                'id_estado', 
-                'id_marca', 
-                'id_modelo', 
-                'year_fabricacion', 
+                'id_empleado_conductor',
+                'id_empleado_apoyo',
+                'placa',
+                'capacidad_carga',
+                'id_bodega',
+                'id_estado',
+                'id_marca',
+                'id_modelo',
+                'year_fabricacion',
                 'tipo'
             ]));
-    
+
             // Cargar relaciones
             $vehiculo->load(['conductor', 'apoyo', 'estado', 'marca', 'modelo']);
-    
+
             return response()->json($this->transformVehiculo($vehiculo), 201);
         } catch (\Exception $e) {
             \Log::error('Error al crear el vehículo: ' . $e->getMessage());
             return response()->json(['error' => 'Error al crear el vehículo: ' . $e->getMessage()], 500);
         }
     }
-    
+
 
 
     /**
@@ -149,15 +164,15 @@ class VehiculoController extends Controller
             $vehiculo = Vehiculo::find($id);
 
             if (!$vehiculo) {
-                return response()->json(['error' => 'Vehículo no encontrado.'], 404);
+                return response()->json(['error' => 'Camión o moto no encontrado.'], 404);
             }
 
-            // No permitir la edición del tipo de vehículo
+            // Validación de los datos
             $validator = Validator::make($request->all(), [
-                'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
-                'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1|required_if:tipo,camion', // Requerido solo si es camion
+                'id_empleado_conductor' => 'sometimes|exists:empleados,id|integer|min:1', // 'sometimes' en lugar de 'required'
+                'id_empleado_apoyo' => 'sometimes|exists:empleados,id|integer|min:1|required_if:tipo,camion', // Requerido solo si es camion
                 'placa' => [
-                    'required',
+                    'sometimes',
                     'unique:vehiculos,placa,' . $vehiculo->id,
                     function ($attribute, $value, $fail) use ($vehiculo) {
                         if ($vehiculo->tipo === 'camion' && !preg_match('/^[CP] \d{1,2}-\d{3}$/', $value)) {
@@ -168,31 +183,40 @@ class VehiculoController extends Controller
                         }
                     },
                 ],
-                'capacidad_carga' => 'nullable|numeric|min:0|required_if:tipo,camion', // Requerido solo si es camion
-                'id_bodega' => 'nullable|exists:bodegas,id|integer|min:1|required_if:tipo,camion', // Requerido solo si es camion
-                'id_estado' => 'required|exists:estado_vehiculos,id|integer|min:1',
-                'id_marca' => 'required|exists:marcas,id|integer|min:1',
-                'id_modelo' => 'required|exists:modelos,id|integer|min:1',
-                'year_fabricacion' => 'required|integer|between:1900,' . date('Y'),
+                'capacidad_carga' => 'sometimes|numeric|min:0|required_if:tipo,camion', // Requerido solo si es camion
+                'id_bodega' => 'sometimes|exists:bodegas,id|integer|min:1|required_if:tipo,camion', // Requerido solo si es camion
+                'id_estado' => 'sometimes|exists:estado_vehiculos,id|integer|min:1',
+                'id_marca' => 'sometimes|exists:marcas,id|integer|min:1',
+                'id_modelo' => 'sometimes|exists:modelos,id|integer|min:1',
+                'year_fabricacion' => 'sometimes|integer|between:1900,' . date('Y'),
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['errores' => $validator->errors()->all()], 400);
             }
 
-            // Establecer capacidad de carga a 0.2 toneladas si el tipo es 'moto'
+            // Combinar los datos existentes del vehículo con los datos nuevos del request
+            $data = array_merge($vehiculo->toArray(), $request->all());
+
+            // Si es 'moto', ajustar los valores específicos
             if ($vehiculo->tipo === 'moto') {
-                $request->merge(['capacidad_carga' => 0.2, 'id_empleado_apoyo' => null, 'id_bodega' => null]);
+                $data['capacidad_carga'] = 0.2;
+                $data['id_empleado_apoyo'] = null;
+                $data['id_bodega'] = null;
             }
 
-            $vehiculo->update($request->except(['tipo'])); // Excluir el campo 'tipo' de la actualización
+            // Actualizar el vehículo con los datos combinados
+            $vehiculo->update($data);
             $vehiculo->load(['conductor', 'apoyo', 'estado', 'marca', 'modelo']);
-            return response()->json($this->transformVehiculo($vehiculo), 200);
+
+            return response()->json([
+                'success' => ucfirst($vehiculo->tipo) . ' actualizado correctamente.',
+                'vehiculo' => $this->transformVehiculo($vehiculo)
+            ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al actualizar el vehículo.'], 500);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -205,16 +229,17 @@ class VehiculoController extends Controller
             $vehiculo = Vehiculo::find($id);
 
             if (!$vehiculo) {
-                return response()->json(['error' => 'Vehículo no encontrado.'], 404);
+                return response()->json(['error' => 'Camión o moto no encontrado.'], 404);
             }
 
+            $tipo = $vehiculo->tipo;  // Obtener el tipo de vehículo antes de eliminar
             $vehiculo->delete();
-            return response()->json(["success" => "Vehículo eliminado correctamente."], 200);
+
+            return response()->json(["success" => ucfirst($tipo) . " eliminado correctamente."], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al eliminar el vehículo.'], 500);
         }
     }
-
     /**
      * Transformar el objeto Vehiculo para la respuesta JSON.
      *

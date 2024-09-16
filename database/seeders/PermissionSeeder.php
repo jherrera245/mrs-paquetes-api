@@ -12,7 +12,6 @@ class PermissionSeeder extends Seeder
     {
         // Crear permisos
         $permissions = [
-            'auth-view_user',
             'auth-get_user_by_id',
             'auth-get_users',
             'auth-assign_user_role',

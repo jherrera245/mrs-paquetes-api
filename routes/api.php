@@ -77,7 +77,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   Route::get('verificar-perfil', [AuthController::class, 'verificarPerfilExistente']);
   // Routes users api
-  Route::get('auth/get_user', [AuthController::class, 'getUser'])->middleware('permission:auth-view_user');
+  Route::get('auth/get_user', [AuthController::class, 'getUser']);
   Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById'])->middleware('permission:auth-get_user_by_id');
   Route::get('auth/show/{id}', [AuthController::class, 'show'])->middleware('permission:auth-view_user');;
   Route::get('auth/get_users', [AuthController::class, 'getUsers'])->middleware('permission:auth-get_users');
