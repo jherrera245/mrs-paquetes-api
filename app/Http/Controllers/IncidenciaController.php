@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class IncidenciaController extends Controller
 {
@@ -77,60 +78,62 @@ class IncidenciaController extends Controller
 
     public function store(Request $request)
     {
-        // Validar los datos de entrada
-        $validator = Validator::make($request->all(), [
-            'id_paquete' => 'required|exists:paquetes,id',
-            'fecha_hora' => 'required|date',
-            'id_tipo_incidencia' => 'required|exists:tipo_incidencia,id',
-            'descripcion' => 'required|string|max:1000',
-            'estado' => 'required|exists:estado_incidencias,id',
-            'id_usuario_asignado' => 'nullable|exists:users,id',
-            'solucion' => 'nullable|string|max:1000',
-            'fecha_resolucion' => 'nullable|date',
-        ]);
+    // Validar los datos de entrada
+    $validator = Validator::make($request->all(), [
+        'id_paquete' => 'required|exists:paquetes,id',
+        'fecha_hora' => 'required|date',
+        'id_tipo_incidencia' => 'required|exists:tipo_incidencia,id',
+        'descripcion' => 'required|string|max:1000',
+        'estado' => 'required|exists:estado_incidencias,id',
+        'id_usuario_asignado' => 'nullable|exists:users,id',
+        'solucion' => 'nullable|string|max:1000',
+        'fecha_resolucion' => 'nullable|date',
+    ]);
 
-        // Si la validación falla, devolver errores de validación
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->all()], 400);
-        }
+    // Si la validación falla, devolver errores de validación
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->all()], 400);
+    }
 
-        try {
-            // Obtener el usuario autenticado
-            $usuarioReporta = Auth::user();
+    // Iniciar una transacción
+    DB::beginTransaction();
 
-            // Crear la incidencia con los datos validados
-            $incidenciaData = $validator->validated();
-            $incidenciaData['id_usuario_reporta'] = $usuarioReporta->id; // Asignar el usuario autenticado como reportador
+    try {
+        // Obtener el usuario autenticado
+        $usuarioReporta = Auth::user();
 
-            $incidencia = Incidencia::create($incidenciaData);
+        // Crear la incidencia con los datos validados
+        $incidenciaData = $validator->validated();
+        $incidenciaData['id_usuario_reporta'] = $usuarioReporta->id; // Asignar el usuario autenticado como reportador
 
-            // Actualizar el estado del paquete según el tipo de incidencia
-            $paquete = $incidencia->paquete;
+        $incidencia = Incidencia::create($incidenciaData);
 
-            $detalleOrden = DetalleOrden::where('id_paquete', $incidenciaData['id_paquete'])->firstOrFail();
-            $id_orden = $detalleOrden->id_orden;
+        // Obtener el paquete y el detalle de la orden
+        $paquete = $incidencia->paquete;
+        $detalleOrden = DetalleOrden::where('id_paquete', $incidenciaData['id_paquete'])->firstOrFail();
+        $id_orden = $detalleOrden->id_orden;
 
-            // Obtener el numero_seguimiento basado en id_orden
-            $numero_seguimiento = Orden::where('id', $id_orden)
-                                            ->value('numero_seguimiento');
+        // Obtener el numero_seguimiento basado en id_orden
+        $numero_seguimiento = Orden::where('id', $id_orden)->value('numero_seguimiento');
 
-            $existeKardexSalida = Kardex::where('id_paquete', $incidenciaData['id_paquete'])
+        // Verificar si ya existe un movimiento de SALIDA para el paquete
+        $existeKardexSalida = Kardex::where('id_paquete', $incidenciaData['id_paquete'])
             ->where('tipo_movimiento', 'SALIDA')
             ->exists();
 
-            if ($existeKardexSalida) {
-                   // Si ya existe un movimiento de SALIDA, se omite la creación de nuevos registros en Kardex
-                return response()->json(['message' => 'Ya existe un registro de SALIDA para este paquete.'], 400);
-            }
-            $tipoTransaccion = Kardex::where('id_paquete', $incidenciaData)
-                                        ->value('tipo_transaccion');
+        if ($existeKardexSalida) {
+            // Si ya existe un movimiento de SALIDA, devolver un error y revertir la transacción
+            DB::rollBack();
+            return response()->json(['message' => 'Ya existe un registro de SALIDA para este paquete.'], 400);
+        }
 
+        // Obtener el tipo_transaccion del Kardex para el paquete
+        $tipoTransaccion = Kardex::where('id_paquete', $incidenciaData['id_paquete'])->value('tipo_transaccion');
 
-            // Verificar el tipo de incidencia y actualizar el estado del paquete
-            if ($incidencia->id_tipo_incidencia == 2) { // 2 es "Daño" según la imagen de la tabla tipo_incidencia
-            $paquete->id_estado_paquete = 11; // 11 es "Dañado" según la imagen de la tabla estado_paquetes
-                // Actualizar el campo id_ubicacion del paquete 
-            $paquete->id_ubicacion = 100; 
+        // Verificar el tipo de incidencia y actualizar el estado del paquete
+        if ($incidencia->id_tipo_incidencia == 2) { // 2 es "Daño"
+            $paquete->id_estado_paquete = 11; // 11 es "Dañado"
+            $paquete->id_ubicacion = 100; // Ubicación específica para "Dañado"
 
             // Crear registros en Kardex basados en el tipo de transacción
             if ($tipoTransaccion == 'RECEPCION') {
@@ -174,30 +177,39 @@ class IncidenciaController extends Controller
                     'fecha' => Carbon::now(),
                 ]);
             } else {
-                throw new \Exception('el paquete no se encuentra en la tipo de transaccion correcta para realizar este proceso.');
+                // Revertir la transacción en caso de error
+                DB::rollBack();
+                throw new \Exception('El paquete no se encuentra en el tipo de transacción correcta para realizar este proceso.');
             }
 
+        } else if ($incidencia->id_tipo_incidencia == 3) { // 3 es "Pérdida"
+            $paquete->id_estado_paquete = 12; // 12 es "Perdido"
+        }
 
-            } else if ($incidencia->id_tipo_incidencia == 3) { // 3 es "Pérdida" según la imagen de la tabla tipo_incidencia
-                $paquete->id_estado_paquete = 12; // 12 es "Perdido" según la imagen de la tabla estado_paquetes
-            }
+        // Guardar el cambio de estado del paquete
+        $paquete->save();
 
-            // Guardar el cambio de estado del paquete
-            $paquete->save();
+        // Confirmar la transacción
+        DB::commit();
 
-            // Cargar las relaciones necesarias
-            $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
+        // Cargar las relaciones necesarias
+        $incidencia->load(['tipoIncidencia', 'paquete', 'usuarioReporta', 'usuarioAsignado']);
 
-            // Transformar los datos antes de devolver la respuesta
-            $data = $this->transformIncidencia($incidencia);
+        // Transformar los datos antes de devolver la respuesta
+        $data = $this->transformIncidencia($incidencia);
 
-            // Devolver una respuesta JSON con los datos transformados y un código de estado 201 (Created)
-            return response()->json(['message' => 'Incidencia creada', 'incidencia' => $data], 201);
+        // Devolver una respuesta JSON con los datos transformados y un código de estado 201 (Created)
+        return response()->json(['message' => 'Incidencia creada', 'incidencia' => $data], 201);
+
         } catch (\Exception $e) {
+            // Revertir la transacción en caso de excepción
+            DB::rollBack();
             // Capturar cualquier excepción y devolver un mensaje de error
             return response()->json(['error' => 'Error al crear la incidencia', 'message' => $e->getMessage()], 500);
         }
     }
+
+
 
     public function update(Request $request, $id)
     {
@@ -252,23 +264,29 @@ class IncidenciaController extends Controller
     }
 
     public function destroy($id)
-{
+    {
+    // Iniciar una transacción
+    DB::beginTransaction();
+
     try {
         // Buscar la incidencia a eliminar
         $incidencia = Incidencia::findOrFail($id);
         $id_paquete = $incidencia->id_paquete;
-    
+        
+        // Obtener el paquete y su estado actual
+        $paquete = Paquete::findOrFail($id_paquete);
+        $estadoActual = $paquete->id_estado_paquete;
 
         // Determinar el tipo_transaccion basado en el id_paquete
         $kardexRecords = Kardex::where('id_paquete', $id_paquete)
-                            ->whereIn('tipo_transaccion', ['RECEPCION', 'ALMACENADO'])
-                            ->get();
+            ->whereIn('tipo_transaccion', ['RECEPCION', 'ALMACENADO'])
+            ->get();
 
         if ($kardexRecords->isEmpty()) {
             throw new \Exception('No se encontraron registros de Kardex para revertir.');
         }
 
-        // Revertir los registros en Kardex
+        // Revertir los registros en Kardex y restaurar el estado del paquete
         foreach ($kardexRecords as $record) {
             if ($record->tipo_transaccion == 'RECEPCION') {
                 // Revertir los registros de Kardex relacionados con RECEPCION
@@ -276,36 +294,54 @@ class IncidenciaController extends Controller
                     ->where('tipo_movimiento', 'SALIDA')
                     ->where('tipo_transaccion', 'RECEPCION')
                     ->delete();
-                
-                Kardex::where('id_paquete', $id_paquete)    
+
+                Kardex::where('id_paquete', $id_paquete)
                     ->where('tipo_movimiento', 'ENTRADA')
                     ->where('tipo_transaccion', 'PAQUETE_DAÑADO')
                     ->delete();
+
+                // Restaurar el estado anterior del paquete para RECEPCION
+                $paquete->id_estado_paquete = 1; // 1 es el estado original para RECEPCION
             } else if ($record->tipo_transaccion == 'ALMACENADO') {
                 // Revertir los registros de Kardex relacionados con ALMACENADO
                 Kardex::where('id_paquete', $id_paquete)
                     ->where('tipo_movimiento', 'SALIDA')
                     ->where('tipo_transaccion', 'ALMACENADO')
                     ->delete();
-                
+
                 Kardex::where('id_paquete', $id_paquete)
                     ->where('tipo_movimiento', 'ENTRADA')
                     ->where('tipo_transaccion', 'PAQUETE_DAÑADO')
                     ->delete();
+
+                // Restaurar el estado anterior del paquete para ALMACENADO
+                $paquete->id_estado_paquete = 3; // 3 es el estado original para ALMACENADO
             }
         }
 
+        // Limpiar el campo id_ubicacion
+        $paquete->id_ubicacion = null;
+
+        // Guardar los cambios en el estado del paquete
+        $paquete->save();
+
         // Eliminar la incidencia
         $incidencia->delete();
+
+        // Confirmar la transacción
+        DB::commit();
 
         // Devolver una respuesta JSON con un mensaje de éxito
         return response()->json(['message' => 'Incidencia eliminada y registros de Kardex revertidos'], 200);
 
     } catch (\Exception $e) {
+        // Revertir la transacción en caso de excepción
+        DB::rollBack();
         // Capturar cualquier excepción y devolver un mensaje de error
         return response()->json(['error' => 'Error al eliminar la incidencia', 'message' => $e->getMessage()], 500);
     }
 }
+
 
     // Función de transformación de incidencia
     private function transformIncidencia($incidencia)
