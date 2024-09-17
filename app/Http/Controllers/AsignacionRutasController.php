@@ -71,9 +71,15 @@ class AsignacionRutasController extends Controller
             $paquetes = $request->input('paquetes');
             $fecha = now();
 
+            $prioridades = array_column($paquetes, 'prioridad');
+            $conteo_prioridades = array_count_values($prioridades);
+
             foreach ($paquetes as $paquete) {
 
-
+                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Debe de establecer una proridad unica para cada paquete'], 500);
+                }
                 
                 $detalle = DB::table('detalle_orden')
                 ->select(
@@ -191,7 +197,16 @@ class AsignacionRutasController extends Controller
             $paquetes = $request->input('paquetes');
             $fecha = now();
 
+            $prioridades = array_column($paquetes, 'prioridad');
+            $conteo_prioridades = array_count_values($prioridades);
+
             foreach ($paquetes as $paquete) {
+
+                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Debe de establecer una proridad unica para cada paquete'], 500);
+                }
+
                 // Obtener el detalle del paquete
                 $detalle = DB::table('detalle_orden')
                     ->select(
@@ -217,6 +232,7 @@ class AsignacionRutasController extends Controller
                     // Actualizar asignación existente
                     $asignaciones->id_vehiculo = $request->input('id_vehiculo');
                     $asignaciones->prioridad = $paquete['prioridad'];
+                    $asignaciones->fecha = $fecha;
                     $asignaciones->id_departamento = $detalle->id_departamento;
                     $asignaciones->id_municipio = $detalle->id_municipio;
                     $asignaciones->id_direccion = $detalle->id_direccion_entrega;
@@ -293,7 +309,7 @@ class AsignacionRutasController extends Controller
         $asignacionRuta->estado = 0;
         $asignacionRuta->save();
         $data = [
-            'message' => 'asignacion de Ruta eliminada',
+            'message' => 'Asignacion de Ruta eliminada',
             'status' => 200
         ];
 
