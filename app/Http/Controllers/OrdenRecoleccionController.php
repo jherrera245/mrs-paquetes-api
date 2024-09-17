@@ -75,7 +75,15 @@ class OrdenRecoleccionController extends Controller
 
             $ordenes = $request->input('ordenes');
 
+            $prioridades = array_column($ordenes, 'prioridad');
+            $conteo_prioridades = array_count_values($prioridades);
+
             foreach ($ordenes as $orden) {
+
+                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Debe de establecer una proridad unica para cada orden'], 500);
+                }
 
                 //informacion de la orden
                 $detalle = DB::table('ordenes')
@@ -200,8 +208,17 @@ class OrdenRecoleccionController extends Controller
 
             $ordenes = $request->input('ordenes');
 
+            $prioridades = array_column($ordenes, 'prioridad');
+            $conteo_prioridades = array_count_values($prioridades);
+
             foreach ($ordenes as $orden) {
                 // Información de la orden
+
+                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Debe de establecer una proridad unica para cada orden'], 500);
+                }
+
                 $detalle = DB::table('ordenes')
                     ->select(
                         'ordenes.id', 
