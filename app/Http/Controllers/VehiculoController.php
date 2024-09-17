@@ -85,11 +85,11 @@ class VehiculoController extends Controller
                 'required',
                 'unique:vehiculos',
                 function ($attribute, $value, $fail) use ($request) {
-                    if ($request->tipo === 'camion' && !preg_match('/^[CP] \d{1,2}-\d{3}$/', $value)) {
-                        $fail('El formato de la placa para un camión debe ser "C 23-180" o "P 7-180".');
+                    if ($request->tipo === 'camion' && !preg_match('/^[CP] [A-Z0-9]{4,6}$/i', $value)) {
+                        $fail('El formato de la placa para un camión debe ser como "C 7238", "P 823725", "C 5N345F". Asegúrate de incluir un espacio después de la letra y solo caracteres alfanuméricos de 4 a 6 dígitos.');
                     }
                     if ($request->tipo === 'moto' && !preg_match('/^M \d{6}$/', $value)) {
-                        $fail('El formato de la placa para una moto debe ser "M 120926".');
+                        $fail('El formato de la placa para una moto debe ser "M 820926".');
                     }
                 },
             ],
@@ -175,8 +175,8 @@ class VehiculoController extends Controller
                     'sometimes',
                     'unique:vehiculos,placa,' . $vehiculo->id,
                     function ($attribute, $value, $fail) use ($vehiculo) {
-                        if ($vehiculo->tipo === 'camion' && !preg_match('/^[CP] \d{1,2}-\d{3}$/', $value)) {
-                            $fail('El formato de la placa para un camión debe ser "C 23-180" o "P 7-180".');
+                        if ($vehiculo->tipo === 'camion' && !preg_match('/^[CP] [A-Z0-9]{4,6}$/i', $value)) {
+                            $fail('El formato de la placa para un camión debe ser como "C 7238", "P 823725", "C 5N345F". Asegúrate de incluir un espacio después de la letra y solo caracteres alfanuméricos de 4 a 6 dígitos.');
                         }
                         if ($vehiculo->tipo === 'moto' && !preg_match('/^M \d{6}$/', $value)) {
                             $fail('El formato de la placa para una moto debe ser "M 120926".');
