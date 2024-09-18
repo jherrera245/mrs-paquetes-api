@@ -19,10 +19,24 @@ class BodegaSeeder extends Seeder
             [
                 'nombre' => 'Bodega Central',
                 'direccion' => 'Avenida Roosevelt y 7ª Calle Poniente, San Miguel, El Salvador.',
+                'tipo_bodega'=>'fisica',
                 'id_departamento' => 12,
                 'id_municipio' => 203,
             ],
-            
+            [
+                'nombre' => 'Bodega Central',
+                'direccion' => 'Avenida Roosevelt y 7ª Calle Poniente, San Miguel, El Salvador.',
+                'tipo_bodega'=>'movil',
+                'id_departamento' => 12,
+                'id_municipio' => 203,
+            ],
+            [
+                'nombre' => 'Bodega Central',
+                'direccion' => 'Avenida Roosevelt y 7ª Calle Poniente, San Miguel, El Salvador.',
+                'tipo_bodega'=>'movil',
+                'id_departamento' => 12,
+                'id_municipio' => 203,
+            ]     
         ];
 
         DB::table('bodegas')->insert($data);

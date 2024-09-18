@@ -45,9 +45,11 @@ class DatabaseSeeder extends Seeder
             UbicacionSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
-            VehicleSeeder::class,
             DireccionesSeeder::class,
             TarifaDestinoSeeder::class,
+            MarcaSeeder::class,
+            ModelosSeeder::class,
+            VehiculosSeeder::class
         ]);
     }
 }
