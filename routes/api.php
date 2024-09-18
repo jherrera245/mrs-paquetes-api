@@ -79,7 +79,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   // Routes users api
   Route::get('auth/get_user', [AuthController::class, 'getUser']);
   Route::get('auth/get_user_by_id/{id}', [AuthController::class, 'getUserById'])->middleware('permission:auth-get_user_by_id');
-  Route::get('auth/show/{id}', [AuthController::class, 'show'])->middleware('permission:auth-view_user');;
+  Route::get('auth/show/{id}', [AuthController::class, 'show']);
   Route::get('auth/get_users', [AuthController::class, 'getUsers'])->middleware('permission:auth-get_users');
   Route::post('auth/assign_user_role/{id}', [AuthController::class, 'assignUserRole'])->middleware('permission:auth-assign_user_role');
   Route::post('auth/assign_permissions_to_role/{id}', [AuthController::class, 'assignPermissionsToRole'])->middleware('permission:auth-assign_permissions_to_role');
@@ -300,6 +300,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   // Rutas para el controlador UbicacionPaquete
   Route::get('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'index'])->middleware('permission:ubicacionespaquetes-view');
+  Route::get('ubicaciones-paquetes/filtro', [UbicacionPaqueteController::class, 'index_filtro']);
   Route::get('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'show'])->middleware('permission:ubicacionespaquetes-show');
   Route::post('ubicaciones-paquetes', [UbicacionPaqueteController::class, 'store'])->middleware('permission:ubicacionespaquetes-create');
   Route::put('ubicaciones-paquetes/{id}', [UbicacionPaqueteController::class, 'update'])->middleware('permission:ubicacionespaquetes-update');

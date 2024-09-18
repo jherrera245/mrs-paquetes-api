@@ -14,30 +14,25 @@ class DepartamentoSeeder extends Seeder
      */
     public function run()
     {
-        // Función personalizada para capitalizar correctamente palabras con tildes
-        function capitalizarPalabraConTildes($string)
-        {
-            return mb_convert_case(mb_strtolower($string), MB_CASE_TITLE, "UTF-8");
-        }
-
-        // Datos de prueba con formato adecuado de capitalización
+        // Utiliza la función global `capitalizarPalabra` desde los helpers
         $data = [
-            ["nombre" => capitalizarPalabraConTildes('AHUACHAPAN')],
-            ["nombre" => capitalizarPalabraConTildes('SANTA ANA')],
-            ["nombre" => capitalizarPalabraConTildes('SONSONATE')],
-            ["nombre" => capitalizarPalabraConTildes('CHALATENANGO')],
-            ["nombre" => capitalizarPalabraConTildes('LA LIBERTAD')],
-            ["nombre" => capitalizarPalabraConTildes('SAN SALVADOR')],
-            ["nombre" => capitalizarPalabraConTildes('CUSCATLAN')],
-            ["nombre" => capitalizarPalabraConTildes('LA PAZ')],
-            ["nombre" => capitalizarPalabraConTildes('CABAÑAS')],
-            ["nombre" => capitalizarPalabraConTildes('SAN VICENTE')],
-            ["nombre" => capitalizarPalabraConTildes('USULUTAN')],
-            ["nombre" => capitalizarPalabraConTildes('SAN MIGUEL')],
-            ["nombre" => capitalizarPalabraConTildes('MORAZAN')],
-            ["nombre" => capitalizarPalabraConTildes('LA UNION')],
+            ["nombre" => capitalizarPalabra('AHUACHAPAN')],
+            ["nombre" => capitalizarPalabra('SANTA ANA')],
+            ["nombre" => capitalizarPalabra('SONSONATE')],
+            ["nombre" => capitalizarPalabra('CHALATENANGO')],
+            ["nombre" => capitalizarPalabra('LA LIBERTAD')],
+            ["nombre" => capitalizarPalabra('SAN SALVADOR')],
+            ["nombre" => capitalizarPalabra('CUSCATLAN')],
+            ["nombre" => capitalizarPalabra('LA PAZ')],
+            ["nombre" => capitalizarPalabra('CABAÑAS')],
+            ["nombre" => capitalizarPalabra('SAN VICENTE')],
+            ["nombre" => capitalizarPalabra('USULUTAN')],
+            ["nombre" => capitalizarPalabra('SAN MIGUEL')],
+            ["nombre" => capitalizarPalabra('MORAZAN')],
+            ["nombre" => capitalizarPalabra('LA UNION')],
         ];
 
         DB::table('departamento')->insert($data);
     }
 }
+

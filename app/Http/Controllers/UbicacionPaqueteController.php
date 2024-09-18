@@ -25,50 +25,28 @@ class UbicacionPaqueteController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index()
     {
         try {
-            // Obtener filtros de la solicitud
-            $filters = $request->only(['id_paquete', 'id_ubicacion', 'estado']);
+            // Obtener todos los registros con los campos solicitados
+            $resultados = DB::table('detalle_orden')
+                ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
+                ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+                ->join('ubicaciones_paquetes', 'detalle_orden.id_paquete', '=', 'ubicaciones_paquetes.id_paquete')
+                ->join('ubicaciones', 'ubicaciones_paquetes.id_ubicacion', '=', 'ubicaciones.id')
+                ->where('ubicaciones_paquetes.estado', '!=', 0)
+                ->select(
+                    'ubicaciones_paquetes.id AS id_ubicacion_paquete',
+                    'ordenes.numero_seguimiento AS numero_orden',
+                    'paquetes.uuid AS qr_paquete',
+                    'paquetes.descripcion_contenido AS descripcion_paquete',
+                    'ubicaciones.nomenclatura AS nomenclatura_ubicacion'
+                )
+                ->get();
 
-            $query = UbicacionPaquete::with(['ubicacion', 'paquete']);
-
-            // Aplicar filtros si están presentes
-            if (!empty($filters['id_paquete'])) {
-                $query->where('id_paquete', $filters['id_paquete']);
-            }
-
-            if (!empty($filters['id_ubicacion'])) {
-                $query->where('id_ubicacion', $filters['id_ubicacion']);
-            }
-
-            if (array_key_exists('estado', $filters) && !is_null($filters['estado'])) {
-                $query->where('estado', $filters['estado']);
-            }
-
-            // Paginación de resultados utilizando el parámetro 'per_page'
-            $perPage = $request->input('per_page', 10); // Número de elementos por página por defecto es 10
-            $ubicacionPaquetes = $query->paginate($perPage);
-
-            // Formatear los datos manualmente
-            $ubicacionPaquetesFormatted = $ubicacionPaquetes->getCollection()->map(function ($ubicacionPaquete) {
-                return [
-                    'id' => $ubicacionPaquete->id,
-                    'paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->descripcion_contenido : 'N/A',
-                    'id_paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->id : 'N/A',
-                    'ubicacion' => $ubicacionPaquete->ubicacion ? $ubicacionPaquete->ubicacion->nomenclatura : 'N/A',
-                    'id_ubicacion' => $ubicacionPaquete->ubicacion ? $ubicacionPaquete->ubicacion->id : 'N/A',
-                    'estado' => $ubicacionPaquete->estado,
-                ];
-            });
-
-            $ubicacionPaquetes->setCollection($ubicacionPaquetesFormatted);
-
-            // Devolver la respuesta paginada
-            return response()->json($ubicacionPaquetes, 200);
+            return response()->json($resultados, 200);
         } catch (\Exception $e) {
-            Log::error('Error al listar ubicaciones de paquetes: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al listar ubicaciones de paquetes', 'details' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al obtener los detalles', 'details' => $e->getMessage()], 500);
         }
     }
 
@@ -79,33 +57,82 @@ class UbicacionPaqueteController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function show($id)
+    public function index_filtro(Request $request)
     {
         try {
-            // Buscar el UbicacionPaquete por ID con sus relaciones
-            $ubicacionPaquete = UbicacionPaquete::with(['ubicacion', 'paquete'])->find($id);
+            // Obtener los filtros desde la solicitud
+            $filtros = $request->only(['numero_orden', 'qr_paquete', 'descripcion_paquete', 'nomenclatura_ubicacion']);
 
-            if (!$ubicacionPaquete) {
-                return response()->json(['error' => 'Relación no encontrada'], 404);
+            // Iniciar la consulta
+            $query = DB::table('detalle_orden')
+                ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
+                ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+                ->join('ubicaciones_paquetes', 'detalle_orden.id_paquete', '=', 'ubicaciones_paquetes.id_paquete')
+                ->join('ubicaciones', 'ubicaciones_paquetes.id_ubicacion', '=', 'ubicaciones.id')
+                ->where('ubicaciones_paquetes.estado', '!=', 0);
+
+            // Aplicar filtros si están presentes
+            if (!empty($filtros['numero_orden'])) {
+                $query->where('ordenes.numero_seguimiento', 'LIKE', '%' . $filtros['numero_orden'] . '%');
             }
 
-            // Formatear los datos manualmente
-            $formattedData = [
-                'id' => $ubicacionPaquete->id,
-                'paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->descripcion_contenido : 'N/A',
-                'id_paquete' => $ubicacionPaquete->paquete ? $ubicacionPaquete->paquete->id : 'N/A',
-                'ubicacion' => $ubicacionPaquete->ubicacion ? $ubicacionPaquete->ubicacion->nomenclatura : 'N/A',
-                'id_ubicacion' => $ubicacionPaquete->ubicacion ? $ubicacionPaquete->ubicacion->id : 'N/A',
-                'estado' => $ubicacionPaquete->estado,
-            ];
+            if (!empty($filtros['qr_paquete'])) {
+                $query->where('paquetes.uuid', 'LIKE', '%' . $filtros['qr_paquete'] . '%');
+            }
 
-            return response()->json($formattedData, 200);
-        } catch (Exception $e) {
-            Log::error('Error al mostrar la relación: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al mostrar la relación', 'details' => $e->getMessage()], 500);
+            if (!empty($filtros['descripcion_paquete'])) {
+                $query->where('paquetes.descripcion_contenido', 'LIKE', '%' . $filtros['descripcion_paquete'] . '%');
+            }
+
+            if (!empty($filtros['nomenclatura_ubicacion'])) {
+                $query->where('ubicaciones.nomenclatura', 'LIKE', '%' . $filtros['nomenclatura_ubicacion'] . '%');
+            }
+
+            // Obtener los resultados filtrados
+            $resultados = $query->select(
+                'ubicaciones_paquetes.id AS id_ubicacion_paquete',
+                'ordenes.numero_seguimiento AS numero_orden',
+                'paquetes.uuid AS qr_paquete',
+                'paquetes.descripcion_contenido AS descripcion_paquete',
+                'ubicaciones.nomenclatura AS nomenclatura_ubicacion'
+            )
+                ->get();
+
+            return response()->json($resultados, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al filtrar los detalles', 'details' => $e->getMessage()], 500);
         }
     }
 
+    public function show($id)
+    {
+        try {
+            // Obtener el registro específico
+            $resultado = DB::table('detalle_orden')
+                ->join('ordenes', 'detalle_orden.id_orden', '=', 'ordenes.id')
+                ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+                ->join('ubicaciones_paquetes', 'detalle_orden.id_paquete', '=', 'ubicaciones_paquetes.id_paquete')
+                ->join('ubicaciones', 'ubicaciones_paquetes.id_ubicacion', '=', 'ubicaciones.id')
+                ->where('detalle_orden.id', $id)
+                ->where('ubicaciones_paquetes.estado', '!=', 0)
+                ->select(
+                    'ubicaciones_paquetes.id AS id_ubicacion_paquete',
+                    'ordenes.numero_seguimiento AS numero_orden',
+                    'paquetes.uuid AS qr_paquete',
+                    'paquetes.descripcion_contenido AS descripcion_paquete',
+                    'ubicaciones.nomenclatura AS nomenclatura_ubicacion'
+                )
+                ->first();
+
+            if (!$resultado) {
+                return response()->json(['error' => 'Registro no encontrado'], 404);
+            }
+
+            return response()->json($resultado, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener el registro', 'details' => $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Crear una nueva relación de ubicación con paquete.
@@ -125,49 +152,49 @@ class UbicacionPaqueteController extends Controller
             'codigo_nomenclatura_ubicacion.required' => 'El campo de ubicación es obligatorio.',
             'codigo_nomenclatura_ubicacion.exists' => 'La ubicación seleccionada no es válida.',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-    
+
         DB::beginTransaction(); // Iniciar transacción
-    
+
         try {
             // Buscar el paquete por el UUID escaneado (el código QR del paquete)
             $paquete = Paquete::where('uuid', $request->codigo_qr_paquete)->firstOrFail();
-            
+
             // Buscar la ubicación por la nomenclatura escaneada (el código de la ubicación)
             $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->firstOrFail();
-    
+
             // Verificar si ya hay un paquete en la ubicación con estado 1
             $paqueteEnUbicacion = UbicacionPaquete::where('id_ubicacion', $ubicacion->id)
                 ->where('estado', 1)
                 ->exists();
-    
+
             if ($paqueteEnUbicacion) {
                 return response()->json(['error' => 'Ya existe un paquete en esta ubicación con estado activo (1).'], 400);
             }
-    
+
             // Verificar si ya existe una relación de ubicación para el paquete con la misma ubicación
             $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $paquete->id)
                 ->where('id_ubicacion', $ubicacion->id)
                 ->first();
-    
+
             if ($existingUbicacionPaquete) {
                 return response()->json(['error' => 'Esta ubicación ya está asignada a este paquete.'], 400);
             }
-    
+
             // **Agregar los movimientos en el Kardex**
             $detalleOrden = DetalleOrden::where('id_paquete', $paquete->id)->first();
             if (!$detalleOrden) {
                 throw new Exception('Detalle de orden no encontrado para el paquete.');
             }
-    
+
             $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
             if (!$numeroSeguimiento) {
                 throw new Exception('Número de seguimiento no encontrado para la orden.');
             }
-    
+
             // Si el estado del paquete es 1 (Recibido de recepción) se hace una salida de recepción a almacenado.
             if ($paquete->id_estado_paquete == 1) {
                 // 1. **SALIDA de RECEPCION**
@@ -208,14 +235,14 @@ class UbicacionPaqueteController extends Controller
             $ubicacionPaquete->id_ubicacion = $ubicacion->id; // Guardar el ID de la ubicación encontrada por su nomenclatura
             $ubicacionPaquete->estado = 1; // Establecer el estado a 1 cuando se asocia
             $ubicacionPaquete->save();
-    
+
             // Actualizar el campo id_ubicacion en el paquete
             $paquete->id_ubicacion = $ubicacion->id;
             $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
             $paquete->save();
-    
+
             DB::commit(); // Confirmar la transacción
-    
+
             return response()->json(['message' => 'Relación de Ubicación con Paquete creada correctamente y Kardex actualizado.'], 201);
         } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción si hay algún error
@@ -223,101 +250,115 @@ class UbicacionPaqueteController extends Controller
             return response()->json(['error' => 'Error al crear la relación', 'details' => $e->getMessage()], 500);
         }
     }
-    
+
 
     //actualiza la ubicacion del paquete
     public function update(Request $request, $id)
     {
     // Validación de la entrada
     $validator = Validator::make($request->all(), [
-        'codigo_nomenclatura_ubicacion' => 'required|string|exists:ubicaciones,nomenclatura',
+        'codigo_qr_paquete' => 'required|string|exists:paquetes,uuid',
+        'codigo_nomenclatura_ubicacion' => 'sometimes|string|exists:ubicaciones,nomenclatura',
+        'estado' => 'sometimes|integer|in:0,1', // Validar que el estado sea 0 o 1 si está presente
     ], [
-        'codigo_nomenclatura_ubicacion.required' => 'El campo de código de nomenclatura de ubicación es obligatorio.',
+        'codigo_qr_paquete.required' => 'El campo de código QR del paquete es obligatorio.',
+        'codigo_qr_paquete.exists' => 'El paquete con ese código QR no es válido.',
         'codigo_nomenclatura_ubicacion.exists' => 'La ubicación seleccionada no es válida.',
+        'estado.integer' => 'El estado debe ser un número entero.',
+        'estado.in' => 'El estado debe ser 0 o 1.',
     ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors(), 'status' => 'fail'], 400);
-    }
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors(), 'status' => 'fail'], 400);
+        }
 
-    DB::beginTransaction(); // Iniciar transacción
+        DB::beginTransaction(); // Iniciar transacción
 
     try {
-        // Buscar la relación de ubicación-paquete por su ID
-        $ubicacionPaquete = UbicacionPaquete::find($id);
+        // Buscar el paquete por su UUID
+        $paquete = Paquete::where('uuid', $request->codigo_qr_paquete)->firstOrFail();
 
-        // Verificar si la relación existe
-        if (!$ubicacionPaquete) {
-            return response()->json([
-                'error' => 'Relación de ubicación-paquete no encontrada.',
-                'status' => 'fail'
-            ], 404);
-        }
-
-        // Obtener el paquete asociado a la relación
-        $paquete = Paquete::find($ubicacionPaquete->id_paquete);
-        
-        // Verificar si el paquete existe
-        if (!$paquete) {
-            throw new Exception('Paquete asociado no encontrado.');
-        }
-
-        // Buscar la nueva ubicación por la nomenclatura proporcionada
-        $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->first();
-
-        // Verificar si la nueva ubicación es la misma que la actual
-        if ($ubicacionPaquete->id_ubicacion == $ubicacion->id) {
-            return response()->json(['error' => 'El paquete ya está en la ubicación especificada.', 'status' => 'fail'], 400);
-        }
-
-        // Verificar si ya existe otro paquete en la nueva ubicación
-        $paqueteEnUbicacion = UbicacionPaquete::where('id_ubicacion', $ubicacion->id)
-            ->where('estado', 1) // Asumiendo que estado 1 significa activo
+        // Obtener la relación de ubicación actual del paquete
+        $ubicacionPaqueteActual = UbicacionPaquete::where('id_paquete', $paquete->id)
+            ->where('id_ubicacion', $paquete->id_ubicacion)
             ->first();
 
-        if ($paqueteEnUbicacion) {
-            return response()->json(['error' => 'Ya existe un paquete en la ubicación especificada.', 'status' => 'fail'], 400);
+        if (!$ubicacionPaqueteActual) {
+            throw new Exception('Relación de ubicación no encontrada para el paquete.');
         }
 
-        // **Actualizar los movimientos en el Kardex**
-        // 1. **SALIDA de la ubicación actual**
-        $kardexSalida = new Kardex();
-        $kardexSalida->id_paquete = $paquete->id;
-        $kardexSalida->id_orden = $paquete->detalleOrden->id_orden; // Asumimos que existe una relación con DetalleOrden
-        $kardexSalida->cantidad = 1;
-        $kardexSalida->numero_ingreso = $paquete->detalleOrden->orden->numero_seguimiento; // Asumimos relación
-        $kardexSalida->tipo_movimiento = 'SALIDA';
-        $kardexSalida->tipo_transaccion = 'ALMACENADO';
-        $kardexSalida->fecha = now();
-        $kardexSalida->save();
+        // Si se proporciona una nueva ubicación, verificar y actualizar
+        if ($request->has('codigo_nomenclatura_ubicacion')) {
+            // Buscar la nueva ubicación por la nomenclatura proporcionada
+            $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->firstOrFail();
 
-        // 2. **ENTRADA a la nueva ubicación**
-        $kardexEntrada = new Kardex();
-        $kardexEntrada->id_paquete = $paquete->id;
-        $kardexEntrada->id_orden = $paquete->detalleOrden->id_orden; // Asumimos que existe una relación con DetalleOrden
-        $kardexEntrada->cantidad = 1;
-        $kardexEntrada->numero_ingreso = $paquete->detalleOrden->orden->numero_seguimiento; // Asumimos relación
-        $kardexEntrada->tipo_movimiento = 'ENTRADA';
-        $kardexEntrada->tipo_transaccion = 'ALMACENADO';
-        $kardexEntrada->fecha = now();
-        $kardexEntrada->save();
+            // Verificar si la nueva ubicación es la misma que la actual
+            if ($paquete->id_ubicacion == $ubicacion->id) {
+                return response()->json(['error' => 'El paquete ya está en la ubicación especificada.', 'status' => 'fail'], 400);
+            }
 
-        // Actualizar la relación de ubicación con la nueva ubicación
-        $ubicacionPaquete->id_ubicacion = $ubicacion->id;
+            // Verificar si ya existe otro paquete en la nueva ubicación
+            $paqueteEnUbicacion = UbicacionPaquete::where('id_ubicacion', $ubicacion->id)
+                ->where('estado', 1) // Asumiendo que estado 1 significa activo
+                ->first();
 
-        // Guardar los cambios en la relación
-        $ubicacionPaquete->save();
+            if ($paqueteEnUbicacion) {
+                return response()->json(['error' => 'Ya existe un paquete en la ubicación especificada.', 'status' => 'fail'], 400);
+            }
 
-        DB::commit(); // Confirmar la transacción
+            // **Actualizar los movimientos en el Kardex**
+            // 1. **SALIDA de la ubicación actual**
+            $kardexSalida = new Kardex();
+            $kardexSalida->id_paquete = $paquete->id;
+            $kardexSalida->id_orden = $paquete->detalleOrden->id_orden; // Asumimos que existe una relación con DetalleOrden
+            $kardexSalida->cantidad = 1;
+            $kardexSalida->numero_ingreso = $paquete->detalleOrden->orden->numero_seguimiento; // Asumimos relación
+            $kardexSalida->tipo_movimiento = 'SALIDA';
+            $kardexSalida->tipo_transaccion = 'ALMACENADO';
+            $kardexSalida->fecha = now();
+            $kardexSalida->save();
 
-            return response()->json([
-                'message' => 'Ubicación de la relación de ubicación-paquete actualizada correctamente.',
-                'status' => 'success',
-                'data' => [
-                    'paquete_id' => $ubicacionPaquete->id_paquete,
-                    'ubicacion' => $ubicacion->nomenclatura
-                ]
-            ], 200);
+            // 2. **ENTRADA a la nueva ubicación**
+            $kardexEntrada = new Kardex();
+            $kardexEntrada->id_paquete = $paquete->id;
+            $kardexEntrada->id_orden = $paquete->detalleOrden->id_orden; // Asumimos que existe una relación con DetalleOrden
+            $kardexEntrada->cantidad = 1;
+            $kardexEntrada->numero_ingreso = $paquete->detalleOrden->orden->numero_seguimiento; // Asumimos relación
+            $kardexEntrada->tipo_movimiento = 'ENTRADA';
+            $kardexEntrada->tipo_transaccion = 'ALMACENADO';
+            $kardexEntrada->fecha = now();
+            $kardexEntrada->save();
+
+            // Actualizar la relación de ubicación actual con la nueva ubicación
+            $ubicacionPaqueteActual->id_ubicacion = $ubicacion->id;
+            $ubicacionPaqueteActual->estado = $request->estado ?? $ubicacionPaqueteActual->estado; // Mantener el estado si no se proporciona uno nuevo
+            $ubicacionPaqueteActual->save();
+
+            // Actualizar el campo id_ubicacion en el paquete
+            $paquete->id_ubicacion = $ubicacion->id;
+        }
+
+        // Si se proporciona un estado, actualizar el estado de la relación de ubicación
+        if ($request->has('estado')) {
+            $ubicacionPaqueteActual->estado = $request->estado;
+            $ubicacionPaqueteActual->save();
+        }
+
+        // Guardar los cambios en el paquete
+        $paquete->save();
+
+            DB::commit(); // Confirmar la transacción
+
+        return response()->json([
+            'message' => 'Ubicación y/o estado del paquete actualizados correctamente.',
+            'status' => 'success',
+            'data' => [
+                'paquete_id' => $paquete->id,
+                'paquete_uuid' => $paquete->uuid, // Agregar el UUID del paquete
+                'ubicacion' => $ubicacion->nomenclatura ?? $paquete->ubicacion->nomenclatura,
+                'estado' => $ubicacionPaqueteActual->estado // Mostrar el estado actualizado
+            ]
+        ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack(); // Revertir la transacción si hay algún error
@@ -338,65 +379,65 @@ class UbicacionPaqueteController extends Controller
      */
     public function destroy($id)
     {
-    try {
-        // Buscar el UbicacionPaquete por ID
-        $ubicacionPaquete = UbicacionPaquete::find($id);
+        try {
+            // Buscar el UbicacionPaquete por ID
+            $ubicacionPaquete = UbicacionPaquete::find($id);
 
-        if (!$ubicacionPaquete) {
-            return response()->json(['error' => 'Relación no encontrada'], 404);
-        }
+            if (!$ubicacionPaquete) {
+                return response()->json(['error' => 'Relación no encontrada'], 404);
+            }
 
-        // Buscar el paquete relacionado
-        $paquete = $ubicacionPaquete->paquete;
+            // Buscar el paquete relacionado
+            $paquete = $ubicacionPaquete->paquete;
 
-        if ($paquete) {
-            // Establecer el campo id_ubicacion a NULL y id_estado_paquete a 14 en la tabla paquete para el paquete relacionado
-            $paquete->id_ubicacion = null;
-            $paquete->id_estado_paquete = 14;
-            $paquete->save();
-        }
+            if ($paquete) {
+                // Establecer el campo id_ubicacion a NULL y id_estado_paquete a 14 en la tabla paquete para el paquete relacionado
+                $paquete->id_ubicacion = null;
+                $paquete->id_estado_paquete = 14;
+                $paquete->save();
+            }
 
-        // Obtener el detalle de la orden
-        $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
+            // Obtener el detalle de la orden
+            $detalleOrden = DetalleOrden::where('id_paquete', $ubicacionPaquete->id_paquete)->first();
 
-        if (!$detalleOrden) {
-            // Si no se encuentra el DetalleOrden, continuar sin lanzar error
-            $ubicacionPaquete->estado = 0; 
+            if (!$detalleOrden) {
+                // Si no se encuentra el DetalleOrden, continuar sin lanzar error
+                $ubicacionPaquete->estado = 0;
+                $ubicacionPaquete->save();
+                return response()->json(['message' => 'Ubicación desactivada correctamente, pero no se encontró el detalle de la orden asociado.'], 200);
+            }
+
+            // Verificar que la orden existe
+            $orden = Orden::find($detalleOrden->id_orden);
+            if (!$orden) {
+                return response()->json(['error' => 'Orden no encontrada.'], 404);
+            }
+
+            // Crear la salida en el Kardex con el número de seguimiento (numero_seguimiento) como SALIDA de recolección
+            $kardexSalida = new Kardex();
+            $kardexSalida->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexSalida->id_orden = $detalleOrden->id_orden;
+            $kardexSalida->cantidad = 1;
+            $kardexSalida->numero_ingreso = $orden->numero_seguimiento;
+            $kardexSalida->tipo_movimiento = 'SALIDA';
+            $kardexSalida->tipo_transaccion = 'ALMACENADO';
+            $kardexSalida->fecha = now();
+            $kardexSalida->save();
+
+            // Crear la entrada en el Kardex con el número de seguimiento como ENTRADA de almacenado
+            $kardexEntrada = new Kardex();
+            $kardexEntrada->id_paquete = $ubicacionPaquete->id_paquete;
+            $kardexEntrada->id_orden = $detalleOrden->id_orden;
+            $kardexEntrada->cantidad = 1;
+            $kardexEntrada->numero_ingreso = $orden->numero_seguimiento;
+            $kardexEntrada->tipo_movimiento = 'ENTRADA';
+            $kardexEntrada->tipo_transaccion = 'EN_ESPERA_UBICACION';
+            $kardexEntrada->fecha = now();
+            $kardexEntrada->save();
+
+            // Cambiar el estado del UbicacionPaquete a 0 desactivado
+            $ubicacionPaquete->estado = 0;
             $ubicacionPaquete->save();
-            return response()->json(['message' => 'Ubicación desactivada correctamente, pero no se encontró el detalle de la orden asociado.'], 200);
-        }
-
-        // Verificar que la orden existe
-        $orden = Orden::find($detalleOrden->id_orden);
-        if (!$orden) {
-            return response()->json(['error' => 'Orden no encontrada.'], 404);
-        }
-
-        // Crear la salida en el Kardex con el número de seguimiento (numero_seguimiento) como SALIDA de recolección
-        $kardexSalida = new Kardex();
-        $kardexSalida->id_paquete = $ubicacionPaquete->id_paquete;
-        $kardexSalida->id_orden = $detalleOrden->id_orden;
-        $kardexSalida->cantidad = 1;
-        $kardexSalida->numero_ingreso = $orden->numero_seguimiento;
-        $kardexSalida->tipo_movimiento = 'SALIDA';
-        $kardexSalida->tipo_transaccion = 'ALMACENADO';
-        $kardexSalida->fecha = now();
-        $kardexSalida->save();
-
-        // Crear la entrada en el Kardex con el número de seguimiento como ENTRADA de almacenado
-        $kardexEntrada = new Kardex();
-        $kardexEntrada->id_paquete = $ubicacionPaquete->id_paquete;
-        $kardexEntrada->id_orden = $detalleOrden->id_orden;
-        $kardexEntrada->cantidad = 1;
-        $kardexEntrada->numero_ingreso = $orden->numero_seguimiento;
-        $kardexEntrada->tipo_movimiento = 'ENTRADA';
-        $kardexEntrada->tipo_transaccion = 'EN_ESPERA_UBICACION';
-        $kardexEntrada->fecha = now();
-        $kardexEntrada->save();
-
-        // Cambiar el estado del UbicacionPaquete a 0 desactivado
-        $ubicacionPaquete->estado = 0;
-        $ubicacionPaquete->save();
 
             // Retornar un mensaje de éxito
             return response()->json(['message' => 'Ubicación desactivada correctamente.'], 200);
@@ -404,5 +445,5 @@ class UbicacionPaqueteController extends Controller
             Log::error('Error al desactivar la relación: ' . $e->getMessage());
             return response()->json(['error' => 'Error al desactivar la relación'], 500);
         }
-    }  
+    }
 }
