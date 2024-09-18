@@ -106,6 +106,28 @@ class VehiculoController extends Controller
         }
 
         try {
+            // IDs de los estados que permiten reasignación (mantenimiento o fuera de servicio)
+        $estadosPermitidos = [2, 4]; // Suponiendo que 2 = En Mantenimiento, 4 = Fuera de Servicio
+
+        // Verificar si el empleado conductor ya está asignado a otro vehículo activo
+        $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
+            ->whereNotIn('id_estado', $estadosPermitidos) // Excluir vehículos en mantenimiento o fuera de servicio
+            ->first();
+
+        if ($vehiculoConductorActivo) {
+            return response()->json(['error' => 'Este conductor ya está asignado a un vehículo activo.'], 400);
+        }
+
+        // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
+        if ($request->id_empleado_apoyo) {
+            $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
+                ->whereNotIn('id_estado', $estadosPermitidos)
+                ->first();
+
+            if ($vehiculoApoyoActivo) {
+                return response()->json(['error' => 'Este empleado de apoyo ya está asignado a un vehículo activo.'], 400);
+            }
+        }
             // Verificar que el modelo pertenece a la marca seleccionada
             $modelo = ModeloVehiculo::find($request->id_modelo);
             if ($modelo->id_marca != $request->id_marca) {
