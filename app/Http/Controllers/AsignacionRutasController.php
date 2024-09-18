@@ -151,7 +151,12 @@ class AsignacionRutasController extends Controller
     public function show($id)
     {
         $asignacionRuta = AsignacionRutas::find($id);
-
+        // obtiene el tama;o del paquete de la tabla paquetes.
+        $paquete = Paquete::find($asignacionRuta->id_paquete);
+        // de la relacion de paquetes con tamano paquete obtenemos el nombre del tamano
+        $tamano = $paquete->tamanoPaquete->nombre;
+        $asignacionRuta->tamano = $tamano;
+        // agrega el tamano a la respuesta.
         if (!$asignacionRuta) {
             $data = [
                 'message' => 'asignacion de Ruta no encontrada',
