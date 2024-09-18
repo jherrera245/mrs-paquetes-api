@@ -80,7 +80,7 @@ class OrdenRecoleccionController extends Controller
 
             foreach ($ordenes as $orden) {
 
-                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                if ( $conteo_prioridades[$orden['prioridad']] > 1) {
                     DB::rollBack();
                     return response()->json(['message' => 'Debe de establecer una proridad unica para cada orden'], 500);
                 }
@@ -214,7 +214,7 @@ class OrdenRecoleccionController extends Controller
             foreach ($ordenes as $orden) {
                 // Información de la orden
 
-                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                if ( $conteo_prioridades[$orden['prioridad']] > 1) {
                     DB::rollBack();
                     return response()->json(['message' => 'Debe de establecer una proridad unica para cada orden'], 500);
                 }
