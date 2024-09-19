@@ -827,7 +827,7 @@ class OrdenController extends Controller
                 'status' =>  Response::HTTP_NOT_FOUND
             ];
         }
-
+        $numero_tracking = $orden->numero_tracking;
         $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
         $view_render = $tipo_dte == '01' ? 'pdf.consumidor_final' : 'pdf.credito_fiscal';
         $numero_control = 'DTE-' . $tipo_dte . '-M001P001-' . str_pad($id, 15, '0', STR_PAD_LEFT);
@@ -882,7 +882,6 @@ class OrdenController extends Controller
             ->join('paquetes as p', 'p.id', '=', 'do.id_paquete')
             ->where('do.id_orden', $id)
             ->get();
-
         $pdf = PDF::loadView(
             $view_render,
             [
@@ -890,6 +889,7 @@ class OrdenController extends Controller
                 "numero_control" => $numero_control,
                 "codigo_generacion" => $codigo_generacion,
                 "sello_recepcion" => $sello_registro,
+                "numero_tracking" => $numero_tracking,
                 "qrCodeBase64" => $qrCodeBase64,
                 'logo' => 'images/logo-claro.png',
                 "cliente" => $cliente,
@@ -904,6 +904,7 @@ class OrdenController extends Controller
             'id_user' => $cliente->id_user,
             'cliente' => $cliente->nombre . ' ' . $cliente->apellido . ($cliente->id_tipo_persona == 2 ?: ' de ' . $cliente->nombre_comercial),
             'numero_control' => $numero_control,
+            'numero_tracking' => $numero_tracking,
             'fecha' =>  $orden->created_at,
             'tipo_documento' =>  $tipo_dte == '01' ? 'Factura Consumidor Final' : 'Credito Fiscal',
             'total_pagar' => $orden->total_pagar,

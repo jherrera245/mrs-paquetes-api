@@ -123,16 +123,19 @@
 
         <table id="header-table">
             <tr>
-                <td style="width: 60%"><b>Código Generación</b>: {{$codigo_generacion}}</td>
-                <td style="width: 40%"><b>Modelo de facturación</b>: Transmisión normal</td>
+                <td style="width: 55%"><b>Código Generación</b>: {{$codigo_generacion}}</td>
+                <td style="width: 45%"><b>Modelo de facturación</b>: Transmisión normal</td>
             </tr>
             <tr>
-                <td style="width: 60%"><b>Número de Control</b>: {{$numero_control}}</td>
-                <td style="width: 40%"><b>Tipo de transamisión</b>: Normal</td>
+                <td style="width: 55%"><b>Número de Control</b>: {{$numero_control}}</td>
+                <td style="width: 45%"><b>Tipo de transamisión</b>: Normal</td>
             </tr>
             <tr>
-                <td style="width: 60%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
-                <td style="width: 40%"><b>Fecha de Generación</b>: {{$orden->created_at}}</td>
+                <td style="width: 55%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
+                <td style="width: 45%"><b>Fecha de Generación</b>: {{$orden->created_at}}</td>
+            </tr>
+            <tr>
+                <td style="width: 55%"><b>Número de tracking</b>: {{$numero_tracking}}</td>
             </tr>
         </table>
 
