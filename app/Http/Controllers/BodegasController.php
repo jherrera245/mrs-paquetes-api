@@ -146,11 +146,13 @@ class BodegasController extends Controller
     }
 
     $validator = Validator::make($request->all(), [
-        'nombre' => 'required|max:255',
-        'tipo_bodega' => 'required',
+        'nombre' => 'required|max:255|unique:bodegas,nombre',
         'id_departamento' => 'required',
         'id_municipio' => 'required',
         'direccion' => 'required|max:255'
+    ], 
+    [
+    'nombre.unique' => 'El nombre de la bodega ya ha sido creado.',
     ]);
 
     if ($validator->fails()) {
@@ -163,7 +165,6 @@ class BodegasController extends Controller
     }
 
     $bodega->nombre = $request->nombre;
-    $bodega->tipo_bodega = $request->tipo_bodega;
     $bodega->id_departamento = $request->id_departamento;
     $bodega->id_municipio = $request->id_municipio;
     $bodega->direccion = $request->direccion;
