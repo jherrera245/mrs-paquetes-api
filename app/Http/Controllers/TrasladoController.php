@@ -67,7 +67,6 @@ class TrasladoController extends Controller
         ], [
             'bodega_origen.required' => 'La bodega de origen es obligatoria.',
             'bodega_destino.required' => 'La bodega de destino es obligatoria.',
-            'paquetes.*.exists' => 'Uno o más paquetes seleccionados no son válidos.',
             'codigos_qr.*.exists' => 'Uno o más códigos QR no son válidos.',
             'fecha_traslado.required' => 'La fecha de traslado es obligatoria.',
         ]);
@@ -92,13 +91,11 @@ class TrasladoController extends Controller
             $kardexService = new KardexService();
 
             // recibir los paquetes por id u opcionalmente por códigos QR.
-            $paquetesIds = $request->input('paquetes', []);
             $codigosQr = $request->input('codigos_qr', []);
 
             // Convertir los códigos QR a sus respectivos IDs de paquetes y si existen, añadirlos al array de paquetes.
             if (!empty($codigosQr)) {
                 $paquetesPorQr = Paquete::whereIn('uuid', $codigosQr)->pluck('id')->toArray();
-                $paquetesIds = array_merge($paquetesIds, $paquetesPorQr);
             }
 
             // create traslado
@@ -112,7 +109,7 @@ class TrasladoController extends Controller
             ]);
 
             // Recorremos el array de los paquetes seleccionados
-            foreach ($paquetesIds as $idPaquete) {
+            foreach ($paquetesPorQr as $idPaquete) {
                 // Registrar el detalle de traslado para cada paquete
                 DetalleTraslado::create([
                     'id_traslado' => $traslado->id,

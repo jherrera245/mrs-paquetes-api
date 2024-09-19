@@ -218,7 +218,7 @@ class OrdenRecoleccionController extends Controller
                     DB::rollBack();
                     return response()->json(['message' => 'Debe de establecer una proridad unica para cada orden'], 500);
                 }
-
+                
                 $detalle = DB::table('ordenes')
                     ->select(
                         'ordenes.id', 

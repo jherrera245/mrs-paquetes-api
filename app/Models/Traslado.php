@@ -50,7 +50,8 @@ class Traslado extends Model
             'id' => $this->id,
             'bodega_origen' => $this->bodegaOrigen ? $this->bodegaOrigen->nombre : 'N/A',
             'bodega_destino' => $this->bodegaDestino ? $this->bodegaDestino->nombre : 'N/A',
-            'paquete' => $this->paquete ? $this->paquete->descripcion_contenido : 'N/A',
+            // cuenta el numero de paquetes que se trasladaron.
+            'cantidad_paquetes' => $this->detalleTraslado->count(),
             'numero_traslado' => $this->numero_traslado,
             'fecha_traslado' => $this->fecha_traslado,
             'estado' => $this->estado,
