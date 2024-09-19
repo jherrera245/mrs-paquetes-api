@@ -29,65 +29,27 @@ class TrasladoController extends Controller
     /**
      * Listar traslados con filtros y paginación.
      */
-    public function index()
+    public function index(Request $request)
     {
-      // Obtener todos los traslados
-     $traslados = Traslado::with('detalles') // Cargar detalles de traslado
-        ->select('id', 'bodega_origen', 'bodega_destino', 'numero_traslado', 'fecha_traslado', 'estado', 'user_id', 'created_at', 'updated_at')
-        ->get()
-        ->map(function ($traslado) {
-             // Obtener detalles de cada traslado
-            $paquetes = $traslado->detalles()->with('paquete:id,descripcion_contenido')->get();
+        $traslados = Traslado::with(['bodegaOrigen', 'bodegaDestino', 'user'])
+            ->paginate($request->input('per_page', 10));
 
-             // Estructurar la respuesta
-            $response = [
-                'id' => $traslado->id,
-                'bodega_origen' => $traslado->bodega_origen,
-                'bodega_destino' => $traslado->bodega_destino,
-                'paquetes' => $paquetes->map(function ($detalle) {
-                    return [
-                        'descripcion' => $detalle->paquete->descripcion_contenido,
-                    ];
-                }),
-                'numero_traslado' => $traslado->numero_traslado,
-                'fecha_traslado' => $traslado->fecha_traslado,
-                'estado' => $traslado->estado,
-            ];
+        $trasladosFormatted = $traslados->getCollection()->map->getFormattedData();
+        $traslados->setCollection($trasladosFormatted);
 
-            return $response;
-        });
-
-    return response()->json($traslados);
+        return response()->json($traslados, 200);
     }
 
 
     public function show($id)
     {
-        // Obtener el traslado con detalles y paquetes
-        $traslado = Traslado::with('detalles.paquete:id,descripcion_contenido')
-        ->find($id);
+        $traslado = Traslado::with(['bodegaOrigen', 'bodegaDestino', 'user'])->find($id);
 
-        // Verificar si el traslado existe
         if (!$traslado) {
-            return response()->json(['error' => 'Traslado no encontrado.'], 404);
+            return response()->json(['message' => 'Traslado no encontrado'], 404);
         }
 
-    // Estructurar la respuesta
-    $response = [
-        'id' => $traslado->id,
-        'bodega_origen' => $traslado->bodega_origen,
-        'bodega_destino' => $traslado->bodega_destino,
-        'numero_traslado' => $traslado->numero_traslado,
-        'paquetes' => $traslado->detalles->map(function ($detalle) {
-            return [
-                'descripcion' => $detalle->paquete->descripcion_contenido,
-            ];
-        }),
-        'fecha_traslado' => $traslado->fecha_traslado,
-        'estado' => $traslado->estado,
-    ];
-
-    return response()->json($response);
+        return response()->json($traslado->getFormattedData(), 200);
     }
 
 
