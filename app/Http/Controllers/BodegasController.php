@@ -49,12 +49,15 @@ class BodegasController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nombre' => 'required|max:255',
+            'nombre' => 'required|max:255|unique:bodegas,nombre',
             'tipo_bodega' => 'required',
             'id_departamento' => 'required',
             'id_municipio' => 'required',
             'direccion' => 'required|max:255',
-        ]);
+            ], 
+            [
+            'nombre.unique' => 'El nombre de la bodega ya ha sido creado.',
+            ]);
 
         if ($validator->fails()) {
             $data = [
