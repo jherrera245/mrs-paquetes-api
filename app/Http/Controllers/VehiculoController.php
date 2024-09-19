@@ -276,7 +276,7 @@ class VehiculoController extends Controller
             'apoyo' => $vehiculo->apoyo ? $vehiculo->apoyo->nombres . ' ' . $vehiculo->apoyo->apellidos : null,
             'placa' => $vehiculo->placa,
             'capacidad_carga' => $vehiculo->capacidad_carga,
-            'bodega' => $vehiculo->bodega ? $vehiculo->bodega->tipo_bodega : null,
+            'bodega' => $vehiculo->bodega ? $vehiculo->bodega->nombre : null,
             'estado' => $vehiculo->estado ? $vehiculo->estado->estado : null,
             'marca' => $vehiculo->marca ? $vehiculo->marca->nombre : null,
             'modelo' => $vehiculo->modelo ? $vehiculo->modelo->nombre : null,
