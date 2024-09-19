@@ -36,6 +36,7 @@ use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\PasilloController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UbicacionPaqueteDaController;
+use App\Http\Controllers\ReportesController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -334,4 +335,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dashboard/orders_by_day', [DashboardController::class, 'ordersByDay']);
   Route::get('dashboard/delivered_by_department', [DashboardController::class, 'deliveredByDepartment']);
   Route::get('dashboard/packages_by_status', [DashboardController::class, 'packagesByStatus']);
+
+  //reportes
+  Route::post('reports/reporte_asignaciones_rutas_por_conductor', [ReportesController::class, 'reporteAsignacionesRutasPorConductor']);
+  Route::post('reports/reporte_rutas_recoleccion_por_conductor', [ReportesController::class, 'reporteRutasRecoleccionPorConductor']);
 });
