@@ -32,6 +32,10 @@ class Traslado extends Model
         return $this->belongsTo(Bodegas::class, 'bodega_destino');
     }
 
+    public function paquete()
+    {
+        return $this->hasOne(Paquete::class, 'id', 'id_paquete');
+    }
     
     public function user()
     {
@@ -44,13 +48,18 @@ class Traslado extends Model
         return $this->hasMany(DetalleTraslado::class, 'id_traslado');
     }
 
+    public function detalles()
+    {
+        return $this->hasMany(DetalleTraslado::class, 'id_traslado');
+    }
+    
     public function getFormattedData()
     {
         return [
             'id' => $this->id,
             'bodega_origen' => $this->bodegaOrigen ? $this->bodegaOrigen->nombre : 'N/A',
             'bodega_destino' => $this->bodegaDestino ? $this->bodegaDestino->nombre : 'N/A',
-            'paquete' => $this->paquete ? $this->paquete->descripcion_contenido : 'N/A',
+            'paquete' => $this->paquete ? $this->paquete->descripcion_contenido : 'Sin paquete',
             'numero_traslado' => $this->numero_traslado,
             'fecha_traslado' => $this->fecha_traslado,
             'estado' => $this->estado,
