@@ -21,6 +21,7 @@ class Orden extends Model
         'costo_adicional',
         'concepto',
         'numero_seguimiento',
+        'numero_tracking',
         'finished',
         'estado',
         'estado_pago',

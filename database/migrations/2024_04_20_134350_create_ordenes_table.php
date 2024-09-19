@@ -23,6 +23,7 @@ return new class extends Migration
             $table->longText('concepto');
             $table->boolean('finished')->default(0);
             $table->string('numero_seguimiento')->nullable(); 
+            $table->string('numero_tracking')->nullable();
             $table->enum('tipo_documento', ['consumidor_final', 'credito_fiscal']);
             $table->enum('tipo_orden', ['orden', 'preorden']);
             $table->enum('estado', ['En_proceso', 'Completada', 'Cancelada'])->default('En_proceso'); 

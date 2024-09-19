@@ -92,6 +92,10 @@ class OrdenController extends Controller
 
             // Generar el número de seguimiento con el formato ORD00000000001
             $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
+
+            // generar el numero de tracking con el formato TR-anio-(10 digitos random)
+            $numeroTracking = 'TR-' . date('Y') . '-' . str_pad(rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
+            $orden->numero_tracking = $numeroTracking;
             $orden->numero_seguimiento = $numeroSeguimiento;
             $orden->save();
 
@@ -961,11 +965,11 @@ class OrdenController extends Controller
     {
         // Validar el número de seguimiento
         $request->validate([
-            'numero_seguimiento' => 'required|string|max:255'
+            'numero_tracking' => 'required|string|max:255'
         ]);
 
         // Buscar la orden por numero_seguimiento
-        $orden = Orden::where('numero_seguimiento', $request->numero_seguimiento)
+        $orden = Orden::where('numero_tracking', $request->numero_tracking)
             ->where('estado', '!=', 'Cancelada') // Excluir órdenes canceladas
             ->with('detalleOrden.paquete.estado') // Cargar la relación estado del paquete
             ->first();
