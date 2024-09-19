@@ -31,7 +31,7 @@ class BodegaSeeder extends Seeder
                 'id_municipio' => 203,
             ],
             [
-                'nombre' => 'Bodega Central moto',
+                'nombre' => 'Bodega Central camion',
                 'direccion' => 'Avenida Roosevelt y 7ª Calle Poniente, San Miguel, El Salvador.',
                 'tipo_bodega'=>'movil',
                 'id_departamento' => 12,

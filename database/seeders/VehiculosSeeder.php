@@ -48,7 +48,6 @@ class VehiculosSeeder extends Seeder
                 'id_empleado_apoyo' => 6, 
                 'placa' => 'M-0001',
                 'capacidad_carga' => 100, 
-                'id_bodega' => 1,
                 'id_estado' => 1, 
                 'id_marca' => 3, // Honda
                 'id_modelo' => 3, // Honda navy
