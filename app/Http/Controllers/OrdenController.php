@@ -492,6 +492,7 @@ class OrdenController extends Controller
             'direccion_recoleccion' => $orden->direccion_recoleccion,
             'concepto' => $orden->concepto,
             'numero_seguimiento' => $orden->numero_seguimiento,
+            'numero_tracking' => $orden->numero_tracking,
             'direccion_emisor' => $direccion ? [
                 'id_direccion' => $direccion->id,
                 'direccion' => $direccion->direccion,
@@ -659,6 +660,7 @@ class OrdenController extends Controller
             'direccion_recoleccion' => $orden->direccion_recoleccion,
             'concepto' => $orden->concepto,
             'numero_seguimiento' => $orden->numero_seguimiento,
+            'numero_tracking' => $orden->numero_tracking,
 
             // Dirección del emisor
             'direccion_emisor' => $direccion ? [
@@ -1013,6 +1015,7 @@ class OrdenController extends Controller
                 'costo_adicional' => $orden->costo_adicional,
                 'concepto' => $orden->concepto,
                 'numero_seguimiento' => $orden->numero_seguimiento,
+                'numero_tracking' => $orden->numero_tracking,
                 'tipo_documento' => $orden->tipo_documento,
                 'estado_pago' => $orden->estado_pago,
                 'created_at' => $orden->created_at,
@@ -1156,6 +1159,7 @@ class OrdenController extends Controller
                     'concepto' => $orden->concepto,
                     'finished' => $orden->finished,
                     'numero_seguimiento' => $orden->numero_seguimiento,
+                    'numero_tracking' => $orden->numero_tracking,
                     'tipo_documento' => $orden->tipo_documento,
                     'tipo_orden' => $orden->tipo_orden,
                     'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
