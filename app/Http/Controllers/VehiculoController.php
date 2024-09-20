@@ -218,6 +218,33 @@ class VehiculoController extends Controller
                 return response()->json(['errores' => $validator->errors()->all()], 400);
             }
 
+        // IDs de los estados que permiten reasignación (mantenimiento o fuera de servicio)
+        $estadosPermitidos = [2, 4]; // Suponiendo que 2 = En Mantenimiento, 4 = Fuera de Servicio
+
+        // Verificar si el conductor está asignado a otro vehículo activo
+        if ($request->has('id_empleado_conductor')) {
+            $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
+                ->whereNotIn('id_estado', $estadosPermitidos)
+                ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
+                ->first();
+
+            if ($vehiculoConductorActivo) {
+                return response()->json(['error' => 'Este conductor ya está asignado a otro vehículo activo.'], 400);
+            }
+        }
+
+        // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
+        if ($request->has('id_empleado_apoyo')) {
+            $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
+                ->whereNotIn('id_estado', $estadosPermitidos)
+                ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
+                ->first();
+
+            if ($vehiculoApoyoActivo) {
+                return response()->json(['error' => 'Este empleado de apoyo ya está asignado a otro vehículo activo.'], 400);
+            }
+        }
+
             // Combinar los datos existentes del vehículo con los datos nuevos del request
             $data = array_merge($vehiculo->toArray(), $request->all());
 
