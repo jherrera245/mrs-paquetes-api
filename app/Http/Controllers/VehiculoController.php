@@ -79,8 +79,8 @@ class VehiculoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'tipo' => 'required|in:camion,moto', // Validación para el tipo
-            'id_empleado_conductor' => 'required|exists:empleados,id|integer|min:1',
-            'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1|required_if:tipo,camion', // Requerido solo si es camion
+            'id_empleado_conductor' => 'setNull|exists:empleados,id|integer|min:1',
+            'id_empleado_apoyo' => 'setNull|exists:empleados,id|integer|min:1', // Requerido solo si es camion
             'placa' => [
                 'required',
                 'unique:vehiculos',
@@ -141,6 +141,7 @@ class VehiculoController extends Controller
                     'capacidad_carga' => 0.2,
                     'id_empleado_apoyo' => null,
                     'id_bodega' => null
+                    
                 ]);
             }
 

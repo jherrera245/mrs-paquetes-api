@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('tipo', ['camion', 'moto'])->default('camion');
 
             // Actualizar columnas existentes para permitir valores null
+            $table->unsignedBigInteger('id_empleado_conductor')->nullable()->change();
             $table->unsignedBigInteger('id_empleado_apoyo')->nullable()->change();
             $table->unsignedBigInteger('id_bodega')->nullable()->change();
 
@@ -38,7 +39,8 @@ return new class extends Migration
         Schema::table('vehiculos', function (Blueprint $table) {
             // Revertir los cambios, eliminando la columna 'tipo' y restaurando las restricciones de no nulidad
             $table->dropColumn('tipo');
-
+            
+            $table->unsignedBigInteger('id_empleado_conductor')->nullable()->change();
             $table->unsignedBigInteger('id_empleado_apoyo')->nullable(false)->change();
             $table->unsignedBigInteger('id_bodega')->nullable(false)->change();
 
