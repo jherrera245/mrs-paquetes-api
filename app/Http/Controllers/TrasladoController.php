@@ -44,20 +44,23 @@ class TrasladoController extends Controller
     public function show($id)
     {
         // Buscar el traslado con sus detalles
-        $traslado = Traslado::with(['detalleTraslados.paquete'])->find($id);
+        $traslado = Traslado::with(['detalleTraslado.paquete'])->find($id);
 
         if (!$traslado) {
             return response()->json(['message' => 'Traslado no encontrado'], 404);
         }
 
         // Formatear la respuesta para mostrar el UUID de los paquetes asociados
-        $detallesPaquetes = $traslado->detalleTraslados->map(function ($detalle) {
+        // mostrar solo paquetes activos, estado = 1.
+        $detalleTraslado = $traslado->detalleTraslado->where('estado', 1);
+        $detallesPaquetes = $detalleTraslado->map(function ($detalle) {
             return [
                 'id' => $detalle->id,
                 'id_paquete' => $detalle->id_paquete,
                 'uuid' => $detalle->paquete->uuid // Acceder al UUID del paquete
             ];
         });
+        
 
         return response()->json([
             'id_traslado' => $traslado->id,
@@ -374,6 +377,27 @@ class TrasladoController extends Controller
             return response()->json(['error' => 'Error al marcar traslado como inactivo.'], 500);
         }
     }
+
+    // destroy para el detalle de un traslado -> pasar el paquete a inactivo.
+    public function destroyDetail($id)
+    {
+        $detalleTraslado = DetalleTraslado::find($id);
+
+        if (!$detalleTraslado) {
+            return response()->json(['message' => 'Detalle de traslado no encontrado'], 404);
+        }
+
+        try {
+            $detalleTraslado->estado = 0;
+            $detalleTraslado->save();
+
+            return response()->json(['message' => 'Detalle de traslado marcado como inactivo.'], 200);
+        } catch (Exception $e) {
+            Log::error('Error al marcar detalle de traslado como inactivo: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al marcar detalle de traslado como inactivo.'], 500);
+        }
+    }
+
 
     public function trasladoPdf($id = null){
 
