@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -187,6 +188,11 @@ class PermissionSeeder extends Seeder
                 'incidencias-view',
                 'incidencias-create',
                 'incidencias-show',
+                'ubicacion-paquetes-danados-index',
+                'ubicacion-paquetes-danados-store',
+                'ubicacion-paquetes-danados-show',
+                'ubicacion-paquetes-danados-update',
+                'ubicacion-paquetes-danados-destroy',
             ]);
         }
 
