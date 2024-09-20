@@ -32,9 +32,9 @@ class AsignacionRutasController extends Controller
             'destino',
         ]);
 
-        $perPage = $request->input('per_page', 10); 
+        $perPage = $request->input('per_page', 10);
 
-    
+
         $asignacionrutas = AsignacionRutas::filtrar($filtros)->paginate($perPage);
 
         $data = [
@@ -44,7 +44,7 @@ class AsignacionRutasController extends Controller
 
         return response()->json($data, 200);
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -76,24 +76,24 @@ class AsignacionRutasController extends Controller
 
             foreach ($paquetes as $paquete) {
 
-                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                if ($conteo_prioridades[$paquete['prioridad']] > 1) {
                     DB::rollBack();
                     return response()->json(['message' => 'Debe de establecer una proridad unica para cada paquete'], 500);
                 }
-                
+
                 $detalle = DB::table('detalle_orden')
-                ->select(
-                    'detalle_orden.id_paquete', 
-                    'detalle_orden.id_orden', 
-                    'ordenes.numero_seguimiento', 
-                    'detalle_orden.id_direccion_entrega', 
-                    'direcciones.id_departamento', 
-                    'direcciones.id_municipio', 
-                    'direcciones.direccion'
-                )
-                ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
-                ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
-                ->where('detalle_orden.id_paquete', $paquete["id"])->first();
+                    ->select(
+                        'detalle_orden.id_paquete',
+                        'detalle_orden.id_orden',
+                        'ordenes.numero_seguimiento',
+                        'detalle_orden.id_direccion_entrega',
+                        'direcciones.id_departamento',
+                        'direcciones.id_municipio',
+                        'direcciones.direccion'
+                    )
+                    ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
+                    ->join('direcciones', 'direcciones.id', '=', 'detalle_orden.id_direccion_entrega')
+                    ->where('detalle_orden.id_paquete', $paquete["id"])->first();
 
                 $results[] = $detalle;
 
@@ -110,6 +110,11 @@ class AsignacionRutasController extends Controller
                 $asignaciones->id_estado = 1;
                 $asignaciones->destino = $detalle->direccion;
                 $asignaciones->save();
+
+                // Actualizar el estado del paquete a "En Ruta de Entrega"
+                DB::table('paquetes')
+                    ->where('id', $paquete['id'])
+                    ->update(['id_estado_paquete' => 5]);
 
                 $kardexSalida = new Kardex();
                 $kardexSalida->id_paquete = $detalle->id_paquete;
@@ -207,7 +212,7 @@ class AsignacionRutasController extends Controller
 
             foreach ($paquetes as $paquete) {
 
-                if ( $conteo_prioridades[$paquete['prioridad']] > 1) {
+                if ($conteo_prioridades[$paquete['prioridad']] > 1) {
                     DB::rollBack();
                     return response()->json(['message' => 'Debe de establecer una proridad unica para cada paquete'], 500);
                 }
@@ -215,12 +220,12 @@ class AsignacionRutasController extends Controller
                 // Obtener el detalle del paquete
                 $detalle = DB::table('detalle_orden')
                     ->select(
-                        'detalle_orden.id_paquete', 
-                        'detalle_orden.id_orden', 
-                        'ordenes.numero_seguimiento', 
-                        'detalle_orden.id_direccion_entrega', 
-                        'direcciones.id_departamento', 
-                        'direcciones.id_municipio', 
+                        'detalle_orden.id_paquete',
+                        'detalle_orden.id_orden',
+                        'ordenes.numero_seguimiento',
+                        'detalle_orden.id_direccion_entrega',
+                        'direcciones.id_departamento',
+                        'direcciones.id_municipio',
                         'direcciones.direccion'
                     )
                     ->join('ordenes', 'ordenes.id', '=', 'detalle_orden.id_orden')
@@ -230,8 +235,8 @@ class AsignacionRutasController extends Controller
 
                 // Verificar si ya existe una asignación para el paquete
                 $asignaciones = AsignacionRutas::where('id_paquete', $paquete['id'])
-                                                ->where('id_ruta', $ruta->id)
-                                                ->first();
+                    ->where('id_ruta', $ruta->id)
+                    ->first();
 
                 if ($asignaciones) {
                     // Actualizar asignación existente
@@ -360,7 +365,7 @@ class AsignacionRutasController extends Controller
     {
         Kardex::create([
             'id_paquete' => $idPaquete,
-            'id_orden' => $idOrden,  
+            'id_orden' => $idOrden,
             'cantidad' => 1,
             'numero_ingreso' => $numeroSeguimiento, // Utilizar el numero_seguimiento de la orden
             'tipo_movimiento' => 'ENTRADA',
@@ -376,7 +381,7 @@ class AsignacionRutasController extends Controller
     {
         Kardex::create([
             'id_paquete' => $idPaquete,
-            'id_orden' => $idOrden,  
+            'id_orden' => $idOrden,
             'cantidad' => 1,
             'numero_ingreso' => $numeroSeguimiento, // Utilizar el numero_seguimiento de la orden
             'tipo_movimiento' => 'SALIDA',
@@ -384,6 +389,4 @@ class AsignacionRutasController extends Controller
             'fecha' => now(),
         ]);
     }
-
-
 }

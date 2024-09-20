@@ -271,6 +271,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dropdown/get_paquetes_danio', [DropdownController::class, 'getPaquetesConDanio']);
   Route::get('dropdown/get_paquetes_en_recepcion', [DropdownController::class, 'getPaquetesEnRecepcion']);
   Route::get('dropdown/get_bodegas_moviles', [DropdownController::class, 'get_Bodegas_Moviles']);
+  Route::get('dropdown/get_paquetes_usuario/{id_usuario}', [DropdownController::class, 'listarPaquetesPorUsuario']);
+
 
   // Detalle Orden
   Route::get('detalle-orden', [DetalleOrdenController::class, 'detalles_orden'])->middleware('permission:orden-view');
@@ -339,5 +341,4 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   //reportes
   Route::post('reports/reporte_asignaciones_rutas_por_conductor', [ReportesController::class, 'reporteAsignacionesRutasPorConductor']);
   Route::post('reports/reporte_rutas_recoleccion_por_conductor', [ReportesController::class, 'reporteRutasRecoleccionPorConductor']);
-  Route::post('reports/reporte_ventas', [ReportesController::class, 'reporteVentas']);
 });

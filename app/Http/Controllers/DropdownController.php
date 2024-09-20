@@ -24,6 +24,7 @@ use App\Models\Empaque;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 use DB;
+use App\Models\AsignacionRutas;
 
 class DropdownController extends Controller
 {
@@ -231,6 +232,21 @@ class DropdownController extends Controller
         $tipo_incidencia = TipoIncidencia::all();
         return response()->json(["tipo_incidencia" => $tipo_incidencia]);
     }
+
+    public function listarPaquetesPorUsuario($id_usuario)
+    {
+        $paquetes = AsignacionRutas::select('paquetes.id', 'paquetes.uuid')
+            ->join('vehiculos', 'asignacion_rutas.id_vehiculo', '=', 'vehiculos.id')
+            ->join('empleados', 'vehiculos.id_empleado_conductor', '=', 'empleados.id')
+            ->join('users', 'empleados.id', '=', 'users.id_empleado')
+            ->join('paquetes', 'asignacion_rutas.id_paquete', '=', 'paquetes.id')
+            ->where('users.id', $id_usuario)
+            ->where('paquetes.id_estado_paquete', 5) // Filtrar solo paquetes "En Ruta de Entrega"
+            ->get();
+
+        return response()->json($paquetes);
+    }
+
 
     public function getTipoPaquete()
     {
