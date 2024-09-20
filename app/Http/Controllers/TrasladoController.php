@@ -43,13 +43,31 @@ class TrasladoController extends Controller
 
     public function show($id)
     {
-        $traslado = Traslado::with(['bodegaOrigen', 'bodegaDestino', 'user'])->find($id);
+        // Buscar el traslado con sus detalles
+        $traslado = Traslado::with(['detalleTraslados.paquete'])->find($id);
 
         if (!$traslado) {
             return response()->json(['message' => 'Traslado no encontrado'], 404);
         }
 
-        return response()->json($traslado->getFormattedData(), 200);
+        // Formatear la respuesta para mostrar el UUID de los paquetes asociados
+        $detallesPaquetes = $traslado->detalleTraslados->map(function ($detalle) {
+            return [
+                'id' => $detalle->id,
+                'id_paquete' => $detalle->id_paquete,
+                'uuid' => $detalle->paquete->uuid // Acceder al UUID del paquete
+            ];
+        });
+
+        return response()->json([
+            'id_traslado' => $traslado->id,
+            'numero_traslado' => $traslado->numero_traslado,
+            'bodega_origen' => $traslado->bodega_origen,
+            'bodega_destino' => $traslado->bodega_destino,
+            'fecha_traslado' => $traslado->fecha_traslado,
+            'estado' => $traslado->estado,
+            'paquetes' => $detallesPaquetes
+        ], 200);
     }
 
 
@@ -167,23 +185,109 @@ class TrasladoController extends Controller
     /**
      * Actualizar un traslado existente.
      */
+    // public function update(Request $request, $id)
+    // {
+    //     $traslado = Traslado::find($id);
+
+    //     if (!$traslado) {
+    //         return response()->json(['message' => 'Traslado no encontrado'], 404);
+    //     }
+
+    //     $validator = Validator::make($request->all(), [
+    //         'bodega_origen' => 'sometimes|required|exists:bodegas,id',
+    //         'bodega_destino' => 'sometimes|required|exists:bodegas,id',
+    //         'paquetes' => 'sometimes|array|min:1', // Para añadir más paquetes
+    //         'paquetes.*' => 'exists:paquetes,id',
+    //         'numero_traslado' => 'required|string|max:255|unique:traslados,numero_traslado,'.$id,
+    //         'fecha_traslado' => 'sometimes|required|date',
+    //         'estado' => 'sometimes|required|in:Activo,Inactivo',
+    //         'user_id' => 'sometimes|required|exists:users,id'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Actualizar la información existente del traslado
+    //         $traslado->update($request->only([
+    //             'bodega_origen',
+    //             'bodega_destino',
+    //             'fecha_traslado',
+    //             'estado',
+    //             'user_id'
+    //         ]));
+
+    //         $paquetesIds = $request->input('paquetes', []);
+
+    //         // Añadir nuevos paquetes al traslado si se proporcionan
+    //         foreach ($paquetesIds as $idPaquete) {
+    //             // Verificar si el paquete ya está asignado a este traslado
+    //             $existingTraslado = Traslado::where('id_paquete', $idPaquete)
+    //                 ->where('numero_traslado', $traslado->numero_traslado)
+    //                 ->first();
+
+    //             if (!$existingTraslado) {
+    //                 // Crear el traslado para el nuevo paquete
+    //                 $nuevoTraslado = Traslado::create([
+    //                     'bodega_origen' => $traslado->bodega_origen,
+    //                     'bodega_destino' => $traslado->bodega_destino,
+    //                     'id_paquete' => $idPaquete,
+    //                     'numero_traslado' => $traslado->numero_traslado,
+    //                     'fecha_traslado' => $traslado->fecha_traslado,
+    //                     'estado' => $traslado->estado,
+    //                     'user_id' => $traslado->user_id
+    //                 ]);
+
+    //                 // Actualizar Kardex para el nuevo paquete
+    //                 $detalleOrden = DetalleOrden::where('id_paquete', $idPaquete)->first();
+    //                 $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
+
+    //                 // Salida de almacén o entrada a la bodega principal
+    //                 $kardexSalida = new Kardex();
+    //                 $kardexSalida->id_paquete = $idPaquete;
+    //                 $kardexSalida->id_orden = $detalleOrden->id_orden;
+    //                 $kardexSalida->cantidad = 1;
+    //                 $kardexSalida->numero_ingreso = $numeroSeguimiento;
+    //                 $kardexSalida->tipo_movimiento = 'SALIDA';
+    //                 $kardexSalida->tipo_transaccion = $traslado->bodega_destino == 1 ? 'DEVOLUCION_RECOLECCION' : 'ASIGNADO_RUTA';
+    //                 $kardexSalida->fecha = now();
+    //                 $kardexSalida->save();
+
+    //                 // Entrada a traslado
+    //                 $kardexEntrada = new Kardex();
+    //                 $kardexEntrada->id_paquete = $idPaquete;
+    //                 $kardexEntrada->id_orden = $detalleOrden->id_orden;
+    //                 $kardexEntrada->cantidad = 1;
+    //                 $kardexEntrada->numero_ingreso = $numeroSeguimiento;
+    //                 $kardexEntrada->tipo_movimiento = 'ENTRADA';
+    //                 $kardexEntrada->tipo_transaccion = 'TRASLADO';
+    //                 $kardexEntrada->fecha = now();
+    //                 $kardexEntrada->save();
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'message' => 'Traslado actualizado y nuevos paquetes añadidos con éxito.',
+    //             'data' => $traslado->getFormattedData()
+    //         ], 200);
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Error al actualizar traslado: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Error al actualizar traslado.'], 500);
+    //     }
+    // }
+
     public function update(Request $request, $id)
     {
-        $traslado = Traslado::find($id);
-
-        if (!$traslado) {
-            return response()->json(['message' => 'Traslado no encontrado'], 404);
-        }
-
+        // Validar los datos de entrada, solo recibimos los códigos QR
         $validator = Validator::make($request->all(), [
-            'bodega_origen' => 'sometimes|required|exists:bodegas,id',
-            'bodega_destino' => 'sometimes|required|exists:bodegas,id',
-            'paquetes' => 'sometimes|array|min:1', // Para añadir más paquetes
-            'paquetes.*' => 'exists:paquetes,id',
-            'numero_traslado' => 'required|string|max:255|unique:traslados,numero_traslado,'.$id,
-            'fecha_traslado' => 'sometimes|required|date',
-            'estado' => 'sometimes|required|in:Activo,Inactivo',
-            'user_id' => 'sometimes|required|exists:users,id'
+            'codigos_qr' => 'required|array|min:1',
+            'codigos_qr.*' => 'string|exists:paquetes,uuid',
         ]);
 
         if ($validator->fails()) {
@@ -193,79 +297,62 @@ class TrasladoController extends Controller
         DB::beginTransaction();
 
         try {
-            // Actualizar la información existente del traslado
-            $traslado->update($request->only([
-                'bodega_origen',
-                'bodega_destino',
-                'fecha_traslado',
-                'estado',
-                'user_id'
-            ]));
+            // Buscar el traslado a actualizar
+            $traslado = Traslado::findOrFail($id);
 
-            $paquetesIds = $request->input('paquetes', []);
+            // Instanciar el servicio KardexService
+            $kardexService = new KardexService();
 
-            // Añadir nuevos paquetes al traslado si se proporcionan
-            foreach ($paquetesIds as $idPaquete) {
-                // Verificar si el paquete ya está asignado a este traslado
-                $existingTraslado = Traslado::where('id_paquete', $idPaquete)
-                    ->where('numero_traslado', $traslado->numero_traslado)
-                    ->first();
+            // Recibir los paquetes por sus códigos QR (UUID)
+            $codigosQr = $request->input('codigos_qr', []);
 
-                if (!$existingTraslado) {
-                    // Crear el traslado para el nuevo paquete
-                    $nuevoTraslado = Traslado::create([
-                        'bodega_origen' => $traslado->bodega_origen,
-                        'bodega_destino' => $traslado->bodega_destino,
-                        'id_paquete' => $idPaquete,
-                        'numero_traslado' => $traslado->numero_traslado,
-                        'fecha_traslado' => $traslado->fecha_traslado,
-                        'estado' => $traslado->estado,
-                        'user_id' => $traslado->user_id
-                    ]);
+            // Convertir los códigos QR a sus respectivos IDs de paquetes
+            $paquetesPorQr = Paquete::whereIn('uuid', $codigosQr)->pluck('id')->toArray();
 
-                    // Actualizar Kardex para el nuevo paquete
-                    $detalleOrden = DetalleOrden::where('id_paquete', $idPaquete)->first();
-                    $numeroSeguimiento = Orden::where('id', $detalleOrden->id_orden)->value('numero_seguimiento');
+            // Agregar nuevos paquetes
+            foreach ($paquetesPorQr as $idPaquete) {
+                // Registrar el detalle de traslado para cada paquete
+                DetalleTraslado::create([
+                    'id_traslado' => $traslado->id,
+                    'id_paquete' => $idPaquete,
+                    'estado' => 1 // Estado activo
+                ]);
 
-                    // Salida de almacén o entrada a la bodega principal
-                    $kardexSalida = new Kardex();
-                    $kardexSalida->id_paquete = $idPaquete;
-                    $kardexSalida->id_orden = $detalleOrden->id_orden;
-                    $kardexSalida->cantidad = 1;
-                    $kardexSalida->numero_ingreso = $numeroSeguimiento;
-                    $kardexSalida->tipo_movimiento = 'SALIDA';
-                    $kardexSalida->tipo_transaccion = $traslado->bodega_destino == 1 ? 'DEVOLUCION_RECOLECCION' : 'ASIGNADO_RUTA';
-                    $kardexSalida->fecha = now();
-                    $kardexSalida->save();
+                // Obtener id_orden y numero_seguimiento a través del servicio KardexService
+                $detalleOrdenInfo = $kardexService->getOrdenInfo($idPaquete);
 
-                    // Entrada a traslado
-                    $kardexEntrada = new Kardex();
-                    $kardexEntrada->id_paquete = $idPaquete;
-                    $kardexEntrada->id_orden = $detalleOrden->id_orden;
-                    $kardexEntrada->cantidad = 1;
-                    $kardexEntrada->numero_ingreso = $numeroSeguimiento;
-                    $kardexEntrada->tipo_movimiento = 'ENTRADA';
-                    $kardexEntrada->tipo_transaccion = 'TRASLADO';
-                    $kardexEntrada->fecha = now();
-                    $kardexEntrada->save();
+                if (!$detalleOrdenInfo) {
+                    throw new Exception("No se encontró información de la orden para el paquete ID: {$idPaquete}");
+                }
+
+                $idOrden = $detalleOrdenInfo->id_orden;
+                $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
+
+                // Registrar movimientos en el Kardex
+                $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'AlMACENADO', $numeroSeguimiento);
+
+                if ($traslado->bodega_destino == 1) {
+                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'EN_ESPERA_UBICACION', $numeroSeguimiento);
+                    Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 14]);
+                } else {
+                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'TRASLADO', $numeroSeguimiento);
+                    Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 5]);
+                    Paquete::where('id', $idPaquete)->update(['id_ubicacion' => $traslado->bodega_destino]);
                 }
             }
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Traslado actualizado y nuevos paquetes añadidos con éxito.',
-                'data' => $traslado->getFormattedData()
+                'message' => 'Traslado actualizado con éxito. Paquetes añadidos.',
+                'numero_traslado' => $traslado->numero_traslado
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar traslado: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al actualizar traslado.'], 500);
+            Log::error('Error al actualizar el traslado: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al actualizar el traslado.', 'details' => $e->getMessage()], 500);
         }
     }
-
-
-
     /**
      * Eliminar (marcar como inactivo) un traslado.
      */
