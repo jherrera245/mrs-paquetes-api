@@ -98,11 +98,15 @@
         .page {
             margin-top: 1cm;
         }
+
+        .page-break {
+            page-break-before: always;
+        }
+
     </style>
 </head>
 
 <body>
-
     <header>
         <div class="header-content">
             <img src="{{ public_path('images/logo-claro.png') }}" class="logo" alt="Logo">
@@ -112,21 +116,20 @@
         </div>
     </header>
 
-    <div class="page">
-        <table>
-            <thead>
-                <tr>
-                    <th>Orden de recolección</th>
-                    <th>Código de ruta</th>
-                    <th>Departamento</th>
-                    <th>Municipio</th>
-                    <th>Destino</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @if (count($recolecciones) > 0)
-                    @foreach ($recolecciones as $recoleccion)
+    @if (count($recolecciones) > 0)
+        @foreach ($recolecciones as $recoleccion)
+            <div class="page">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Orden de recolección</th>
+                            <th>Código de ruta</th>
+                            <th>Departamento</th>
+                            <th>Municipio</th>
+                            <th>Destino</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <tr>
                             <td>{{$recoleccion->prioridad}}</td>
                             <td>{{$recoleccion->codigo_unico_recoleccion}}</td>
@@ -137,6 +140,12 @@
                         <tr>
                             <th colspan="5">Detalle de paquetes {{$recoleccion->total_paquetes}} estimados</th>
                         </tr>
+                        <tr>
+                            <th colspan="2">Descripción del paquete</th>
+                            <th>Tamaño</th>
+                            <th>Peso (kg)</th>
+                            <th>Empaque</th>
+                        </tr>
                         @foreach($recoleccion->paquetes as $paquete)
                             <tr>
                                 <td colspan="2">{{$paquete->descripcion_contenido}}</td>
@@ -145,23 +154,23 @@
                                 <td>{{$paquete->empaquetado}}</td>
                             </tr>
                         @endforeach
-                        <tr>
-                            <th colspan="5"></th>
-                        </tr>
-                    @endforeach
-                @else
-                    <tr>
-                        <td colspan="8" style="text-align:center;">No se encontraron registros que cumplan con el criterio de búsqueda.</td>
-                    </tr>    
-                @endif
-            </tbody>
-        </table>
-    </div>
+                    </tbody>
+                </table>
+            </div>
+
+            @if(!$loop->last)
+                <div class="page-break"></div>
+            @endif
+        @endforeach
+    @else
+        <div>
+            <p>No se encontraron registros que cumplan con el criterio de búsqueda.</p>
+        </div>
+    @endif
 
     <footer>
         <p>Reporte generado automáticamente por el sistema.</p>
     </footer>
-
 </body>
 
 </html>

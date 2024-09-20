@@ -187,6 +187,79 @@ class ReportesController extends Controller
             ]
         );
 
-        return $pdf->stream('reporte' . '.pdf', array("Attachment" => false));
+        $output = $pdf->output();
+
+        return response()->json(
+            [
+                'title' => 'Reporte_de_rutas_de_recoleccion_por_conductor',
+                'formart' => 'pdf',
+                'base64Encode' => base64_encode($output)
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    public function reporteVentas(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'fecha_inicio' => 'required|date', 
+            'fecha_final' => 'required|date'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json($validator->errors(),  Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    
+        $fechaInicioFormateda = Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d');
+        $fechaFinalFormateada = Carbon::parse($request->input('fecha_final'))->format('Y-m-d');
+
+        $fechaReporteInicio = Carbon::parse($request->input('fecha_inicio'))->format('d-m-Y');
+        $fechaReporteFinal = Carbon::parse($request->input('fecha_final'))->format('d-m-Y');
+
+        $ordenes = DB::table('ordenes')
+        ->select([
+            'ordenes.id',
+            DB::raw("DATE_FORMAT(ordenes.created_at, '%d/%m/%Y') AS fecha"),
+            DB::raw("CONCAT(clientes.nombre, ' ', clientes.apellido) AS cliente"),
+            'ordenes.tipo_documento',
+            'ordenes.tipo_orden',
+            'tipo_pago.pago AS tipo_pago',
+            DB::raw('((ordenes.total_pagar + ordenes.costo_adicional) / 1.13) AS total_gravado'),
+            DB::raw('((ordenes.total_pagar + ordenes.costo_adicional) - ((ordenes.total_pagar + ordenes.costo_adicional) / 1.13)) AS total_iva'),
+            DB::raw('(ordenes.total_pagar + ordenes.costo_adicional) AS total_operacion'),
+        ])
+        ->leftJoin('clientes', 'clientes.id', '=', 'ordenes.id_cliente')
+        ->leftJoin('tipo_pago', 'tipo_pago.id', '=', 'ordenes.id_tipo_pago')
+        ->whereBetween(DB::raw('DATE(ordenes.created_at)'), [$fechaInicioFormateda, $fechaFinalFormateada])
+        ->get();
+
+        //mapeo de numeros de controlar
+        foreach($ordenes as $orden)
+        {
+            $tipo_dte = $orden->tipo_documento == 'consumidor_final' ? '01' : '03';
+            $orden->numero_control = 'DTE-' . $tipo_dte . '-M001P001-' . str_pad($orden->id, 15, '0', STR_PAD_LEFT);
+        }
+
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, "enable_php" => true, 'chroot' => public_path('images')])->loadView(
+            'pdf.reporte_ventas',
+            [
+                "fechaReporteInicio" => $fechaReporteInicio,
+                "fechaReporteFinal" => $fechaReporteFinal,
+                "ordenes" => $ordenes
+            ]
+        );
+
+        $output = $pdf->output();
+
+        return response()->json(
+            [
+                'title' => 'Reporte-ventas-'.$fechaReporteInicio.'-y-'.$fechaReporteFinal,
+                'formart' => 'pdf',
+                'base64Encode' => base64_encode($output)
+            ],
+            Response::HTTP_OK
+        );
+
     }
 }
