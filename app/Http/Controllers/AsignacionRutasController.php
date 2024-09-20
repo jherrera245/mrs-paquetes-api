@@ -316,7 +316,7 @@ class AsignacionRutasController extends Controller
         }
 
         // en lugar de hacer el delete, cambiamos el estado.
-        $asignacionRuta->estado = 0;
+        $asignacionRuta->id_estado = 2;
         $asignacionRuta->save();
         $data = [
             'message' => 'Asignacion de Ruta eliminada',
