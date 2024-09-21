@@ -539,8 +539,8 @@ class TrasladoController extends Controller
                 $cantidadPaquetes = DetalleTraslado::where('id_traslado', $traslado->id_traslado)
                     ->whereIn('id_paquete', function($query) use ($detalleOrden) {
                         $query->select('id_paquete')
-                              ->from('detalle_orden')
-                              ->where('id_orden', $detalleOrden ? $detalleOrden->id_orden : null);
+                            ->from('detalle_orden')
+                            ->where('id_orden', $detalleOrden ? $detalleOrden->id_orden : null);
                     })
                     ->where('estado', 1) // Solo contar los activos
                     ->count('id_paquete');
@@ -562,13 +562,9 @@ class TrasladoController extends Controller
             // Generar el PDF
             $pdf = Pdf::loadView('pdf.traslado_general', $data);
     
-            // Devolver el PDF como respuesta
-            return response()->stream(function () use ($pdf) {
-                echo $pdf->output();
-            }, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="traslado.pdf"',
-            ]);
+            $pdfBase64 = base64_encode($pdf->output());
+        
+            return response()->json([$pdfBase64]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
