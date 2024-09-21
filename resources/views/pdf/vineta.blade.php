@@ -70,7 +70,7 @@
             </tr>
             <tr>
                 <td rowspan="6" style="width: 10%;">
-                    <img src="data:image/png;base64,{{ $qrCodeBase64 }}" alt="QR Code" style="width: 5cm; height: 5cm;">
+                    <img src="data:image/png;base64,{{ $detalle->qr_paquete }}" alt="QR Code" style="width: 5cm; height: 5cm;">
                 </td>
                 <td style="width: 15%;"><b>Cliente<b></td>
                 <td>{{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}</td>

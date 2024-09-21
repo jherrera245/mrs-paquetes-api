@@ -34,29 +34,31 @@ class VinetaController extends Controller
             ], 400);
         }
 
-        // Generar el código QR
-        $result = Builder::create()
-            ->writer(new PngWriter())
-            ->writerOptions([])
-            ->data($orden->numero_seguimiento)
-            ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
-            ->size(200)
-            ->margin(10)
-            ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
-            ->build();
+        foreach ($orden->detalles as $detalle) {
+            // Generar el código QR
+            $result = Builder::create()
+                ->writer(new PngWriter())
+                ->writerOptions([])
+                ->data($detalle->paquete->uuid)
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
+                ->size(200)
+                ->margin(10)
+                ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+                ->build();
 
-        $qrCodeBase64 = base64_encode($result->getString());
+            $detalle->qr_paquete = base64_encode($result->getString());
+        }
 
         // Determinar el mensaje de pago
-        $mensajePago = $orden->estado_pago === 'pagado' 
-            ? 'Paquete pagado' 
+        $mensajePago = $orden->estado_pago === 'pagado'
+            ? 'Paquete pagado'
             : 'Cobrar a destinatario: $' . number_format($orden->total_pagar, 2);
 
         $logo = 'images/logo-claro.png';
 
         // Cargar la vista con los datos
-        $pdf = PDF::loadView('pdf.vineta', compact('orden', 'qrCodeBase64', 'mensajePago', 'logo'));
+        $pdf = PDF::loadView('pdf.vineta', compact('orden', 'mensajePago', 'logo'));
 
         $pdf->setPaper([0, 0, 500, 500]);
 
