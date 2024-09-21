@@ -736,7 +736,7 @@ class OrdenController extends Controller
                 $paquete->id_estado_paquete = 14;
                 $paquete->save();
             }
-        }else{
+        } else {
             $paquetes = DetalleOrden::where('id_orden', $orden->id)->get();
             foreach ($paquetes as $paquete) {
                 $paquete->id_estado_paquetes = 15;
@@ -1080,6 +1080,8 @@ class OrdenController extends Controller
 
                 // Generar el número de seguimiento con el formato ORD00000000001
                 $numeroSeguimiento = 'ORD' . str_pad($orden->id, 10, '0', STR_PAD_LEFT);
+                $numeroTracking = 'TR-' . date('Y') . '-' . str_pad(rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
+                $orden->numero_tracking = $numeroTracking;
                 $orden->numero_seguimiento = $numeroSeguimiento;
                 $orden->save();
 
