@@ -720,6 +720,24 @@ class OrdenController extends Controller
             return response()->json(['message' => 'Esta orden ya ha sido pagada'], 400);
         }
 
+        $tipoPago = $orden->tipoPago->pago;
+
+        if ($tipoPago === 'Tarjeta') {
+            $validator = Validator::make($request->all(), [
+                'nombre_titular' => 'required|string|max:255',
+                'numero_tarjeta' => 'required|string|size:16',
+                'fecha_vencimiento' => 'required|date_format:m/Y|after:today',
+                'cvv' => 'required|string|size:3',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Aquí iría la lógica de procesamiento del pago con tarjeta
+            // Por ahora, simularemos un pago exitoso
+        }
+
         // Verificar si la orden ya está cancelada
         if ($orden->estado === 'Cancelada') {
             return response()->json(['message' => 'No se puede hacer el pago porque la orden está cancelada.'], Response::HTTP_CONFLICT);
