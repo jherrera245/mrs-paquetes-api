@@ -344,4 +344,5 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   //reportes
   Route::post('reports/reporte_asignaciones_rutas_por_conductor', [ReportesController::class, 'reporteAsignacionesRutasPorConductor']);
   Route::post('reports/reporte_rutas_recoleccion_por_conductor', [ReportesController::class, 'reporteRutasRecoleccionPorConductor']);
+  Route::post('reports/reporte_ventas', [ReportesController::class, 'reporteVentas']);
 });
