@@ -323,6 +323,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('traslados/{id}', [TrasladoController::class, 'update'])->middleware('permission:traslados-update');
   Route::delete('traslados/{id}', [TrasladoController::class, 'destroy'])->middleware('permission:traslados-destroy');
   Route::get('traslado-pdf/{id?}', [TrasladoController::class, 'trasladoPdf'])->middleware('permission:traslados-pdf');
+  Route::get('traslado-pdf-general', [TrasladoController::class, 'trasladoPdfGeneral'])->middleware('permission:traslados-pdf');
   // eliminar detalle de traslado.
   Route::delete('traslados/destroy-detail/{id}', [TrasladoController::class, 'destroyDetail'])->middleware('permission:traslados-destroy');
 

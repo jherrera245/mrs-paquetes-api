@@ -101,9 +101,6 @@
         <div class="header-content">
             <img src="{{ public_path('images/logo-claro.png') }}" class="logo" alt="Logo">
             <h3>Fecha: {{ $fecha }}</h3>
-            @if($single)
-                <h3>Destino: {{ $bodega_destino }}</h3> 
-            @endif
         </div>
     </header>
 
@@ -112,54 +109,27 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Código</th>
-                    <th>Descripción</th>
-                    <th>Bodega origen</th>
+                    <th>Bodega Origen</th>
                     <th>Bodega Destino</th>
                     <th>Orden</th>
+                    <th>Cantidad Paquetes</th>
                 </tr>
             </thead>
-
             <tbody>
             @php $counter = 1; @endphp
-            @if($single)
-                @forelse($paquetes as $paquete)
-                    <tr>
-                        <td>{{ $counter++ }}</td>
-                        <td>
-                            <img src="data:image/png;base64,{{ $qrCodes[0] }}" alt="QR Code" style="width: 50px; height: 50px;" />
-                        </td>
-                        <td>{{ $paquete->descripcion_contenido }}</td>
-                        <td>{{ $bodega_origen }}</td>
-                        <td>{{ $bodega_destino }}</td>
-                        <td>{{ $numero_seguimiento }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="no-data">No hay paquetes disponibles.</td>
-                    </tr>
-                @endforelse
-            @else
-                @forelse($traslados as $traslado)
-                    @forelse($traslado->paquetes as $paquete)
-                        <tr>
-                            <td>{{ $counter++ }}</td>
-                            <td>
-                                <img src="data:image/png;base64,{{ $paquete->qrCode }}" alt="QR Code" style="width: 50px; height: 50px;" />
-                            </td>
-                            <td>{{ $paquete->descripcion_contenido }}</td>
-                            <td>{{ $traslado->bodega_origen_nombre }}</td>
-                            <td>{{ $traslado->bodega_destino_nombre }}</td>
-                            <td>{{ $traslado->numero_seguimiento }}</td>
-                        </tr>
-                    @empty
-                    @endforelse
-                @empty
-                    <tr>
-                        <td colspan="5" class="no-data">No hay paquetes disponibles.</td>
-                    </tr>
-                @endforelse
-            @endif
+            @forelse($traslados as $traslado)
+                <tr>
+                    <td>{{ $counter++ }}</td>
+                    <td>{{ $traslado['bodega_origen'] }}</td>
+                    <td>{{ $traslado['bodega_destino'] }}</td>
+                    <td>{{ $traslado['orden'] }}</td>
+                    <td>{{ $traslado['cantidad_paquetes'] }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="no-data">No hay traslados disponibles.</td>
+                </tr>
+            @endforelse
             </tbody>
         </table>
     </div>
