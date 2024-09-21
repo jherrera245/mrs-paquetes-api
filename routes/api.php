@@ -340,6 +340,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('dashboard/orders_by_day', [DashboardController::class, 'ordersByDay']);
   Route::get('dashboard/delivered_by_department', [DashboardController::class, 'deliveredByDepartment']);
   Route::get('dashboard/packages_by_status', [DashboardController::class, 'packagesByStatus']);
+  Route::get('dashboard/last_orders', [DashboardController::class, 'lastOrders']);
+  Route::get('dashboard/last_employees', [DashboardController::class, 'lastEmployees']);
 
   //reportes
   Route::post('reports/reporte_asignaciones_rutas_por_conductor', [ReportesController::class, 'reporteAsignacionesRutasPorConductor']);

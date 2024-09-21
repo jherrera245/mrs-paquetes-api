@@ -131,4 +131,52 @@ class DashboardController extends Controller
             Response::HTTP_OK
         );
     }
+
+    public function lastOrders()
+    {
+        $ordenes = DB::table('ordenes')
+        ->select(
+            'ordenes.id',
+            DB::raw("CONCAT(clientes.nombre, ' ', clientes.apellido) AS cliente"),
+            'ordenes.tipo_orden',
+            'ordenes.numero_tracking',
+            'ordenes.numero_seguimiento',
+            'tipo_entrega.entrega as tipo_entrega'
+        )
+        ->join('clientes', 'clientes.id', '=', 'ordenes.id_cliente')
+        ->join('detalle_orden', 'detalle_orden.id_orden', '=', 'ordenes.id')
+        ->join('tipo_entrega', 'tipo_entrega.id', '=', 'detalle_orden.id_tipo_entrega')
+        ->groupBy('ordenes.id', 'clientes.nombre', 'clientes.apellido', 'ordenes.tipo_orden', 'tipo_entrega.entrega')
+        ->orderByDesc('ordenes.id')
+        ->limit(6)
+        ->get();
+
+        return response()->json(
+            [
+                'ordenes' => $ordenes
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    public function lastEmployees()
+    {
+        $empleados = DB::table('empleados')
+        ->select(
+            'empleados.id',
+            DB::raw("CONCAT(empleados.nombres, ' ', empleados.apellidos) AS empleado"),
+            'estado_empleados.estado'
+        )
+        ->join('estado_empleados', 'estado_empleados.id', '=', 'empleados.id_estado')
+        ->orderByDesc('empleados.id')
+        ->limit(6)
+        ->get();
+
+        return response()->json(
+            [
+                'empleados' => $empleados
+            ],
+            Response::HTTP_OK
+        );
+    }
 }
