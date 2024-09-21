@@ -134,9 +134,6 @@
                 <td style="width: 55%"><b>Sello de Recepción</b>: {{$sello_recepcion}}</td>
                 <td style="width: 45%"><b>Fecha de Generación</b>: {{$orden->created_at}}</td>
             </tr>
-            <tr>
-                <td style="width: 55%"><b>Número de tracking</b>: {{$numero_tracking}}</td>
-            </tr>
         </table>
 
         <table id="details-document-table">
@@ -208,7 +205,9 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" rowspan="6"></td>
+                    <td colspan="4" rowspan="6">
+                        <b>Número de tracking</b>: {{$numero_tracking}}
+                    </td>
                     <td>Suma de Ventas</td>
                     <td></td>
                     <td></td>

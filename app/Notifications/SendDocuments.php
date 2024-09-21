@@ -32,6 +32,7 @@ class SendDocuments extends Notification
         $this->fecha = $details['fecha'];
         $this->tipo_documento = $details['tipo_documento'];
         $this->total_pagar = $details['total_pagar'];
+        $this->numero_tracking = $details['numero_tracking'];
         $this->pdfBase64 = $details['pdfBase64'];
     }
 
@@ -64,6 +65,7 @@ class SendDocuments extends Notification
             ->markdown('emails.send_documents', [
                 'cliente' => $this->cliente,
                 'numero_control' => $this->numero_control,
+                'numero_tracking' => $this->numero_tracking,
                 'fecha' => $this->fecha,
                 'tipo_documento' => $this->tipo_documento,
                 'total_pagar' => $this->total_pagar,

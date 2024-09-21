@@ -20,6 +20,7 @@
                 <li style="padding: 5px 0; color: #5a3f2a;"><strong>Fecha:</strong> {{ $fecha }}</li>
                 <li style="padding: 5px 0; color: #5a3f2a;"><strong>Tipo de documento tributario:</strong> {{ $tipo_documento }}</li>
                 <li style="padding: 5px 0; color: #5a3f2a;"><strong>Monto:</strong> {{ $total_pagar }}</li>
+                <li style="padding: 5px 0; color: #5a3f2a;"><strong>Rastrea a tu orden a través de tu codigo de tracking:</strong> {{ $numero_tracking }}</li>
             </ul>
             <p style="font-size: 16px; line-height: 1.5; margin: 10px 0; color: #5a3f2a;">Gracias por usar nuestros servicios.</p>
         </div>
