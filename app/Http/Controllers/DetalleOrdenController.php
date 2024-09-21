@@ -259,7 +259,7 @@ class DetalleOrdenController extends Controller
 
             // en PAQUETES actualizamos el estado tambien.
             $paquete = Paquete::findOrFail($detalleOrden->id_paquete);
-            $paquete->id_estado_paquetes = 8;
+            $paquete->id_estado_paquete = 8;
             $paquete->save();
 
             // Obtener el número de seguimiento y la info de la orden
