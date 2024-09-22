@@ -72,7 +72,7 @@ Route::get('seguimiento-orden', [OrdenController::class, 'buscarPorNumeroSeguimi
 Route::post('login-cliente', [AuthController::class, 'login_cliente']);
 //registro de cliente
 Route::post('register', [AuthController::class, 'register']);
-Route::post('validacion-entrega', [DetalleOrdenController::class, 'validacionEntrega']);
+
 
 Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
@@ -282,7 +282,8 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::put('ordenes/{id}/cancelar', [OrdenController::class, 'cancelOrder'])->middleware('permission:orden-update');
   Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('permission:orden-view');
   Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('permission:mis-ordenes-cliente');
-
+  Route::post('validacion-entrega', [DetalleOrdenController::class, 'validacionEntrega'])->middleware('permission:validacion-entrega');
+  
   // Historial Ordenes
   Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index'])->middleware('permission:historialpaquetes-view');
   Route::get('historial/{identificador}', [HistorialOrdenTrackingController::class, 'buscarHistorial'])->middleware('permission:historialpaquete-show');

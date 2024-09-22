@@ -134,6 +134,7 @@ class PermissionSeeder extends Seeder
             'ubicacion-paquetes-danados-show',
             'ubicacion-paquetes-danados-update',
             'ubicacion-paquetes-danados-destroy',
+            'validacion-entrega',
         ];
 
         foreach ($permissions as $permission) {
@@ -208,7 +209,8 @@ class PermissionSeeder extends Seeder
                 'rutas-view',
                 'paquete-view',
                 'incidencias-create',
-                'incidencias-view'
+                'incidencias-view',
+                'validacion-entrega',
             ]);
         }
 
