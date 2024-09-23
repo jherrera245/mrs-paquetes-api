@@ -232,27 +232,39 @@ class DetalleOrdenController extends Controller
     {
         // Validar la imagen y el ID de la orden
         $request->validate([
-            'id' => 'required|exists:detalle_orden,id',
+            'uuid' => 'required|exists:paquetes,uuid',
             'validacion_entrega' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480'
         ]);
 
         // Capturar los datos de la solicitud
-        $id = $request->input('id');
+        $uuid = $request->input('uuid');
         $imageFile = $request->file('validacion_entrega');
 
         DB::beginTransaction();
 
         try {
+        // Obtener el paquete usando el UUID
+        $paquete = Paquete::where('uuid', $uuid)->firstOrFail();
+
+        // Comprobar si el estado del paquete ya es 8
+        if ($paquete->id_estado_paquete == 8) {
+            return response()->json(['error' => 'El paquete ya fue validado.'], 400);
+        }
+
+        // Obtener el detalle de la orden
+        $detalleOrden = DetalleOrden::where('id_paquete', $paquete->id)->firstOrFail();
+
+
             // Guardar la imagen en S3
-            $filename = 'entrega_' . $id . '_' . time() . '.' . $imageFile->getClientOriginalExtension();
+            $filename = 'entrega_' . $uuid . '_' . time() . '.' . $imageFile->getClientOriginalExtension();
             $path = $imageFile->storeAs('validacion_entregas', $filename, 's3');
             $bucketName = env('AWS_BUCKET');
             $region = env('AWS_DEFAULT_REGION');
             $imageUrl = "https://{$bucketName}.s3.{$region}.amazonaws.com/{$path}";
 
             // Actualizar el campo validacion_entrega en el detalle de la orden
-            $detalleOrden = DetalleOrden::findOrFail($id);
             $detalleOrden->validacion_entrega = $imageUrl;
+
             // actualizar el estado del detalle de la orden.
             $detalleOrden->id_estado_paquetes = 8;
             $detalleOrden->save();
