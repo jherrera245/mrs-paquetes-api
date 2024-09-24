@@ -238,7 +238,7 @@ class DropdownController extends Controller
     {
         $paquetes = AsignacionRutas::select('paquetes.id', 'paquetes.uuid')
             ->join('vehiculos', 'asignacion_rutas.id_vehiculo', '=', 'vehiculos.id')
-            ->join('empleados', 'vehiculos.id_empleado_conductor', '=', 'empleados.id')
+            ->join('empleados', 'vehiculos.id_empleado_apoyo', '=', 'empleados.id')
             ->join('users', 'empleados.id', '=', 'users.id_empleado')
             ->join('paquetes', 'asignacion_rutas.id_paquete', '=', 'paquetes.id')
             ->where('users.id', $id_usuario)

@@ -208,9 +208,15 @@ class PermissionSeeder extends Seeder
             $acompananteRole->syncPermissions([
                 'rutas-view',
                 'paquete-view',
-                'incidencias-create',
-                'incidencias-view',
                 'validacion-entrega',
+                'incidencias-view',
+                'incidencias-create',
+                'incidencias-show',
+                'ubicacion-paquetes-danados-index',
+                'ubicacion-paquetes-danados-store',
+                'ubicacion-paquetes-danados-show',
+                'ubicacion-paquetes-danados-update',
+                'ubicacion-paquetes-danados-destroy',
             ]);
         }
 
