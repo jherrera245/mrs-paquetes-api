@@ -19,12 +19,27 @@ class AuthController extends Controller
     public function adminClienteRegistrar(Request $request)
     {
 
-    $r_user = 2;
+        $r_user = 2;
         // Indicamos que solo queremos recibir  email y password de la request
-    $data = $request->only( 'email', 'password', 'nombre', 'apellido', 'nombre_comercial', 'dui', 
-                            'telefono', 'id_tipo_persona', 'es_contribuyente', 'id_estado', 
-                            'id_departamento', 'id_municipio', 'nit', 'nrc', 'giro', 
-                            'nombre_empresa', 'direccion');
+        $data = $request->only(
+            'email',
+            'password',
+            'nombre',
+            'apellido',
+            'nombre_comercial',
+            'dui',
+            'telefono',
+            'id_tipo_persona',
+            'es_contribuyente',
+            'id_estado',
+            'id_departamento',
+            'id_municipio',
+            'nit',
+            'nrc',
+            'giro',
+            'nombre_empresa',
+            'direccion'
+        );
 
         // Realizamos las validaciones
         $validator = Validator::make($data, [
@@ -138,7 +153,7 @@ class AuthController extends Controller
             'telefono',
             'id_tipo_persona',
             'es_contribuyente',
-          
+
             'id_departamento',
             'id_municipio',
             'nit',
@@ -178,7 +193,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $clienteCreado= Clientes::where('id_user', $user->id)->first();
+        $clienteCreado = Clientes::where('id_user', $user->id)->first();
         if ($clienteCreado) {
             return response()->json(['error' => 'El perfil del cliente ya ha sido creado'], Response::HTTP_CONFLICT);
         }
@@ -216,7 +231,7 @@ class AuthController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     public function verPerfilCliente()
     {
         //obtener el usuario autenticado
@@ -228,12 +243,12 @@ class AuthController extends Controller
         $cliente = Clientes::where('id_user', $user->id)->first();
 
         if (!$cliente) {
-        return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Cliente no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        
+
         $datosCliente = [
             'email' => $user->email,
-            'id'=> $cliente->id,
+            'id' => $cliente->id,
             'nombre' => $cliente->nombre,
             'apellido' => $cliente->apellido,
             'nombre_comercial' => $cliente->nombre_comercial,
@@ -353,17 +368,17 @@ class AuthController extends Controller
 
     public function verificarPerfilExistente(Request $request)
     {
-      
+
         $user = JWTAuth::parseToken()->authenticate();
-    
+
         if (!$user) {
             return response()->json(['error' => 'Usuario no autenticado'], Response::HTTP_UNAUTHORIZED);
         }
-    
-      
+
+
         $user_id = $user->id;
         $clienteExiste = Clientes::where('id_user', $user_id)->first();
-    
+
         if ($clienteExiste) {
             return response()->json([
                 'exists' => true,
@@ -410,7 +425,6 @@ class AuthController extends Controller
             try {
                 JWTAuth::invalidate(JWTAuth::getToken());
                 return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
-    
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
             }
@@ -487,7 +501,6 @@ class AuthController extends Controller
             try {
                 JWTAuth::invalidate(JWTAuth::getToken());
                 return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
-    
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Could not authenticate user', 'error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
             }
@@ -598,21 +611,21 @@ class AuthController extends Controller
         ]);
 
         $user = DB::table('users')
-        ->select(
-            'users.id',
-            'users.email',
-            'roles.id as role_id',
-            'users.id_empleado',
-            'roles.name as role_name',
-            'users.status',
-            'users.created_at',
-            'users.updated_at'
-        )
-        ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-        ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-        ->where('model_has_roles.model_type', 'App\\Models\\User')
-        ->where('users.id', $id)
-        ->first();
+            ->select(
+                'users.id',
+                'users.email',
+                'roles.id as role_id',
+                'users.id_empleado',
+                'roles.name as role_name',
+                'users.status',
+                'users.created_at',
+                'users.updated_at'
+            )
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('model_has_roles.model_type', 'App\\Models\\User')
+            ->where('users.id', $id)
+            ->first();
 
         return response()->json(['user' => $user]);
     }
@@ -738,7 +751,7 @@ class AuthController extends Controller
     {
         // Indicamos que solo queremos recibir name, email, password, id_empleado y role_id de la request
         $data = $request->only('name', 'email', 'password', 'role_id');
-    
+
         // Realizamos las validaciones con un mensaje personalizado para id_empleado y email
         $validator = Validator::make($data, [
             'email' => [
@@ -756,32 +769,39 @@ class AuthController extends Controller
         ], [
             'email.unique' => 'Este correo electrónico ya está registrado.', // Mensaje personalizado para email
         ]);
-    
+
         // Devolvemos un error si fallan las validaciones
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-    
+
         $user = new User();
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->save();
-    
+
         $role = Role::find($request->role_id);
         $user->roles()->detach();
         $user->assignRole($role);
-    
+
         return response()->json(['message' => 'User created successfully'], Response::HTTP_OK);
     }
-    
+
     public function update(Request $request, $id)
     {
+        // Buscar el usuario existente
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
         // Validar la solicitud
         $data = $request->only('name', 'email', 'password', 'role_id', 'id_empleado');
-    
+
         // Realizamos las validaciones con un mensaje personalizado para id_empleado y email
         $validator = Validator::make($data, [
             'email' => [
+                'sometimes',
                 'required',
                 'email',
                 'unique:users,email,' . $id,
@@ -792,39 +812,36 @@ class AuthController extends Controller
                 }
             ],
             'password' => 'nullable|string|min:6|max:50',
-            'role_id' => 'required|integer|exists:roles,id',
-            'id_empleado' => 'required|unique:users,id_empleado,' . $id,
+            'role_id' => 'sometimes|required|integer|exists:roles,id',
+            'id_empleado' => 'nullable|unique:users,id_empleado,' . $id,
         ], [
-            'id_empleado.unique' => 'Este empleado ya tiene su usuario.', // Mensaje personalizado
+            'id_empleado.unique' => 'Este empleado ya tiene su usuario asignado.', // Mensaje personalizado
             'email.unique' => 'Este correo electrónico ya está registrado.', // Mensaje personalizado para email
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-    
-        $user = User::find($id);
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
-    
-        $user->email = $request->email;
-        $user->status = $request->status ? 1 : 0;
-    
-        if (!empty($request->password)) {
+
+        // Actualizar solo los campos que se han enviado
+        $user->fill($data);
+
+        // Verificar y actualizar el password solo si se ha proporcionado
+        if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
         }
-    
-        $user->id_empleado = $request->id_empleado;
+
         $user->save();
-    
-        $role = Role::find($request->role_id);
-        $user->roles()->detach();
-        $user->assignRole($role);
-    
-        return response()->json(['message' => 'User updated successfully'], Response::HTTP_OK);
+
+        // Actualizar rol del usuario
+        if ($request->filled('role_id')) {
+            $role = Role::find($request->role_id);
+            $user->roles()->sync([$role->id]);
+        }
+
+        return response()->json(['message' => 'Usuario actualizado correctamente'], Response::HTTP_OK);
     }
-    
+
 
     public function destroy($id)
     {
