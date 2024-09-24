@@ -16,12 +16,12 @@ class VehiculosSeeder extends Seeder
     {
         DB::table('vehiculos')->insert([
             [
-                'id_empleado_conductor' => 1, 
-                'id_empleado_apoyo' => 2, 
+                'id_empleado_conductor' => 1,
+                'id_empleado_apoyo' => 2,
                 'placa' => 'C-0069',
-                'capacidad_carga' => 1500, 
-                'id_bodega' => 2, 
-                'id_estado' => 1, 
+                'capacidad_carga' => 1500,
+                'id_bodega' => 2,
+                'id_estado' => 1,
                 'id_marca' => 1, // Isuzu
                 'id_modelo' => 1, // Isuzu N-Series
                 'year_fabricacion' => 2020,
@@ -30,26 +30,26 @@ class VehiculosSeeder extends Seeder
                 'tipo' => 'camion',
             ],
             [
-                'id_empleado_conductor' => 3, 
+                'id_empleado_conductor' => 3,
                 'id_empleado_apoyo' => 4,
                 'placa' => 'C-0001',
-                'capacidad_carga' => 3000, 
-                'id_bodega' => 3, 
-                'id_estado' => 1, 
-                'id_marca' => 2, 
-                'id_modelo' => 2, 
+                'capacidad_carga' => 3000,
+                'id_bodega' => 3,
+                'id_estado' => 1,
+                'id_marca' => 2,
+                'id_modelo' => 2,
                 'year_fabricacion' => 2021,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'tipo' => 'camion',
             ],
             [
-                'id_empleado_conductor' => 5, 
-                'id_empleado_apoyo' => 6, 
+                'id_empleado_conductor' => 13,
+                'id_empleado_apoyo' => null,
                 'placa' => 'M-0001',
-                'capacidad_carga' => 100, 
-                'id_bodega' => null, 
-                'id_estado' => 1, 
+                'capacidad_carga' => 0.2,
+                'id_bodega' => null,
+                'id_estado' => 1,
                 'id_marca' => 3, // Honda
                 'id_modelo' => 3, // Honda navy
                 'year_fabricacion' => 2022,

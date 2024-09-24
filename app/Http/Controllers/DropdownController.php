@@ -37,8 +37,6 @@ class DropdownController extends Controller
 
     public function getMunicipios($id)
     {
-
-
         $municipio = DB::table('municipios')->select('id', 'nombre')->where('id_departamento', $id)->get();
         return response()->json(["municipio" => $municipio]);
     }
@@ -197,22 +195,25 @@ class DropdownController extends Controller
     public function get_Bodegas_Moviles()
     {
         try {
-            // Obtener bodegas de tipo 'movil' que no estén asignadas a ningún camión en la tabla 'vehiculos'
+            // Obtener todas las bodegas de tipo 'movil'
             $bodegas = \DB::table('bodegas')
-                ->leftJoin('vehiculos', function ($join) {
-                    $join->on('bodegas.id', '=', 'vehiculos.id_bodega')
-                        ->where('vehiculos.id_empleado_conductor', '!=', null); // Verificar si está asignada a un conductor (camión)
-                })
+                ->leftJoin('vehiculos', 'bodegas.id', '=', 'vehiculos.id_bodega') // Unir opcionalmente con vehiculos
+                ->leftJoin('estado_vehiculos', 'vehiculos.id_estado', '=', 'estado_vehiculos.id') // Unir opcionalmente con estados de vehiculos
                 ->where('bodegas.tipo_bodega', 'movil') // Filtrar solo las bodegas de tipo 'movil'
-                ->whereNull('vehiculos.id_bodega') // Asegura que la bodega no esté asignada a ningún camión
-                ->select('bodegas.*')
+                ->where(function ($query) {
+                    $query->whereNull('vehiculos.id_bodega') // Incluir bodegas no asignadas
+                        ->orWhereIn('estado_vehiculos.id', [1, 3]); // O incluir si el vehículo está en mantenimiento o fuera de servicio
+                })
+                ->select('bodegas.*', 'estado_vehiculos.estado as estado_vehiculo') // Seleccionar datos necesarios
+                ->distinct() // Asegurarse de que no haya duplicados
                 ->get();
 
             return response()->json(["bodegas" => $bodegas], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener las bodegas móviles no asignadas.'], 500);
+            return response()->json(['error' => 'Error al obtener las bodegas móviles.'], 500);
         }
     }
+
 
 
     public function getEstadoVehiculos()

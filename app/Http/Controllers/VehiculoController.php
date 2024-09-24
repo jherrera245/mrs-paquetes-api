@@ -80,7 +80,7 @@ class VehiculoController extends Controller
         $validator = Validator::make($request->all(), [
             'tipo' => 'required|in:camion,moto', // Validación para el tipo
             'id_empleado_conductor' => 'nullable|exists:empleados,id|integer|min:1',
-            'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1', 
+            'id_empleado_apoyo' => 'nullable|exists:empleados,id|integer|min:1',
             'placa' => [
                 'required',
                 'unique:vehiculos',
@@ -107,27 +107,27 @@ class VehiculoController extends Controller
 
         try {
             // IDs de los estados que permiten reasignación (mantenimiento o fuera de servicio)
-        $estadosPermitidos = [2, 4]; // Suponiendo que 2 = En Mantenimiento, 4 = Fuera de Servicio
+            $estadosPermitidos = [1, 3]; // Suponiendo que 1 = En Mantenimiento, 3 = Fuera de Servicio
 
-        // Verificar si el empleado conductor ya está asignado a otro vehículo activo
-        $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
-            ->whereNotIn('id_estado', $estadosPermitidos) // Excluir vehículos en mantenimiento o fuera de servicio
-            ->first();
-
-        if ($vehiculoConductorActivo) {
-            return response()->json(['error' => 'Este conductor ya está asignado a un vehículo activo.'], 400);
-        }
-
-        // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
-        if ($request->id_empleado_apoyo) {
-            $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
-                ->whereNotIn('id_estado', $estadosPermitidos)
+            // Verificar si el empleado conductor ya está asignado a otro vehículo activo
+            $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
+                ->whereNotIn('id_estado', $estadosPermitidos) // Excluir vehículos en mantenimiento o fuera de servicio
                 ->first();
 
-            if ($vehiculoApoyoActivo) {
-                return response()->json(['error' => 'Este empleado de apoyo ya está asignado a un vehículo activo.'], 400);
+            if ($vehiculoConductorActivo) {
+                return response()->json(['error' => 'Este conductor ya está asignado a un vehículo activo.'], 400);
             }
-        }
+
+            // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
+            if ($request->id_empleado_apoyo) {
+                $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
+                    ->whereNotIn('id_estado', $estadosPermitidos)
+                    ->first();
+
+                if ($vehiculoApoyoActivo) {
+                    return response()->json(['error' => 'Este empleado de apoyo ya está asignado a un vehículo activo.'], 400);
+                }
+            }
             // Verificar que el modelo pertenece a la marca seleccionada
             $modelo = ModeloVehiculo::find($request->id_modelo);
             if ($modelo->id_marca != $request->id_marca) {
@@ -141,7 +141,7 @@ class VehiculoController extends Controller
                     'capacidad_carga' => 0.2,
                     'id_empleado_apoyo' => null,
                     'id_bodega' => null
-                    
+
                 ]);
             }
 
@@ -218,32 +218,32 @@ class VehiculoController extends Controller
                 return response()->json(['errores' => $validator->errors()->all()], 400);
             }
 
-        // IDs de los estados que permiten reasignación (mantenimiento o fuera de servicio)
-        $estadosPermitidos = [2, 4]; // Suponiendo que 2 = En Mantenimiento, 4 = Fuera de Servicio
+            // IDs de los estados que permiten reasignación (mantenimiento o fuera de servicio)
+            $estadosPermitidos = [1, 3]; // Suponiendo que 1 = En Mantenimiento, 3 = Fuera de Servicio
 
-        // Verificar si el conductor está asignado a otro vehículo activo
-        if ($request->has('id_empleado_conductor')) {
-            $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
-                ->whereNotIn('id_estado', $estadosPermitidos)
-                ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
-                ->first();
+            // Verificar si el conductor está asignado a otro vehículo activo
+            if ($request->has('id_empleado_conductor')) {
+                $vehiculoConductorActivo = Vehiculo::where('id_empleado_conductor', $request->id_empleado_conductor)
+                    ->whereNotIn('id_estado', $estadosPermitidos)
+                    ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
+                    ->first();
 
-            if ($vehiculoConductorActivo) {
-                return response()->json(['error' => 'Este conductor ya está asignado a otro vehículo activo.'], 400);
+                if ($vehiculoConductorActivo) {
+                    return response()->json(['error' => 'Este conductor ya está asignado a otro vehículo activo.'], 400);
+                }
             }
-        }
 
-        // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
-        if ($request->has('id_empleado_apoyo')) {
-            $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
-                ->whereNotIn('id_estado', $estadosPermitidos)
-                ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
-                ->first();
+            // Verificar si el empleado de apoyo ya está asignado a otro vehículo activo (si aplica)
+            if ($request->has('id_empleado_apoyo')) {
+                $vehiculoApoyoActivo = Vehiculo::where('id_empleado_apoyo', $request->id_empleado_apoyo)
+                    ->whereNotIn('id_estado', $estadosPermitidos)
+                    ->where('id', '!=', $vehiculo->id) // Excluir el vehículo actual
+                    ->first();
 
-            if ($vehiculoApoyoActivo) {
-                return response()->json(['error' => 'Este empleado de apoyo ya está asignado a otro vehículo activo.'], 400);
+                if ($vehiculoApoyoActivo) {
+                    return response()->json(['error' => 'Este empleado de apoyo ya está asignado a otro vehículo activo.'], 400);
+                }
             }
-        }
 
             // Combinar los datos existentes del vehículo con los datos nuevos del request
             $data = array_merge($vehiculo->toArray(), $request->all());

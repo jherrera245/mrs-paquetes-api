@@ -14,9 +14,6 @@ class EmpaquetadoSeeder extends Seeder
 
         DB::table('empaquetado')->insert([
             ['empaquetado' => 'Caja de cartón', 'created_at' => $now, 'updated_at' => $now],
-            ['empaquetado' => 'Bolsa de plástico', 'created_at' => $now, 'updated_at' => $now],
-            ['empaquetado' => 'Sobres acolchados', 'created_at' => $now, 'updated_at' => $now],
-            ['empaquetado' => 'Papel burbuja', 'created_at' => $now, 'updated_at' => $now],
         ]);
     }
 }
