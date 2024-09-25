@@ -407,12 +407,20 @@ class OrdenController extends Controller
             // Encuentra el detalle de la orden por ID
             $detalleOrden = DetalleOrden::find($id);
 
+            $paquete = Paquete::find($detalleOrden->id_paquete);
+            if ($paquete) {
+                $paquete->id_estado_paquete = 13; 
+                $paquete->save();
+            }
+
             if (!$detalleOrden) {
                 return response()->json(['mensaje' => 'Detalle de orden no encontrado'], Response::HTTP_NOT_FOUND);
             }
 
             // Encuentra la orden asociada al detalle de la orden
             $orden = Orden::find($detalleOrden->id_orden);
+
+            
 
             // Verificar si la orden existe
             if (!$orden) {
