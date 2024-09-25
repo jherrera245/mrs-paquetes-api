@@ -37,6 +37,9 @@ use App\Http\Controllers\PasilloController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UbicacionPaqueteDaController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\KardexController;
+// inventario
+use App\Http\Controllers\InventarioController;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 /*
@@ -351,4 +354,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
 
   // kardex.
   Route::get('kardex', [KardexController::class, 'index'])->middleware('permission:kardex-view');
+
+  // inventario
+  Route::get('inventario', [InventarioController::class, 'index'])->middleware('permission:inventario-view');
 });
