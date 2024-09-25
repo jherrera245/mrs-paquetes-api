@@ -326,6 +326,24 @@ class TrasladoController extends Controller
 
             // Agregar nuevos paquetes
             foreach ($paquetesPorQr as $idPaquete) {
+                // Verificar si el paquete ya está asignado a este traslado.
+                $existingTraslado = DetalleTraslado::where('id_paquete', $idPaquete)
+                    ->where('id_traslado', $traslado->id)
+                    ->where('estado', 1) // Solo paquetes activos
+                    ->first();
+                
+                if ($existingTraslado) {
+                    // si el paquete esta asignado, mostrar mensaje de error.
+                    throw new Exception("El paquete con ID: {$idPaquete} ya está asignado a este traslado.");
+                }
+
+                //verificamos la ubicacion del paquete.
+                $ubicacion = UbicacionPaquete::where('id_paquete', $idPaquete)->first();
+                // si el paquete tiene una ubicacion, se borra del registro de ubicacion.
+                if ($ubicacion) {
+                    $ubicacion->delete();
+                }
+                
                 // Registrar el detalle de traslado para cada paquete
                 DetalleTraslado::create([
                     'id_traslado' => $traslado->id,
