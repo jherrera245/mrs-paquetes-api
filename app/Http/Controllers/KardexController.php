@@ -19,7 +19,7 @@ class KardexController extends Controller
         ]);
 
         // Creamos una consulta básica que luego iremos filtrando
-        $query = Kardex::query();
+        $query = Kardex::with('paquete:id,uuid'); // Cargamos solo los campos 'id' y 'uuid' de la relación paquete
 
         // Aplicamos los filtros si están presentes
         if (isset($filters['tipo_movimiento'])) {
@@ -45,7 +45,32 @@ class KardexController extends Controller
         // Ejecutamos la consulta con paginación
         $kardex = $query->paginate($request->input('per_page', 10));
 
-        // Retornamos la respuesta con los resultados paginados
-        return response()->json($kardex);
+        // Formateamos la salida para reemplazar el id_paquete por el uuid del paquete
+        $formattedKardex = $kardex->getCollection()->transform(function ($item) {
+            return [
+                'id' => $item->id,
+                'id_orden' => $item->id_orden,
+                'cantidad' => $item->cantidad,
+                'numero_ingreso' => $item->numero_ingreso,
+                'tipo_movimiento' => $item->tipo_movimiento,
+                'tipo_transaccion' => $item->tipo_transaccion,
+                'fecha' => $item->fecha,
+                'paquete' => $item->paquete ? $item->paquete->uuid : null, // Mostramos el uuid del paquete en lugar del id_paquete
+            ];
+        });
+
+        // Retornamos la respuesta con los resultados formateados y paginados
+        return response()->json([
+            'data' => $formattedKardex,
+            'pagination' => [
+                'total' => $kardex->total(),
+                'per_page' => $kardex->perPage(),
+                'current_page' => $kardex->currentPage(),
+                'last_page' => $kardex->lastPage(),
+                'from' => $kardex->firstItem(),
+                'to' => $kardex->lastItem(),
+            ]
+        ]);
     }
+
 }
