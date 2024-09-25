@@ -216,7 +216,7 @@ class UbicacionPaqueteController extends Controller
                 $kardexSalida->cantidad = 1;
                 $kardexSalida->numero_ingreso = $numeroSeguimiento;
                 $kardexSalida->tipo_movimiento = 'SALIDA';
-                $kardexSalida->tipo_transaccion = 'RECOLECTADO';
+                $kardexSalida->tipo_transaccion = 'EN_ESPERA_UBICACION';
                 $kardexSalida->fecha = now();
                 $kardexSalida->save();
             }
@@ -424,12 +424,11 @@ class UbicacionPaqueteController extends Controller
             $kardexEntrada->fecha = now();
             $kardexEntrada->save();
 
-            // Cambiar el estado del UbicacionPaquete a 0 desactivado
-            $ubicacionPaquete->estado = 0;
-            $ubicacionPaquete->save();
+            // en lugar de cambiar estado, se va eliminar el regitro.
+            $ubicacionPaquete->delete();
 
             // Retornar un mensaje de éxito
-            return response()->json(['message' => 'Ubicación desactivada correctamente.'], 200);
+            return response()->json(['message' => 'Ubicación eliminada correctamente.'], 200);
         } catch (Exception $e) {
             Log::error('Error al desactivar la relación: ' . $e->getMessage());
             return response()->json(['error' => 'Error al desactivar la relación'], 500);

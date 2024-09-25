@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Services\KardexService;
 use App\Models\DetalleTraslado;
+use App\Models\UbicacionPaquete;
 use Endroid\QrCode\QrCode;
 
 class TrasladoController extends Controller
@@ -135,12 +136,19 @@ class TrasladoController extends Controller
 
             // Recorremos el array de los paquetes seleccionados
             foreach ($paquetesPorQr as $idPaquete) {
-                // Registrar el detalle de traslado para cada paquete
+                // buscamos si el paquete estaba asignado a una ubicacion.
+                $ubicacion = UbicacionPaquete::where('id_paquete', $idPaquete)->first();
+                // si el paquete tiene una ubicacion, se borra del registro de ubicacion.
+                if ($ubicacion) {
+                    $ubicacion->delete();
+                }
+                
                 DetalleTraslado::create([
                     'id_traslado' => $traslado->id,
                     'id_paquete' => $idPaquete,
                     'estado' => 1 // Estado activo
                 ]);
+                
 
                 // Obtener id_orden y numero_seguimiento a través de inner join
                 $detalleOrdenInfo = $kardexService->getOrdenInfo($idPaquete);
@@ -390,6 +398,27 @@ class TrasladoController extends Controller
         if (!$detalleTraslado) {
             return response()->json(['message' => 'Detalle de traslado no encontrado'], 404);
         }
+
+        // si se elimina un detalle de traslado, se tiene que borrar el registro del kardex con el services.
+         // Instanciar el servicio KardexService
+        $kardexService = new KardexService();
+        // registrar salida de traslado.
+
+        $detalleOrdenInfo = $kardexService->getOrdenInfo($detalleTraslado->id_paquete);
+
+        if (!$detalleOrdenInfo) {
+            throw new Exception("No se encontró información de la orden para el paquete ID: {$detalleTraslado->id_paquete}");
+        }
+
+        $idOrden = $detalleOrdenInfo->id_orden;
+        $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
+
+
+        $kardexService->registrarMovimientoKardex($detalleTraslado->id_paquete, $idOrden, 'SALIDA', 'TRASLADO', $numeroSeguimiento);
+        // cambiar estado de paquete en espera de ubicacion.
+        Paquete::where('id', $detalleTraslado->id_paquete)->update(['id_estado_paquete' => 14]);
+        // registrar entrada al kardex en espera de ubicacion.
+        $kardexService->registrarMovimientoKardex($detalleTraslado->id_paquete, $idOrden, 'ENTRADA', 'EN_ESPERA_UBICACION', $numeroSeguimiento);
 
         try {
             $detalleTraslado->estado = 0;
