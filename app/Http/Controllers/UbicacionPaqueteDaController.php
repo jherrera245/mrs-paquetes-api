@@ -125,10 +125,12 @@ class UbicacionPaqueteDaController extends Controller
             $ubicacionPaquete->estado = 1; // Estado ocupado
             $ubicacionPaquete->save();
 
+
             // Actualizar el campo id_ubicacion en el paquete y cambiar el estado a "Dañado"
             $paquete->id_ubicacion = $ubicacion->id;
             $paquete->id_estado_paquete = 2; // ID 2 para "Bodega nuevamente"
             $paquete->save();
+
 
             // **Agregar los movimientos en el Kardex**
             $detalleOrden = DetalleOrden::where('id_paquete', $paquete->id)->first();
@@ -144,6 +146,10 @@ class UbicacionPaqueteDaController extends Controller
             // Registrar movimientos en el Kardex
             $this->registrarMovimientoKardex($paquete->id, $detalleOrden->id_orden, 1, $numeroSeguimiento, 'SALIDA', 'RECOLECTADO');
             $this->registrarMovimientoKardex($paquete->id, $detalleOrden->id_orden, 1, $numeroSeguimiento, 'ENTRADA', 'DAÑADO');
+
+            // **Actualizar el estado en la tabla detalle_orden**
+            $detalleOrden->id_estado_paquetes = 11; // Actualizar estado a "Dañado" en detalle_orden
+            $detalleOrden->save();
 
             DB::commit(); // Confirmar la transacción
 

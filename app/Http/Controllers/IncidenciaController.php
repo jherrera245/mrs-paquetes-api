@@ -145,7 +145,7 @@ class IncidenciaController extends Controller
             // Verificar el tipo de incidencia y actualizar el estado del paquete solo si es necesario
             if ($incidencia->id_tipo_incidencia == 2) { // 2 es "Daño"
                 $paquete->id_estado_paquete = 11; // 11 es "Dañado"
-                $paquete->id_ubicacion = 100; // Ubicación específica para "Dañado"
+                //$paquete->id_ubicacion = 100; // Ubicación específica para "Dañado"
 
                 // Registrar los movimientos en Kardex independientemente del estado de la transacción previa
                 Kardex::create([

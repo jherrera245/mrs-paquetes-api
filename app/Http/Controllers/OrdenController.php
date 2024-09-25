@@ -409,7 +409,7 @@ class OrdenController extends Controller
 
             $paquete = Paquete::find($detalleOrden->id_paquete);
             if ($paquete) {
-                $paquete->id_estado_paquete = 13; 
+                $paquete->id_estado_paquete = 13;
                 $paquete->save();
             }
 
@@ -420,7 +420,7 @@ class OrdenController extends Controller
             // Encuentra la orden asociada al detalle de la orden
             $orden = Orden::find($detalleOrden->id_orden);
 
-            
+
 
             // Verificar si la orden existe
             if (!$orden) {
@@ -778,7 +778,6 @@ class OrdenController extends Controller
         // Actualizar el estado de la orden
         $orden->estado_pago = 'pagado';
         $orden->tipo_orden = 'orden';
-        $orden->estado = 'Completada';
         $orden->save();
 
         // Generar y enviar el comprobante

@@ -233,6 +233,9 @@ class UbicacionPaqueteController extends Controller
             $paquete->id_estado_paquete = 2; // ID 2 para "En Bodega"
             $paquete->save();
 
+            $detalleOrden->id_estado_paquetes = 2; // Asegurarse de que el estado del paquete en detalle_orden también sea "En Bodega"
+            $detalleOrden->save();
+
             DB::commit(); // Confirmar la transacción
 
             return response()->json(['message' => 'Relación de Ubicación con Paquete creada correctamente y Kardex actualizado.'], 201);
