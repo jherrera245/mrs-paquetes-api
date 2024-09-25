@@ -231,6 +231,7 @@ class ReportesController extends Controller
         ])
         ->leftJoin('clientes', 'clientes.id', '=', 'ordenes.id_cliente')
         ->leftJoin('tipo_pago', 'tipo_pago.id', '=', 'ordenes.id_tipo_pago')
+        ->where('estado_pago', 'pagado')
         ->whereBetween(DB::raw('DATE(ordenes.created_at)'), [$fechaInicioFormateda, $fechaFinalFormateada])
         ->get();
 
