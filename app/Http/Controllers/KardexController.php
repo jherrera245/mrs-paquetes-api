@@ -13,15 +13,13 @@ class KardexController extends Controller
         $filters = $request->only([
             'tipo_movimiento',
             'fecha',
-            'id_paquete',
+            'uuid', 
             'id_orden',
             'numero_ingreso'
         ]);
 
-        // Creamos una consulta básica que luego iremos filtrando
-        $query = Kardex::with('paquete:id,uuid'); // Cargamos solo los campos 'id' y 'uuid' de la relación paquete
+        $query = Kardex::with('paquete:id,uuid'); 
 
-        // Aplicamos los filtros si están presentes
         if (isset($filters['tipo_movimiento'])) {
             $query->byTipoMovimiento($filters['tipo_movimiento']);
         }
@@ -30,8 +28,10 @@ class KardexController extends Controller
             $query->byFecha($filters['fecha']);
         }
 
-        if (isset($filters['id_paquete'])) {
-            $query->byPaquete($filters['id_paquete']);
+        if (isset($filters['uuid'])) {
+            $query->whereHas('paquete', function ($q) use ($filters) {
+                $q->where('uuid', $filters['uuid']);
+            });
         }
 
         if (isset($filters['id_orden'])) {
@@ -42,10 +42,8 @@ class KardexController extends Controller
             $query->byNumeroIngreso($filters['numero_ingreso']);
         }
 
-        // Ejecutamos la consulta con paginación
         $kardex = $query->paginate($request->input('per_page', 10));
 
-        // Formateamos la salida para reemplazar el id_paquete por el uuid del paquete
         $formattedKardex = $kardex->getCollection()->transform(function ($item) {
             return [
                 'id' => $item->id,
@@ -55,11 +53,10 @@ class KardexController extends Controller
                 'tipo_movimiento' => $item->tipo_movimiento,
                 'tipo_transaccion' => $item->tipo_transaccion,
                 'fecha' => $item->fecha,
-                'paquete' => $item->paquete ? $item->paquete->uuid : null, // Mostramos el uuid del paquete en lugar del id_paquete
+                'uuid' => $item->paquete ? $item->paquete->uuid : null,
             ];
         });
 
-        // Retornamos la respuesta con los resultados formateados y paginados
         return response()->json([
             'data' => $formattedKardex,
             'pagination' => [
@@ -72,5 +69,6 @@ class KardexController extends Controller
             ]
         ]);
     }
+
 
 }
