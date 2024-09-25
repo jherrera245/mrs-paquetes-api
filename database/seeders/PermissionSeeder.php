@@ -135,6 +135,8 @@ class PermissionSeeder extends Seeder
             'ubicacion-paquetes-danados-update',
             'ubicacion-paquetes-danados-destroy',
             'validacion-entrega',
+            'kardex-view',
+            'inventario-view',
         ];
 
         foreach ($permissions as $permission) {
