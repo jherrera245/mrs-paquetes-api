@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\DetalleOrden;
 use App\Models\Inventario;
+use App\Models\Orden;
 use Illuminate\Http\Request;
 use App\Services\KardexService;
 use App\Models\Paquete;
@@ -307,4 +308,89 @@ class DetalleOrdenController extends Controller
         }
     }
 
+    public function finalizarOrden(Request $request)
+    {
+        // Validar que el número de seguimiento esté presente
+        $request->validate([
+            'numero_seguimiento' => 'required|string',
+        ]);
+
+        $numero_seguimiento = $request->input('numero_seguimiento');
+
+        // Verificar si la orden existe por número de seguimiento
+        $orden = Orden::where('numero_seguimiento', $numero_seguimiento)->first();
+        
+        if (!$orden) {
+            return response()->json(['message' => 'Orden no encontrada.'], 404);
+        }
+
+        // Validar si el estado de pago es "pendiente"
+        if ($orden->estado_pago === 'pendiente') {
+            return response()->json(['message' => 'No se puede finalizar la orden, el estado de pago es pendiente.'], 400);
+        }
+
+        // Validar si la orden ya ha sido finalizada
+        if ($orden->finished === 1) {
+            return response()->json(['message' => 'La orden ya ha sido finalizada.'], 400);
+        }
+
+        // Iniciar una transacción
+        DB::beginTransaction();
+
+        try {
+            $entregados = DetalleOrden::where('id_orden', $orden->id)
+            ->where('id_estado_paquetes', 8)
+            ->join('paquetes', 'detalle_orden.id_paquete', '=', 'paquetes.id')
+            ->join('estado_paquetes', 'detalle_orden.id_estado_paquetes', '=', 'estado_paquetes.id') 
+            ->select('detalle_orden.*', 'paquetes.uuid', 'estado_paquetes.nombre as estado') 
+            ->get();
+
+            // Validar que al menos un paquete ha sido entregado
+            if ($entregados->isEmpty()) {
+                return response()->json(['message' => 'No se puede finalizar la orden, ningún paquete ha sido entregado.'], 400);
+            }
+
+            // Actualizar el estado de la orden a "completado" y el campo finished a 1
+            $orden->estado = 'Completada';
+            $orden->finished = 1; 
+            $orden->save();
+
+            // Commit de la transacción
+            DB::commit();
+
+            // Preparar los datos de respuesta
+            $response = [
+                'message' => 'Orden finalizada exitosamente.',
+                'orden' => [
+                    'id' => $orden->id,
+                    'numero_seguimiento' => $orden->numero_seguimiento,
+                    'estado' => $orden->estado,
+                    'finished' => $orden->finished,
+                    'total_pagar' => $orden->total_pagar,
+                    'costo_adicional' => $orden->costo_adicional,
+                    'fecha_entrega' => $orden->updated_at, 
+                    'paquetes_entregados' => $entregados->map(function ($paquete) {
+                        return [
+                            'id' => $paquete->id,
+                            'uuid' => $paquete->uuid, 
+                            'descripcion' => $paquete->descripcion,
+                            'precio' => $paquete->precio,
+                            'estado' => $paquete->estado,
+                            'fecha_entrega' => $paquete->fecha_entrega, 
+                        ];
+                    }),
+                ]
+            ];
+
+        return response()->json($response, 200);
+        }
+        catch (\Exception $e) {
+        // Si hay algún error, revertir la transacción
+
+        DB::rollBack();
+
+        return response()->json(['message' => 'Error al finalizar la orden: ' . $e->getMessage()], 500);
+        
+        }
+    }
 }

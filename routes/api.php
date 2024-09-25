@@ -286,6 +286,7 @@ Route::group(['middleware' => ['jwt.verify', 'check.access']], function () {
   Route::get('ordenes/{id}/pdf', [OrdenController::class, 'generatePDF'])->middleware('permission:orden-view');
   Route::get('mis-ordenes', [OrdenController::class, 'misOrdenes'])->middleware('permission:mis-ordenes-cliente');
   Route::post('validacion-entrega', [DetalleOrdenController::class, 'validacionEntrega'])->middleware('permission:validacion-entrega');
+  Route::post('finalizar-orden', [DetalleOrdenController::class, 'finalizarOrden'])->middleware('permission:validacion-entrega');
   
   // Historial Ordenes
   Route::get('historial/ordenes', [HistorialOrdenTrackingController::class, 'index'])->middleware('permission:historialpaquetes-view');
