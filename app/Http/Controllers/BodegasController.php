@@ -10,6 +10,7 @@ use App\Models\Anaquel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class BodegasController extends Controller
 {
@@ -207,4 +208,50 @@ class BodegasController extends Controller
 
         return response()->json($data, 200);
     }
+
+    // existencias por bodega.
+    public function existencias(Request $request)
+    {
+        $id_bodega = $request->query('id_bodega');
+        $perPage = $request->query('per_page', 10); // Número de resultados por página, por defecto 10
+        $uuid = $request->query('uuid'); // Obtener el filtro por uuid
+
+        // Verificar que se haya pasado el id_bodega
+        if (!$id_bodega) {
+            return response()->json(['error' => 'El ID de la bodega es obligatorio.'], 400);
+        }
+
+        // Ejecutar la consulta SQL con paginación utilizando el query builder
+        $query = DB::table('paquetes as p')
+            ->select('p.uuid', 'p.peso', 'u.nomenclatura', 'b.nombre as bodega')
+            ->join('ubicaciones_paquetes as up', 'p.id', '=', 'up.id_paquete')
+            ->join('ubicaciones as u', 'up.id_ubicacion', '=', 'u.id')
+            ->join('bodegas as b', 'u.id_bodega', '=', 'b.id')
+            ->where('b.id', '=', $id_bodega);
+
+        // Aplicar filtro por uuid si se proporciona
+        if ($uuid) {
+            $query->where('p.uuid', $uuid);
+        }
+
+        // Paginar los resultados
+        $paquetes = $query->paginate($perPage);
+
+        // Verificar si se encontraron paquetes
+        if ($paquetes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron paquetes para esta bodega o con ese UUID.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Paquetes encontrados',
+            'data' => $paquetes->items(), // Elementos actuales en la página
+            'current_page' => $paquetes->currentPage(),
+            'last_page' => $paquetes->lastPage(),
+            'total' => $paquetes->total(),
+            'per_page' => $paquetes->perPage(),
+        ], 200);
+    }
+
+
+
 }

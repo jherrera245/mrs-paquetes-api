@@ -167,15 +167,6 @@ class UbicacionPaqueteController extends Controller
             // Buscar la ubicación por la nomenclatura escaneada (el código de la ubicación)
             $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->firstOrFail();
 
-            // Verificar si ya hay un paquete en la ubicación con estado 1
-            $paqueteEnUbicacion = UbicacionPaquete::where('id_ubicacion', $ubicacion->id)
-                ->where('estado', 1)
-                ->exists();
-
-            if ($paqueteEnUbicacion) {
-                return response()->json(['error' => 'Ya existe un paquete en esta ubicación con estado activo (1).'], 400);
-            }
-
             // Verificar si ya existe una relación de ubicación para el paquete con la misma ubicación
             $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $paquete->id)
                 ->where('id_ubicacion', $ubicacion->id)
