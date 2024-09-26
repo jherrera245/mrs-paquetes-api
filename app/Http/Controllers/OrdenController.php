@@ -778,6 +778,7 @@ class OrdenController extends Controller
         // Actualizar el estado de la orden
         $orden->estado_pago = 'pagado';
         $orden->tipo_orden = 'orden';
+        $orden->estado = 'Completada';
         $orden->save();
 
         // Generar y enviar el comprobante
