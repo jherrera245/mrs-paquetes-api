@@ -617,7 +617,32 @@ class TrasladoController extends Controller
         }
     }
     
-    
-    
-    
+    public function finalizarTraslado(Request $request)
+    {
+        // Validar la entrada por id_traslado
+        $request->validate([
+            'id_traslado' => 'required|integer',
+        ]);
+
+        // Buscar el traslado por id
+        $traslado = Traslado::find($request->id_traslado);
+
+        if (!$traslado) {
+            return response()->json(['message' => 'Traslado no encontrado'], 404);
+        }
+
+        if ($traslado->estado =='Completado') {
+            return response()->json(['message' => 'el traslado ya fue finalizado'], 404);
+        }
+
+        // Actualizar el estado del traslado
+        $traslado->estado = 'Completado';
+        $traslado->save();
+
+        // Retornar los datos del traslado y los detalles
+        return response()->json([
+            'message' => 'Traslado finalizado correctamente',
+            'traslado' => $traslado
+        ], 200);
+    } 
 }

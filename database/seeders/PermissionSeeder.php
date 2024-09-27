@@ -137,6 +137,7 @@ class PermissionSeeder extends Seeder
             'validacion-entrega',
             'kardex-view',
             'inventario-view',
+            'traslados-finalizar'
         ];
 
         foreach ($permissions as $permission) {
@@ -250,7 +251,8 @@ class PermissionSeeder extends Seeder
                 'bodegas-update',
                 'bodegas-destroy',
                 'traslados-view',
-                'traslados-create'
+                'traslados-create',
+                'traslados-finalizar'
             ]);
         }
 
@@ -268,7 +270,8 @@ class PermissionSeeder extends Seeder
                 'rutas-view',
                 'orden-view',
                 'traslados-view',
-                'ubicaciones-view'
+                'ubicaciones-view',
+                'traslados-finalizar'
             ]);
         }
 
