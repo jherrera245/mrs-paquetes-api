@@ -296,6 +296,8 @@ class DetalleOrdenController extends Controller
             $inventario = Inventario::where('id_paquete', $detalleOrden->id_paquete)->first();
             if ($inventario) {
                 $inventario->cantidad = 0;  // Marcar como sin stock
+                // enviamos la fecha_salida
+                $inventario->fecha_salida = now();
                 $inventario->save();
             }
 
