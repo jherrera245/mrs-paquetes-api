@@ -37,19 +37,19 @@ class DatabaseSeeder extends Seeder
             TipoIncidenciaSeeder::class,
             TipoPaqueteSeeder::class,
             TipoPersonaSeeder::class,
-            EmpleadoSeeder::class,
+            // EmpleadoSeeder::class,
             UsersSeeder::class,
-            ClienteSeeder::class,
+            // ClienteSeeder::class,
             BodegaSeeder::class,
             PasilloSeeder::class,
             UbicacionSeeder::class,
             TipoPagoSeeder::class,
             TipoEntregaSeeder::class,
-            DireccionesSeeder::class,
+            // DireccionesSeeder::class,
             TarifaDestinoSeeder::class,
             MarcaSeeder::class,
             ModelosSeeder::class,
-            VehiculosSeeder::class
+            // VehiculosSeeder::class
         ]);
     }
 }
