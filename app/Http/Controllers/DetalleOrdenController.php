@@ -287,7 +287,7 @@ class DetalleOrdenController extends Controller
             $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
 
             // Registrar en Kardex (SALIDA por TRASLADO)
-            $kardexService->registrarMovimientoKardex($detalleOrden->id_paquete, $idOrden, 'SALIDA', 'TRASLADO', $numeroSeguimiento);
+            $kardexService->registrarMovimientoKardex($detalleOrden->id_paquete, $idOrden, 'SALIDA', 'EN_VEHICULO_ENTREGA', $numeroSeguimiento);
 
             // **Registrar en Kardex (ENTRADA por ENTREGADO)**
             $kardexService->registrarMovimientoKardex($detalleOrden->id_paquete, $idOrden, 'ENTRADA', 'ENTREGADO', $numeroSeguimiento);

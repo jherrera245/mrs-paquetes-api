@@ -439,6 +439,8 @@ class PaqueteController extends Controller
                 return 'Asignado a Ruta';
             case 'TRASLADO':
                 return 'En Traslado';
+            case 'EN_VEHICULO_ENTREGA':
+                return 'En vehículo de entrega';
             case 'DEVUELTO_A_BODEGA':
                 return 'Devuelto a Bodega';
             case 'RECOLECTADO':
@@ -446,7 +448,7 @@ class PaqueteController extends Controller
             case 'PAQUETE_DAÑADO':
                 return 'Paquete dañado';
             case 'ENTREGADO':
-                return 'Entreado';
+                return 'Entregado';
             default:
                 return 'Desconocido';
         }

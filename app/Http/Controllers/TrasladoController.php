@@ -161,17 +161,17 @@ class TrasladoController extends Controller
                 $idOrden = $detalleOrdenInfo->id_orden;
                 $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
 
-                // Registrar en Kardex
-                // Salida de almacén
-                $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'AlMACENADO', $numeroSeguimiento);
-
                 // Si la bodega de destino es la bodega principal (bodega_id = 1), registrar como ENTRADA
                 if ($bodegaDestino == 1) {
+                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'EN_VEHICULO_ENTREGA', $numeroSeguimiento);
                     $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'EN_ESPERA_UBICACION', $numeroSeguimiento);
 
                     // el estado del paquete cambia al 14 => EN ESPERA DE UBICACION.
                     Paquete::where('id', $idPaquete)->update(['id_estado_paquete' => 14]);
                 } else {
+                    // Registrar en Kardex
+                    // Salida de almacén
+                    $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'SALIDA', 'AlMACENADO', $numeroSeguimiento);
                     // Entrada a traslado (cuando no es la bodega principal)
                     $kardexService->registrarMovimientoKardex($idPaquete, $idOrden, 'ENTRADA', 'TRASLADO', $numeroSeguimiento);
 
@@ -417,26 +417,12 @@ class TrasladoController extends Controller
             return response()->json(['message' => 'Detalle de traslado no encontrado'], 404);
         }
 
-        // si se elimina un detalle de traslado, se tiene que borrar el registro del kardex con el services.
-         // Instanciar el servicio KardexService
-        $kardexService = new KardexService();
-        // registrar salida de traslado.
-
-        $detalleOrdenInfo = $kardexService->getOrdenInfo($detalleTraslado->id_paquete);
-
-        if (!$detalleOrdenInfo) {
-            throw new Exception("No se encontró información de la orden para el paquete ID: {$detalleTraslado->id_paquete}");
-        }
-
-        $idOrden = $detalleOrdenInfo->id_orden;
-        $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
-
-
-        $kardexService->registrarMovimientoKardex($detalleTraslado->id_paquete, $idOrden, 'SALIDA', 'TRASLADO', $numeroSeguimiento);
         // cambiar estado de paquete en espera de ubicacion.
         Paquete::where('id', $detalleTraslado->id_paquete)->update(['id_estado_paquete' => 14]);
-        // registrar entrada al kardex en espera de ubicacion.
-        $kardexService->registrarMovimientoKardex($detalleTraslado->id_paquete, $idOrden, 'ENTRADA', 'EN_ESPERA_UBICACION', $numeroSeguimiento);
+
+        // eliminar el ultimo movimiento del kardex de este paquete.
+        $kardex = Kardex::where('id_paquete', $detalleTraslado->id_paquete)->orderBy('id', 'desc')->first();
+        $kardex->delete();
 
         try {
             $detalleTraslado->estado = 0;
@@ -447,6 +433,14 @@ class TrasladoController extends Controller
             Log::error('Error al marcar detalle de traslado como inactivo: ' . $e->getMessage());
             return response()->json(['error' => 'Error al marcar detalle de traslado como inactivo.'], 500);
         }
+    }
+
+    // mostrar paquetes en espera de ubicacion, con el id_estado_paquete = 14.
+    public function paquetesEsperaUbicacion()
+    {
+        $paquetes = Paquete::where('id_estado_paquete', 14)->get();
+
+        return response()->json($paquetes, 200);
     }
 
     public function trasladoPdf($id = null) {
@@ -627,8 +621,32 @@ class TrasladoController extends Controller
         // Buscar el traslado por id
         $traslado = Traslado::find($request->id_traslado);
 
+        // recorremos el detalle de ese traslado para obtener los paquetes.
+        $detalleTraslado = DetalleTraslado::where('id_traslado', $traslado->id)->get();
+        // si el traslado no tiene detalles, mostrar mensaje de error.
+        if ($detalleTraslado->isEmpty()) {
+            return response()->json(['message' => 'El traslado no tiene paquetes asignados'], 404);
+        }
         if (!$traslado) {
             return response()->json(['message' => 'Traslado no encontrado'], 404);
+        }
+        // recorremos los detalles del traslado para registrar el kardex.
+        foreach ($detalleTraslado as $detalle) {
+            // Instanciar el servicio KardexService
+            $kardexService = new KardexService();
+            // registrar salida de traslado.
+            $detalleOrdenInfo = $kardexService->getOrdenInfo($detalle->id_paquete);
+
+            if (!$detalleOrdenInfo) {
+                throw new Exception("No se encontró información de la orden para el paquete ID: {$detalle->id_paquete}");
+            }
+
+            $idOrden = $detalleOrdenInfo->id_orden;
+            $numeroSeguimiento = $detalleOrdenInfo->numero_seguimiento;
+
+            $kardexService->registrarMovimientoKardex($detalle->id_paquete, $idOrden, 'SALIDA', 'TRASLADO', $numeroSeguimiento);
+            // registrar entrada al kardex en espera de ubicacion.
+            $kardexService->registrarMovimientoKardex($detalle->id_paquete, $idOrden, 'ENTRADA', 'EN_VEHICULO_ENTREGA', $numeroSeguimiento);
         }
 
         if ($traslado->estado =='Completado') {
