@@ -164,9 +164,14 @@ class UbicacionPaqueteController extends Controller
             // Buscar el paquete por el UUID escaneado (el código QR del paquete)
             $paquete = Paquete::where('uuid', $request->codigo_qr_paquete)->firstOrFail();
 
+            // si el paquete se encuentra en un estado diferente a 14 (En espera de ubicación) no se puede asignar una ubicación.
+            if ($paquete->estado->id != 14) {
+                return response()->json(['error' => 'El paquete no está en estado "En espera de ubicación".'], 400);
+            }
+
             // Buscar la ubicación por la nomenclatura escaneada (el código de la ubicación)
             $ubicacion = Ubicacion::where('nomenclatura', $request->codigo_nomenclatura_ubicacion)->firstOrFail();
-
+            
             // Verificar si ya existe una relación de ubicación para el paquete con la misma ubicación
             $existingUbicacionPaquete = UbicacionPaquete::where('id_paquete', $paquete->id)
                 ->where('id_ubicacion', $ubicacion->id)
