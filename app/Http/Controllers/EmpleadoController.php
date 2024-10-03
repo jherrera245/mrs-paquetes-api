@@ -8,18 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class EmpleadoController extends Controller
 {
     public function index(Request $request)
     {
         $filters = $request->only(['nombres', 'apellidos', 'fecha_contratacion_inicio', 'fecha_contratacion_fin', 'id_estado']);
-
-        // Realiza la consulta incluyendo todas las columnas del empleado y los nombres de las relaciones
-        $empleados = Empleado::with(['cargo:id,nombre', 'departamento:id,nombre', 'municipio:id,nombre'])->get();
-
-        // Transforma la salida para incluir todos los datos del empleado y los nombres de las relaciones
-        $empleados = $empleados->map(function ($empleado) {
+    
+        $perPage = 10; // Definir el número de resultados por página
+        $empleados = Empleado::with(['cargo:id,nombre', 'departamento:id,nombre', 'municipio:id,nombre'])
+            ->paginate($perPage);
+    
+        $empleadosTransformed = $empleados->map(function ($empleado) {
             return [
                 'id' => $empleado->id,
                 'nombres' => $empleado->nombres,
@@ -42,12 +43,21 @@ class EmpleadoController extends Controller
                 'municipio' => $empleado->municipio->nombre ?? null
             ];
         });
-
+    
         $data = [
-            'empleados' => $empleados,
+            'empleados' => $empleadosTransformed,
+            'pagination' => [
+                'total' => $empleados->total(),
+                'per_page' => $empleados->perPage(),
+                'current_page' => $empleados->currentPage(),
+                'last_page' => $empleados->lastPage(),
+                'from' => $empleados->firstItem(),
+                'to' => $empleados->lastItem(),
+                'next_page_url' => $empleados->nextPageUrl() // URL de la siguiente página
+            ],
             'status' => 200
         ];
-
+    
         return response()->json($data, 200);
     }
 
