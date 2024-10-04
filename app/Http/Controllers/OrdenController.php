@@ -1182,6 +1182,7 @@ class OrdenController extends Controller
                     'tipo_documento' => $orden->tipo_documento,
                     'tipo_orden' => $orden->tipo_orden,
                     'tipo_pago' => $orden->tipoPago->pago ?? 'NA',
+                    'estado_pago' => $orden->estado_pago,
                     'detalles' => $orden->detalles->map(function ($detalle) {
                         return [
                             'id_orden' => $detalle->id_orden,
