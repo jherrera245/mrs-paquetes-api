@@ -48,13 +48,13 @@ class TrasladoController extends Controller
 
     public function show($id)
     {
-        // Buscar el traslado con sus detalles
-        $traslado = Traslado::with(['detalleTraslado.paquete'])->find($id);
-
+        // Buscar el traslado con sus detalles y relaciones de bodegas
+        $traslado = Traslado::with(['detalleTraslado.paquete', 'bodegaOrigen', 'bodegaDestino'])->find($id);
+    
         if (!$traslado) {
             return response()->json(['message' => 'Traslado no encontrado'], 404);
         }
-
+    
         // Formatear la respuesta para mostrar el UUID de los paquetes asociados
         // mostrar solo paquetes activos, estado = 1.
         $detalleTraslado = $traslado->detalleTraslado->where('estado', 1);
@@ -62,21 +62,29 @@ class TrasladoController extends Controller
             return [
                 'id' => $detalle->id,
                 'id_paquete' => $detalle->id_paquete,
-                'uuid' => $detalle->paquete->uuid // Acceder al UUID del paquete
+                'uuid' => $detalle->paquete->uuid,// Acceder al UUID del paquete
+                'tipo_paquete' => $detalle->paquete->tipoPaquete ? $detalle->paquete->tipoPaquete->nombre : null,
+                'tamano_paquete' => $detalle->paquete->tamanoPaquete ? $detalle->paquete->tamanoPaquete->nombre : null,
+                'descripcion_contenido' => $detalle->paquete->descripcion_contenido,
+            
             ];
         });
-        
-
+    
+        // Contar el número total de paquetes
+        $totalPaquetes = $detallesPaquetes->count();
+    
         return response()->json([
             'id_traslado' => $traslado->id,
             'numero_traslado' => $traslado->numero_traslado,
-            'bodega_origen' => $traslado->bodega_origen,
-            'bodega_destino' => $traslado->bodega_destino,
+            'bodega_origen' => $traslado->bodegaOrigen->nombre ?? 'No disponible',
+            'bodega_destino' => $traslado->bodegaDestino->nombre ?? 'No disponible',
             'fecha_traslado' => $traslado->fecha_traslado,
             'estado' => $traslado->estado,
+            'total_paquetes' => $totalPaquetes,
             'paquetes' => $detallesPaquetes
         ], 200);
     }
+    
 
 
 
