@@ -118,7 +118,7 @@ class Clientes extends Model
         foreach ($filters as $field => $value) {
             if (in_array($field, ['nombre', 'apellido', 'nombre_comercial', 'telefono', 'dui', 'nit', 'nrc', 'fecha_registro'])) {
                 $query->where($field, 'like', '%' . $value . '%');
-            } elseif (in_array($field, ['id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio'])) {
+            } elseif (in_array($field, ['id_tipo_persona', 'es_contribuyente', 'id_estado', 'id_departamento', 'id_municipio','giro'])) {
                 $query->where($field, $value);
             }
         }
